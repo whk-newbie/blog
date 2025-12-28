@@ -5,9 +5,9 @@ services:
     container_name: blog-postgres-dev
     restart: unless-stopped
     environment:
-      POSTGRES_USER: blog_user
-      POSTGRES_PASSWORD: blog_password
-      POSTGRES_DB: blog_db
+      POSTGRES_USER: ${DB_USER:-blog_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-blog_password}
+      POSTGRES_DB: ${DB_NAME:-blog_db}
       TZ: Asia/Shanghai
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
@@ -40,16 +40,16 @@ services:
     restart: unless-stopped
     environment:
       CONFIG_PATH: /app/config/config.yaml
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: blog_user
-      DB_PASSWORD: blog_password
-      DB_NAME: blog_db
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ""
-      JWT_SECRET: "dev-jwt-secret-key-12345678"
-      CRYPTO_MASTER_KEY: "12345678901234567890123456789012"
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-blog_user}
+      DB_PASSWORD: ${DB_PASSWORD:-blog_password}
+      DB_NAME: ${DB_NAME:-blog_db}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-key-12345678}
+      CRYPTO_MASTER_KEY: ${CRYPTO_MASTER_KEY:-12345678901234567890123456789012}
       TZ: Asia/Shanghai
       GOPROXY: "https://goproxy.cn,direct"
     volumes:
