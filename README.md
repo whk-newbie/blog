@@ -6,6 +6,7 @@
 
 - **前后端分离**: Go后端 + Vue 3前端
 - **容器化部署**: 完整的Docker支持，一键启动
+- **JWT认证**: 基于Token的安全认证机制
 - **内容加密**: 支持文章内容AES-256-GCM加密
 - **访客追踪**: 基于浏览器指纹的访客识别
 - **爬虫监控**: Python SDK支持内容爬取和监控
@@ -85,6 +86,11 @@ chmod +x scripts/*.sh
 - 健康检查: http://localhost/health
 - API文档: http://localhost/swagger/index.html
 
+5. 默认管理员账号
+- 用户名: `admin`
+- 密码: `admin@123`
+- **⚠️ 首次登录后请立即修改密码！**
+
 ### 开发环境
 
 开发环境支持热重载，代码修改后自动重启服务。
@@ -99,6 +105,10 @@ chmod +x scripts/*.sh
 - API文档: http://localhost:8080/swagger/index.html
 - PostgreSQL: localhost:5432
 - Redis: localhost:6379
+
+默认管理员账号：
+- 用户名: `admin`
+- 密码: `admin@123`
 
 ## 📝 常用命令
 
@@ -160,6 +170,36 @@ docker-compose build --no-cache
 docker-compose down -v
 ```
 
+## ✨ 功能特性
+
+### 已实现功能
+
+#### 认证系统 ✅
+- [x] JWT Token认证
+- [x] 管理员登录
+- [x] 密码修改（BCrypt加密）
+- [x] Token刷新
+- [x] 路由守卫
+- [x] 默认管理员初始化
+
+### 待实现功能
+
+#### 文章管理
+- [ ] 文章CRUD
+- [ ] 分类管理
+- [ ] 标签管理
+- [ ] 图片上传
+- [ ] 富文本编辑器
+- [ ] 定时发布
+
+#### 高级功能
+- [ ] 浏览器指纹识别
+- [ ] 访问统计分析
+- [ ] 爬虫任务监控
+- [ ] 系统配置管理
+- [ ] 日志管理
+- [ ] 工具集合
+
 ## 🔧 配置说明
 
 ### 后端配置
@@ -169,7 +209,7 @@ docker-compose down -v
 - **server**: 服务器配置（端口、模式等）
 - **database**: PostgreSQL数据库配置
 - **redis**: Redis缓存配置
-- **jwt**: JWT认证配置
+- **jwt**: JWT认证配置（Token过期时间、签名密钥等）
 - **crypto**: 加密配置（AES-256密钥）
 - **upload**: 文件上传配置
 - **log**: 日志配置
