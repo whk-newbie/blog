@@ -24,6 +24,12 @@ COPY go.mod go.sum ./
 # 下载依赖
 RUN go mod download
 
+# 复制源代码（先复制以生成docs）
+COPY . .
+
+# 生成Swagger文档
+RUN swag init -g cmd/server/main.go -o docs --parseDependency --parseInternal || true
+
 # 暴露端口
 EXPOSE 8080
 
