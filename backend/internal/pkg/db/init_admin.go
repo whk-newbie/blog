@@ -10,7 +10,7 @@ import (
 
 const (
 	DefaultAdminUsername = "admin"
-	DefaultAdminPassword = "admin123"
+	DefaultAdminPassword = "admin@123"
 	DefaultAdminEmail    = "admin@example.com"
 )
 
