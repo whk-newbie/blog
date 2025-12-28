@@ -1,0 +1,40 @@
+# 构建产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+blog-server
+
+# Swagger生成的文档
+docs/
+
+# 测试和覆盖率
+*.test
+*.out
+coverage.*
+
+# 临时文件
+*.tmp
+*.swp
+*.swo
+*~
+tmp/
+
+# IDE配置
+.vscode
+.idea
+*.iml
+
+# 日志和数据
+logs/
+uploads/
+backups/
+*.log
+
+# 配置文件
+config/config.yaml
+
+# Air热重载
+.air/
+

@@ -1,0 +1,110 @@
+# 操作系统
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# 日志
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 依赖
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 构建产物
+dist/
+build/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage/
+*.cover
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+.air/
+
+# 配置文件（包含敏感信息）
+backend/config/config.yaml
+.env
+.env.local
+.env.*.local
+
+# 上传文件
+backend/uploads/
+uploads/
+
+# 备份文件
+backend/backups/
+backups/
+*.sql
+*.sql.gz
+
+# Go
+go.work
+go.work.sum
+
+# 前端
+.nuxt
+.next
+out
+.cache
+.parcel-cache
+.turbo
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.dockerignore
+
+# 开发文档（不上传到GitHub）
+PRD.md
+ARCHITECTURE.md
+DATABASE_DESIGN.md
+API_DESIGN.md
+FRONTEND_DESIGN.md
+PROJECT_STRUCTURE.md
+DEVELOPMENT_PLAN.md
+
+# 其他
+*.bak
+*.orig
+
