@@ -1,5 +1,5 @@
 # 开发环境Dockerfile（支持热重载）
-FROM golang:1.23-alpine
+FROM golang:1.25-alpine
 
 # 设置 Go 代理（加速下载）
 ENV GOPROXY=https://goproxy.cn,direct
