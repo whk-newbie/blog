@@ -5,6 +5,9 @@ FROM golang:1.23-alpine AS builder
 ENV GOPROXY=https://goproxy.cn,direct
 ENV GO111MODULE=on
 
+# 配置 Alpine 镜像源（加速 apk 下载）
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 # 设置工作目录
 WORKDIR /build
 
@@ -31,6 +34,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o blog-server ./cmd
 
 # 运行阶段
 FROM alpine:latest
+
+# 配置 Alpine 镜像源（加速 apk 下载）
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 安装必要的运行时依赖
 RUN apk --no-cache add ca-certificates tzdata
