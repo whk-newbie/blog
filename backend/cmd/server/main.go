@@ -53,6 +53,19 @@ func main() {
 	}
 	defer db.Close()
 
+	// 运行数据库迁移
+	gormDB, err := db.GetSQLDB()
+	if err != nil {
+		logger.Fatal("Failed to get database instance: %v", err)
+	}
+	sqlDB, err := gormDB.DB()
+	if err != nil {
+		logger.Fatal("Failed to get sql.DB: %v", err)
+	}
+	if err := db.RunMigrations(sqlDB, "./migrations"); err != nil {
+		logger.Fatal("Failed to run migrations: %v", err)
+	}
+
 	// 初始化Redis
 	if err := redis.Init(cfg.Redis); err != nil {
 		logger.Fatal("Failed to initialize redis: %v", err)

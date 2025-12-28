@@ -73,6 +73,14 @@ func Close() error {
 	return nil
 }
 
+// GetSQLDB 获取底层的sql.DB实例（用于迁移）
+func GetSQLDB() (*gorm.DB, error) {
+	if db == nil {
+		return nil, fmt.Errorf("database not initialized")
+	}
+	return db, nil
+}
+
 // AutoMigrate 自动迁移数据库表
 func AutoMigrate(models ...interface{}) error {
 	return db.AutoMigrate(models...)

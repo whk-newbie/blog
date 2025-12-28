@@ -75,6 +75,10 @@ backups/
 *.sql
 *.sql.gz
 
+# 例外：migrations目录下的SQL文件需要版本控制
+!backend/migrations/*.sql
+!migrations/*.sql
+
 # Go
 go.work
 go.work.sum
