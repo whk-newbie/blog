@@ -66,6 +66,11 @@ func main() {
 		logger.Fatal("Failed to run migrations: %v", err)
 	}
 
+	// 初始化默认管理员
+	if err := db.InitDefaultAdmin(gormDB); err != nil {
+		logger.Fatal("Failed to initialize default admin: %v", err)
+	}
+
 	// 初始化Redis
 	if err := redis.Init(cfg.Redis); err != nil {
 		logger.Fatal("Failed to initialize redis: %v", err)
