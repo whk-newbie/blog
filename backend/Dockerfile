@@ -1,6 +1,10 @@
 # 构建阶段
 FROM golang:1.23-alpine AS builder
 
+# 设置 Go 代理（加速下载）
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GO111MODULE=on
+
 # 设置工作目录
 WORKDIR /build
 
