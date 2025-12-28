@@ -1,0 +1,89 @@
+// CSS 变量定义
+:root {
+  // 主色调
+  --primary-color: #1890ff;
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --danger-color: #f5222d;
+  --info-color: #1890ff;
+
+  // 文本颜色
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --text-disabled: #999999;
+
+  // 背景颜色
+  --bg-color: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #fafafa;
+  --header-bg: #ffffff;
+  --footer-bg: #f5f5f5;
+  --hover-bg: #f0f0f0;
+
+  // 边框颜色
+  --border-color: #d9d9d9;
+  --border-light: #e8e8e8;
+
+  // 阴影
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+  // 圆角
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 8px;
+
+  // 间距
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  // 字体大小
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  // 动画时间
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+}
+
+// 暗色主题
+:root[data-theme='dark'] {
+  // 文本颜色
+  --text-color: #e8e8e8;
+  --text-secondary: #b8b8b8;
+  --text-disabled: #888888;
+
+  // 背景颜色
+  --bg-color: #141414;
+  --bg-secondary: #1f1f1f;
+  --bg-tertiary: #262626;
+  --header-bg: #1f1f1f;
+  --footer-bg: #1f1f1f;
+  --hover-bg: #2a2a2a;
+
+  // 边框颜色
+  --border-color: #434343;
+  --border-light: #303030;
+
+  // 阴影
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+// 导出 Less 变量供 Element Plus 使用
+@primary-color: #1890ff;
+@success-color: #52c41a;
+@warning-color: #faad14;
+@danger-color: #f5222d;
+@info-color: #1890ff;
+
