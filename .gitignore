@@ -112,3 +112,9 @@ DEVELOPMENT_PLAN.md
 *.bak
 *.orig
 
+
+# 数据持久化目录
+data/postgres/*
+data/redis/*
+!data/postgres/.gitkeep
+!data/redis/.gitkeep
