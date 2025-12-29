@@ -21,15 +21,21 @@
           {{ t('login.title') }}
         </el-button>
         <!-- 已登录：显示跳转到后台按钮 -->
-        <el-button
+        <el-tooltip
           v-else
-          type="primary"
-          size="default"
-          @click="goToAdmin"
+          :content="t('nav.adminTooltip')"
+          placement="bottom"
         >
-          <el-icon><Setting /></el-icon>
-          <span>{{ t('nav.dashboard') }}</span>
-        </el-button>
+          <el-button
+            text
+            size="default"
+            @click="goToAdmin"
+            class="admin-btn"
+          >
+            <el-icon><Setting /></el-icon>
+            <span>{{ t('nav.dashboard') }}</span>
+          </el-button>
+        </el-tooltip>
         <LoginDialog v-model="showLoginDialog" @success="handleLoginSuccess" />
       </div>
     </div>
@@ -144,6 +150,23 @@ const goToAdmin = () => {
 
     .el-icon {
       font-size: 16px;
+    }
+  }
+
+  .admin-btn {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-color);
+    padding: 8px 12px;
+    transition: all 0.3s;
+
+    &:hover {
+      color: var(--primary-color);
+      background: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .el-icon {
+      font-size: 18px;
     }
   }
 }

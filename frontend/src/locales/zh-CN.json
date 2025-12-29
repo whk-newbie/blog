@@ -67,6 +67,7 @@
     "articles": "文章",
     "about": "关于",
     "dashboard": "仪表盘",
+    "adminTooltip": "后台管理，仅站主可以访问",
     "articleManage": "文章管理",
     "articleList": "文章列表",
     "newArticle": "新建文章",
