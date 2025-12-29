@@ -21,7 +21,10 @@
   },
   "app": {
     "title": "My Blog",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "adminSystem": "Blog Management System",
+    "blogSystem": "Blog System",
+    "notFound": "Page Not Found"
   },
   "nav": {
     "home": "Home",
@@ -122,7 +125,23 @@
     "thisMonth": "This Month",
     "trend": "Trend",
     "topArticles": "Top Articles",
-    "referrers": "Referrers"
+    "referrers": "Referrers",
+    "articleCount": "Total Articles",
+    "categoryCount": "Total Categories",
+    "tagCount": "Total Tags",
+    "chartTitle": "Data Statistics Chart",
+    "chartPlaceholder": "Chart Placeholder",
+    "chartDescription": "ECharts and other chart libraries can be integrated in the future to display visit trends, article publishing statistics and other data",
+    "recentArticles": "Recent Articles",
+    "viewAll": "View All",
+    "loadStatsError": "Failed to load statistics",
+    "noArticles": "No Articles",
+    "cover": "Cover",
+    "noCover": "No Cover",
+    "createTime": "Create Time",
+    "publishConfirm": "Are you sure you want to publish this article?",
+    "publishSuccess": "Published successfully",
+    "publishError": "Failed to publish"
   },
   "crawler": {
     "taskId": "Task ID",

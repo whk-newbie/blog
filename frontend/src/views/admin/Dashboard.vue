@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <page-header title="仪表盘" />
+    <page-header :title="t('nav.dashboard')" />
 
     <!-- 统计卡片 -->
     <div v-loading="loading" class="stats-cards">
@@ -10,7 +10,7 @@
             <el-icon :size="32"><Document /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-label">文章总数</div>
+            <div class="stat-label">{{ t('stats.articleCount') }}</div>
             <div class="stat-value">{{ stats.article_count || 0 }}</div>
           </div>
         </div>
@@ -22,7 +22,7 @@
             <el-icon :size="32"><Folder /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-label">分类总数</div>
+            <div class="stat-label">{{ t('stats.categoryCount') }}</div>
             <div class="stat-value">{{ stats.category_count || 0 }}</div>
           </div>
         </div>
@@ -34,7 +34,7 @@
             <el-icon :size="32"><PriceTag /></el-icon>
           </div>
           <div class="stat-info">
-            <div class="stat-label">标签总数</div>
+            <div class="stat-label">{{ t('stats.tagCount') }}</div>
             <div class="stat-value">{{ stats.tag_count || 0 }}</div>
           </div>
         </div>
@@ -47,14 +47,14 @@
         <div class="card-header">
           <span class="card-title">
             <el-icon><DataAnalysis /></el-icon>
-            数据统计图表
+            {{ t('stats.chartTitle') }}
           </span>
         </div>
       </template>
       <div class="chart-placeholder">
         <el-icon :size="64" class="placeholder-icon"><DataAnalysis /></el-icon>
-        <p class="placeholder-text">图表占位区域</p>
-        <p class="placeholder-desc">未来可集成 ECharts 等图表库展示访问趋势、文章发布统计等数据</p>
+        <p class="placeholder-text">{{ t('stats.chartPlaceholder') }}</p>
+        <p class="placeholder-desc">{{ t('stats.chartDescription') }}</p>
       </div>
     </el-card>
 
@@ -64,9 +64,9 @@
         <div class="card-header">
           <span class="card-title">
             <el-icon><Clock /></el-icon>
-            最近文章
+            {{ t('stats.recentArticles') }}
           </span>
-          <el-button text @click="goToArticles">查看全部</el-button>
+          <el-button text @click="goToArticles">{{ t('stats.viewAll') }}</el-button>
         </div>
       </template>
 
@@ -78,7 +78,7 @@
       >
         <el-table-column prop="id" label="ID" width="80" />
         
-        <el-table-column label="封面" width="100">
+        <el-table-column :label="t('stats.cover')" width="100">
           <template #default="{ row }">
             <el-image
               v-if="row.cover_image"
@@ -86,13 +86,13 @@
               style="width: 60px; height: 60px; border-radius: 4px"
               fit="cover"
             />
-            <span v-else class="no-cover">无封面</span>
+            <span v-else class="no-cover">{{ t('stats.noCover') }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="title" :label="t('article.title')" min-width="200" show-overflow-tooltip />
 
-        <el-table-column label="分类" width="120">
+        <el-table-column :label="t('article.category')" width="120">
           <template #default="{ row }">
             <el-tag v-if="row.category" size="small">
               {{ row.category.name }}
@@ -101,31 +101,31 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" width="100">
+        <el-table-column :label="t('article.status')" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 'published' ? 'success' : 'info'" size="small">
-              {{ row.status === 'published' ? '已发布' : '草稿' }}
+              {{ row.status === 'published' ? t('article.published') : t('article.draft') }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column label="浏览量" width="100">
+        <el-table-column :label="t('article.viewCount')" width="100">
           <template #default="{ row }">
             <span>{{ row.view_count || 0 }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="创建时间" width="180">
+        <el-table-column :label="t('stats.createTime')" width="180">
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column :label="t('common.operation')" width="180" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" text size="small" @click="handleEdit(row.id)">
               <el-icon><Edit /></el-icon>
-              编辑
+              {{ t('common.edit') }}
             </el-button>
             <el-button
               v-if="row.status === 'draft'"
@@ -135,14 +135,14 @@
               @click="handlePublish(row.id)"
             >
               <el-icon><Promotion /></el-icon>
-              发布
+              {{ t('article.publishArticle') }}
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div v-if="!loading && recentArticles.length === 0" class="empty-state">
-        <empty-state description="暂无文章" />
+        <empty-state :description="t('stats.noArticles')" />
       </div>
     </el-card>
   </div>
@@ -151,6 +151,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Document,
@@ -167,6 +168,7 @@ import statsApi from '@/api/stats'
 import articleApi from '@/api/article'
 
 const router = useRouter()
+const { t } = useI18n()
 
 // 数据
 const loading = ref(false)
@@ -192,7 +194,7 @@ const loadStats = async () => {
     }
   } catch (error) {
     console.error('加载统计数据失败:', error)
-    ElMessage.error('加载统计数据失败')
+    ElMessage.error(t('stats.loadStatsError'))
   } finally {
     loading.value = false
   }
@@ -224,19 +226,19 @@ const handleEdit = (id) => {
 // 发布文章
 const handlePublish = async (id) => {
   try {
-    await ElMessageBox.confirm('确定要发布这篇文章吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm(t('stats.publishConfirm'), t('common.tip'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
       type: 'info'
     })
 
     await articleApi.publish(id)
-    ElMessage.success('发布成功')
+    ElMessage.success(t('stats.publishSuccess'))
     loadStats() // 重新加载数据
   } catch (error) {
     if (error !== 'cancel') {
       console.error('发布失败:', error)
-      ElMessage.error(error.message || '发布失败')
+      ElMessage.error(error.message || t('stats.publishError'))
     }
   }
 }

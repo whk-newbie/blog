@@ -2,7 +2,7 @@
   <div class="admin-sidebar">
     <div class="sidebar-logo">
       <el-icon class="logo-icon"><Collection /></el-icon>
-      <h2>博客管理系统</h2>
+      <h2>{{ t('app.adminSystem') }}</h2>
       <p class="logo-subtitle">Admin Dashboard</p>
     </div>
     <el-menu
@@ -15,47 +15,47 @@
     >
       <el-menu-item index="/admin">
         <el-icon><Monitor /></el-icon>
-        <span>仪表盘</span>
+        <span>{{ t('nav.dashboard') }}</span>
       </el-menu-item>
       
       <el-sub-menu index="articles">
         <template #title>
           <el-icon><Document /></el-icon>
-          <span>文章管理</span>
+          <span>{{ t('nav.articleManage') }}</span>
         </template>
-        <el-menu-item index="/admin/articles">文章列表</el-menu-item>
-        <el-menu-item index="/admin/articles/new">新建文章</el-menu-item>
-        <el-menu-item index="/admin/categories">分类管理</el-menu-item>
-        <el-menu-item index="/admin/tags">标签管理</el-menu-item>
+        <el-menu-item index="/admin/articles">{{ t('nav.articleList') }}</el-menu-item>
+        <el-menu-item index="/admin/articles/new">{{ t('nav.newArticle') }}</el-menu-item>
+        <el-menu-item index="/admin/categories">{{ t('nav.categories') }}</el-menu-item>
+        <el-menu-item index="/admin/tags">{{ t('nav.tags') }}</el-menu-item>
       </el-sub-menu>
 
       <el-sub-menu index="stats">
         <template #title>
           <el-icon><DataAnalysis /></el-icon>
-          <span>统计分析</span>
+          <span>{{ t('nav.stats') }}</span>
         </template>
-        <el-menu-item index="/admin/stats/visits">访问统计</el-menu-item>
-        <el-menu-item index="/admin/stats/fingerprints">指纹记录</el-menu-item>
+        <el-menu-item index="/admin/stats/visits">{{ t('nav.visits') }}</el-menu-item>
+        <el-menu-item index="/admin/stats/fingerprints">{{ t('nav.fingerprints') }}</el-menu-item>
       </el-sub-menu>
 
       <el-menu-item index="/admin/crawler">
         <el-icon><Monitor /></el-icon>
-        <span>爬虫监控</span>
+        <span>{{ t('nav.crawler') }}</span>
       </el-menu-item>
 
       <el-sub-menu index="system">
         <template #title>
           <el-icon><Setting /></el-icon>
-          <span>系统管理</span>
+          <span>{{ t('nav.system') }}</span>
         </template>
-        <el-menu-item index="/admin/system/config">系统配置</el-menu-item>
-        <el-menu-item index="/admin/system/logs">系统日志</el-menu-item>
-        <el-menu-item index="/admin/system/backup">数据备份</el-menu-item>
+        <el-menu-item index="/admin/system/config">{{ t('nav.config') }}</el-menu-item>
+        <el-menu-item index="/admin/system/logs">{{ t('nav.logs') }}</el-menu-item>
+        <el-menu-item index="/admin/system/backup">{{ t('nav.backup') }}</el-menu-item>
       </el-sub-menu>
 
       <el-menu-item index="/admin/tools">
         <el-icon><Tools /></el-icon>
-        <span>开发工具</span>
+        <span>{{ t('nav.tools') }}</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -64,6 +64,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import {
   Monitor,
   Document,
@@ -74,6 +75,7 @@ import {
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
+const { t } = useI18n()
 const activeMenu = computed(() => route.path)
 </script>
 

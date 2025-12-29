@@ -22,9 +22,9 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="profile">个人资料</el-dropdown-item>
-            <el-dropdown-item command="password">修改密码</el-dropdown-item>
-            <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+            <el-dropdown-item command="profile">{{ t('user.profile') }}</el-dropdown-item>
+            <el-dropdown-item command="password">{{ t('user.changePassword') }}</el-dropdown-item>
+            <el-dropdown-item divided command="logout">{{ t('user.logout') }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -35,6 +35,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/store/user'
 import ThemeSwitch from '../common/ThemeSwitch.vue'
 import { ElMessage } from 'element-plus'
@@ -42,6 +43,7 @@ import { ElMessage } from 'element-plus'
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const { t } = useI18n()
 
 const username = computed(() => userStore.username || 'Admin')
 
@@ -64,7 +66,7 @@ const handleCommand = (command) => {
     case 'logout':
       userStore.logout()
       router.push('/')
-      ElMessage.success('退出登录成功')
+      ElMessage.success(t('user.logoutSuccess'))
       break
   }
 }

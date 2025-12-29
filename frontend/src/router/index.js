@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { ElMessage } from 'element-plus'
+import i18n from '@/locales'
 
 const routes = [
   // 公开页面 - 使用主布局
@@ -12,19 +13,19 @@ const routes = [
         path: '',
         name: 'Home',
         component: () => import('@/views/Home.vue'),
-        meta: { title: '首页' }
+        meta: { titleKey: 'nav.home' }
       },
       {
         path: 'articles',
         name: 'Articles',
         component: () => import('@/views/Articles.vue'),
-        meta: { title: '文章列表' }
+        meta: { titleKey: 'nav.articles' }
       },
       {
         path: 'article/:slug',
         name: 'ArticleDetail',
         component: () => import('@/views/ArticleDetail.vue'),
-        meta: { title: '文章详情' }
+        meta: { titleKey: 'article.title' }
       }
     ]
   },
@@ -38,43 +39,43 @@ const routes = [
         path: '',
         name: 'Admin',
         component: () => import('@/views/admin/Dashboard.vue'),
-        meta: { title: '仪表盘', requiresAuth: true }
+        meta: { titleKey: 'nav.dashboard', requiresAuth: true }
       },
       {
         path: 'password',
         name: 'ChangePassword',
         component: () => import('@/views/admin/ChangePassword.vue'),
-        meta: { title: '修改密码', requiresAuth: true }
+        meta: { titleKey: 'user.changePassword', requiresAuth: true }
       },
       {
         path: 'articles',
         name: 'AdminArticles',
         component: () => import('@/views/admin/Articles.vue'),
-        meta: { title: '文章管理', requiresAuth: true }
+        meta: { titleKey: 'nav.articleManage', requiresAuth: true }
       },
       {
         path: 'articles/new',
         name: 'CreateArticle',
         component: () => import('@/views/admin/ArticleEditor.vue'),
-        meta: { title: '新建文章', requiresAuth: true }
+        meta: { titleKey: 'nav.newArticle', requiresAuth: true }
       },
       {
         path: 'articles/edit/:id',
         name: 'EditArticle',
         component: () => import('@/views/admin/ArticleEditor.vue'),
-        meta: { title: '编辑文章', requiresAuth: true }
+        meta: { titleKey: 'article.editArticle', requiresAuth: true }
       },
       {
         path: 'categories',
         name: 'AdminCategories',
         component: () => import('@/views/admin/Categories.vue'),
-        meta: { title: '分类管理', requiresAuth: true }
+        meta: { titleKey: 'nav.categories', requiresAuth: true }
       },
       {
         path: 'tags',
         name: 'AdminTags',
         component: () => import('@/views/admin/Tags.vue'),
-        meta: { title: '标签管理', requiresAuth: true }
+        meta: { titleKey: 'nav.tags', requiresAuth: true }
       }
     ]
   },
@@ -82,7 +83,7 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFound.vue'),
-    meta: { title: '页面未找到' }
+    meta: { titleKey: 'app.notFound' }
   }
 ]
 
@@ -100,8 +101,14 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  // 设置页面标题
-  document.title = to.meta.title ? `${to.meta.title} - 博客系统` : '博客系统'
+  // 设置页面标题 - 使用i18n
+  const titleKey = to.meta.titleKey || (to.meta.title ? `nav.${to.meta.title}` : null)
+  if (titleKey) {
+    const title = i18n.global.t(titleKey)
+    document.title = `${title} - ${i18n.global.t('app.blogSystem')}`
+  } else {
+    document.title = i18n.global.t('app.blogSystem')
+  }
   
   const userStore = useUserStore()
   
