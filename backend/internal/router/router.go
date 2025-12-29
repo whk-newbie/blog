@@ -55,13 +55,20 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	categoryRepo := repository.NewCategoryRepository(gormDB)
 	tagRepo := repository.NewTagRepository(gormDB)
 	articleRepo := repository.NewArticleRepository(gormDB)
+	fingerprintRepo := repository.NewFingerprintRepository(gormDB)
+	visitRepo := repository.NewVisitRepository(gormDB)
 
 	// 初始化Service
 	authService := service.NewAuthService(adminRepo, jwtManager, cfg.JWT.ExpireTime)
 	categoryService := service.NewCategoryService(categoryRepo)
 	tagService := service.NewTagService(tagRepo)
 	articleService := service.NewArticleService(articleRepo, categoryRepo, tagRepo)
-	statsService := service.NewStatsService(articleRepo, categoryRepo, tagRepo)
+
+	// 访问统计相关服务
+	visitCacheService := service.NewVisitCacheService()
+	visitService := service.NewVisitService(visitRepo, visitCacheService)
+	fingerprintService := service.NewFingerprintService(fingerprintRepo)
+	statsService := service.NewStatsService(articleRepo, categoryRepo, tagRepo, visitService)
 
 	// 初始化Handler
 	authHandler := handler.NewAuthHandler(authService)
@@ -70,6 +77,8 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	articleHandler := handler.NewArticleHandler(articleService)
 	uploadHandler := handler.NewUploadHandler("uploads", 10) // 10MB max size
 	statsHandler := handler.NewStatsHandler(statsService)
+	fingerprintHandler := handler.NewFingerprintHandler(fingerprintService)
+	visitHandler := handler.NewVisitHandler(visitService)
 
 	// API路由组
 	api := r.Group("/api/v1")
@@ -105,6 +114,10 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 		api.GET("/articles/slug/:slug", articleHandler.GetBySlug)
 		api.GET("/articles/search", articleHandler.Search)
 
+		// 公开接口 - 指纹和访问统计
+		api.POST("/fingerprint", fingerprintHandler.CollectFingerprint)
+		api.POST("/visit", visitHandler.RecordVisit)
+
 		// 管理接口（需要认证）
 		admin := api.Group("/admin")
 		admin.Use(middleware.Auth(jwtManager))
@@ -133,6 +146,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 
 			// 统计数据
 			admin.GET("/stats/dashboard", statsHandler.GetDashboardStats)
+			admin.GET("/stats/visits", statsHandler.GetVisitStats)
+			admin.GET("/stats/popular-articles", statsHandler.GetPopularArticles)
+			admin.GET("/stats/referrers", statsHandler.GetReferrerStats)
 		}
 	}
 
