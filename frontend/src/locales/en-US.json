@@ -17,7 +17,11 @@
     "error": "Error",
     "warning": "Warning",
     "tip": "Tip",
-    "languageSwitched": "Switched to English"
+    "languageSwitched": "Switched to English",
+    "uploadImageOnly": "Only image files can be uploaded!",
+    "uploadImageSizeLimit": "Image size cannot exceed 10MB!",
+    "uploadSuccess": "Upload successful",
+    "uploadError": "Upload failed"
   },
   "app": {
     "title": "My Blog",
@@ -86,8 +90,14 @@
     "changePassword": "Change Password",
     "changePasswordSuccess": "Password changed successfully",
     "changePasswordError": "Failed to change password",
+    "changePasswordSuccessRelogin": "Password changed successfully, please login again",
     "logout": "Logout",
-    "logoutSuccess": "Logout success"
+    "logoutSuccess": "Logout success",
+    "passwordSecurityTip": "Password Security Tips",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "passwordSuggestion": "It is recommended to use a combination of letters, numbers and special characters",
+    "passwordSimpleWarning": "Do not use overly simple passwords",
+    "passwordChangeRegularly": "Change password regularly to ensure account security"
   },
   "article": {
     "title": "Title",
@@ -119,7 +129,29 @@
     "publishSuccess": "Published successfully",
     "unpublishSuccess": "Unpublished successfully",
     "publishError": "Failed to publish",
-    "unpublishError": "Failed to unpublish"
+    "unpublishError": "Failed to unpublish",
+    "titlePlaceholder": "Please enter article title",
+    "slugPlaceholder": "Leave empty to auto-generate",
+    "autoGenerateSlug": "Auto Generate",
+    "coverImage": "Cover Image",
+    "changeImage": "Change Image",
+    "uploadImage": "Upload Image",
+    "deleteImage": "Delete Image",
+    "summaryPlaceholder": "Please enter article summary",
+    "selectCategoryPlaceholder": "Please select category",
+    "selectTagsPlaceholder": "Please select tags",
+    "contentPlaceholder": "Please enter article content...",
+    "publishStatus": "Publish Status",
+    "publishTime": "Publish Time",
+    "publishTimePlaceholder": "Select publish time",
+    "publishTimeTip": "Leave empty to use current time",
+    "otherOptions": "Other Options",
+    "saveAndPublish": "Save and Publish",
+    "saveAsDraft": "Save as Draft",
+    "createSuccess": "Created successfully",
+    "updateSuccess": "Updated successfully",
+    "createError": "Failed to create",
+    "updateError": "Failed to update"
   },
   "category": {
     "name": "Name",

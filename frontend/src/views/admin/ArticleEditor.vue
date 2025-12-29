@@ -1,7 +1,7 @@
 <template>
   <div class="article-editor-page">
-    <page-header :title="isEdit ? '编辑文章' : '新建文章'">
-      <el-button @click="goBack">返回</el-button>
+    <page-header :title="isEdit ? t('article.editArticle') : t('nav.newArticle')">
+      <el-button @click="goBack">{{ t('common.back') }}</el-button>
     </page-header>
 
     <el-form
@@ -13,10 +13,10 @@
       class="article-form"
     >
       <!-- 标题 -->
-      <el-form-item label="文章标题" prop="title">
+      <el-form-item :label="t('article.title')" prop="title">
         <el-input
           v-model="form.title"
-          placeholder="请输入文章标题"
+          :placeholder="t('article.titlePlaceholder')"
           maxlength="255"
           show-word-limit
         />
@@ -26,16 +26,16 @@
       <el-form-item label="URL Slug" prop="slug">
         <el-input
           v-model="form.slug"
-          placeholder="留空自动生成"
+          :placeholder="t('article.slugPlaceholder')"
         >
           <template #append>
-            <el-button @click="generateSlug">自动生成</el-button>
+            <el-button @click="generateSlug">{{ t('article.autoGenerateSlug') }}</el-button>
           </template>
         </el-input>
       </el-form-item>
 
       <!-- 封面图 -->
-      <el-form-item label="封面图片">
+      <el-form-item :label="t('article.coverImage')">
         <div class="cover-upload">
           <el-image
             v-if="form.cover_image"
@@ -53,32 +53,32 @@
           >
             <el-button type="primary">
               <el-icon><Upload /></el-icon>
-              {{ form.cover_image ? '更换图片' : '上传图片' }}
+              {{ form.cover_image ? t('article.changeImage') : t('article.uploadImage') }}
             </el-button>
           </el-upload>
           <el-button v-if="form.cover_image" @click="form.cover_image = ''">
-            删除图片
+            {{ t('article.deleteImage') }}
           </el-button>
         </div>
       </el-form-item>
 
       <!-- 摘要 -->
-      <el-form-item label="文章摘要">
+      <el-form-item :label="t('article.summary')">
         <el-input
           v-model="form.summary"
           type="textarea"
           :rows="3"
-          placeholder="请输入文章摘要"
+          :placeholder="t('article.summaryPlaceholder')"
           maxlength="500"
           show-word-limit
         />
       </el-form-item>
 
       <!-- 分类 -->
-      <el-form-item label="文章分类" prop="category_id">
+      <el-form-item :label="t('article.category')" prop="category_id">
         <el-select
           v-model="form.category_id"
-          placeholder="请选择分类"
+          :placeholder="t('article.selectCategoryPlaceholder')"
           clearable
         >
           <el-option
@@ -91,11 +91,11 @@
       </el-form-item>
 
       <!-- 标签 -->
-      <el-form-item label="文章标签">
+      <el-form-item :label="t('article.tags')">
         <el-select
           v-model="form.tag_ids"
           multiple
-          placeholder="请选择标签"
+          :placeholder="t('article.selectTagsPlaceholder')"
           style="width: 100%"
         >
           <el-option
@@ -108,46 +108,46 @@
       </el-form-item>
 
       <!-- 正文 -->
-      <el-form-item label="文章正文" prop="content">
+      <el-form-item :label="t('article.content')" prop="content">
         <rich-text-editor
           v-model="form.content"
-          placeholder="请输入文章内容..."
+          :placeholder="t('article.contentPlaceholder')"
           height="500px"
         />
       </el-form-item>
 
       <!-- 状态设置 -->
-      <el-form-item label="发布状态">
+      <el-form-item :label="t('article.publishStatus')">
         <el-radio-group v-model="form.status">
-          <el-radio label="draft">草稿</el-radio>
-          <el-radio label="published">已发布</el-radio>
+          <el-radio label="draft">{{ t('article.draft') }}</el-radio>
+          <el-radio label="published">{{ t('article.published') }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
       <!-- 发布时间 -->
-      <el-form-item label="发布时间">
+      <el-form-item :label="t('article.publishTime')">
         <el-date-picker
           v-model="form.publish_at"
           type="datetime"
-          placeholder="选择发布时间"
+          :placeholder="t('article.publishTimePlaceholder')"
           format="YYYY-MM-DD HH:mm:ss"
         />
-        <div class="form-tip">留空则使用当前时间</div>
+        <div class="form-tip">{{ t('article.publishTimeTip') }}</div>
       </el-form-item>
 
       <!-- 其他选项 -->
-      <el-form-item label="其他选项">
-        <el-checkbox v-model="form.is_top">置顶</el-checkbox>
-        <el-checkbox v-model="form.is_featured">推荐</el-checkbox>
+      <el-form-item :label="t('article.otherOptions')">
+        <el-checkbox v-model="form.is_top">{{ t('article.isTop') }}</el-checkbox>
+        <el-checkbox v-model="form.is_featured">{{ t('article.isFeatured') }}</el-checkbox>
       </el-form-item>
 
       <!-- 操作按钮 -->
       <el-form-item>
         <el-button type="primary" @click="handleSubmit('published')">
-          {{ form.status === 'published' ? '发布文章' : '保存并发布' }}
+          {{ form.status === 'published' ? t('article.publishArticle') : t('article.saveAndPublish') }}
         </el-button>
-        <el-button @click="handleSubmit('draft')">保存为草稿</el-button>
-        <el-button @click="goBack">取消</el-button>
+        <el-button @click="handleSubmit('draft')">{{ t('article.saveAsDraft') }}</el-button>
+        <el-button @click="goBack">{{ t('common.cancel') }}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -156,6 +156,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Upload } from '@element-plus/icons-vue'
 import api from '@/api'
@@ -166,6 +167,7 @@ import { useUserStore } from '@/store/user'
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+const { t } = useI18n()
 
 const formRef = ref(null)
 const loading = ref(false)
@@ -188,14 +190,14 @@ const form = reactive({
   is_featured: false
 })
 
-const rules = {
+const rules = computed(() => ({
   title: [
-    { required: true, message: '请输入文章标题', trigger: 'blur' }
+    { required: true, message: t('article.titlePlaceholder'), trigger: 'blur' }
   ],
   content: [
-    { required: true, message: '请输入文章内容', trigger: 'blur' }
+    { required: true, message: t('article.contentPlaceholder'), trigger: 'blur' }
   ]
-}
+}))
 
 const uploadAction = computed(() => {
   const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
@@ -229,7 +231,7 @@ const fetchArticle = async () => {
     form.is_featured = article.is_featured || false
   } catch (error) {
     console.error('获取文章详情失败:', error)
-    ElMessage.error('获取文章详情失败')
+    ElMessage.error(t('article.loadError'))
     router.push('/admin/articles')
   } finally {
     loading.value = false
@@ -243,7 +245,7 @@ const fetchCategories = async () => {
     categories.value = response.items || []
   } catch (error) {
     console.error('获取分类列表失败:', error)
-    ElMessage.error('获取分类列表失败')
+    ElMessage.error(t('category.loadError'))
   }
 }
 
@@ -254,7 +256,7 @@ const fetchTags = async () => {
     tags.value = response.items || []
   } catch (error) {
     console.error('获取标签列表失败:', error)
-    ElMessage.error('获取标签列表失败')
+    ElMessage.error(t('tag.loadError'))
   }
 }
 
@@ -275,11 +277,11 @@ const beforeUpload = (file) => {
   const isLt10M = file.size / 1024 / 1024 < 10
 
   if (!isImage) {
-    ElMessage.error('只能上传图片文件！')
+    ElMessage.error(t('common.uploadImageOnly'))
     return false
   }
   if (!isLt10M) {
-    ElMessage.error('图片大小不能超过 10MB！')
+    ElMessage.error(t('common.uploadImageSizeLimit'))
     return false
   }
   return true
@@ -289,15 +291,15 @@ const beforeUpload = (file) => {
 const handleUploadSuccess = (response) => {
   if (response.code === 0) {
     form.cover_image = response.data.url
-    ElMessage.success('上传成功')
+    ElMessage.success(t('common.uploadSuccess'))
   } else {
-    ElMessage.error(response.message || '上传失败')
+    ElMessage.error(response.message || t('common.uploadError'))
   }
 }
 
 // 上传失败
 const handleUploadError = () => {
-  ElMessage.error('上传失败')
+  ElMessage.error(t('common.uploadError'))
 }
 
 // 提交表单
@@ -315,17 +317,17 @@ const handleSubmit = async (status) => {
 
     if (isEdit.value) {
       await api.article.update(route.params.id, data)
-      ElMessage.success('更新成功')
+      ElMessage.success(t('article.updateSuccess'))
     } else {
       await api.article.create(data)
-      ElMessage.success('创建成功')
+      ElMessage.success(t('article.createSuccess'))
     }
 
     router.push('/admin/articles')
   } catch (error) {
     if (error instanceof Error) {
       console.error('提交失败:', error)
-      ElMessage.error('提交失败')
+      ElMessage.error(isEdit.value ? t('article.updateError') : t('article.createError'))
     }
   } finally {
     loading.value = false

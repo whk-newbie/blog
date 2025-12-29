@@ -17,7 +17,11 @@
     "error": "操作失败",
     "warning": "警告",
     "tip": "提示",
-    "languageSwitched": "已切换到简体中文"
+    "languageSwitched": "已切换到简体中文",
+    "uploadImageOnly": "只能上传图片文件！",
+    "uploadImageSizeLimit": "图片大小不能超过 10MB！",
+    "uploadSuccess": "上传成功",
+    "uploadError": "上传失败"
   },
   "app": {
     "title": "我的博客",
@@ -86,8 +90,14 @@
     "changePassword": "修改密码",
     "changePasswordSuccess": "密码修改成功",
     "changePasswordError": "修改密码失败",
+    "changePasswordSuccessRelogin": "密码修改成功，请重新登录",
     "logout": "退出登录",
-    "logoutSuccess": "退出成功"
+    "logoutSuccess": "退出成功",
+    "passwordSecurityTip": "密码安全提示",
+    "passwordMinLength": "密码长度至少为6位",
+    "passwordSuggestion": "建议使用字母、数字和特殊字符的组合",
+    "passwordSimpleWarning": "不要使用过于简单的密码",
+    "passwordChangeRegularly": "定期更换密码以保证账户安全"
   },
   "article": {
     "title": "标题",
