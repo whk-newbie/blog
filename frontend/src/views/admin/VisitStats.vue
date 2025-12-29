@@ -37,21 +37,21 @@
       </el-form>
     </el-card>
 
-    <!-- 访问趋势图表 -->
-    <el-card class="chart-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">
-            <el-icon><DataAnalysis /></el-icon>
-            {{ t('stats.visitTrend') }}
-          </span>
-        </div>
-      </template>
-      <div v-loading="loading" ref="trendChartRef" class="chart-container"></div>
-    </el-card>
+    <!-- 三个板块：访问趋势、来源分析、热门文章 -->
+    <div class="main-section">
+      <!-- 访问趋势图表 -->
+      <el-card class="chart-card" shadow="hover">
+        <template #header>
+          <div class="card-header">
+            <span class="card-title">
+              <el-icon><DataAnalysis /></el-icon>
+              {{ t('stats.visitTrend') }}
+            </span>
+          </div>
+        </template>
+        <div v-loading="loading" ref="trendChartRef" class="chart-container"></div>
+      </el-card>
 
-    <!-- 来源分析和热门文章 -->
-    <div class="bottom-section">
       <!-- 来源分析 -->
       <el-card class="referrer-card" shadow="hover">
         <template #header>
