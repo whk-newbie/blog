@@ -21,14 +21,24 @@
     "uploadImageOnly": "Only image files can be uploaded!",
     "uploadImageSizeLimit": "Image size cannot exceed 10MB!",
     "uploadSuccess": "Upload successful",
-    "uploadError": "Upload failed"
+    "uploadError": "Upload failed",
+    "backToList": "Back to List",
+    "views": "views",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "days ago",
+    "weeksAgo": "weeks ago",
+    "monthsAgo": "months ago",
+    "uploading": "Uploading image..."
   },
   "app": {
     "title": "My Blog",
     "adminPanel": "Admin Panel",
     "adminSystem": "Blog Management System",
     "blogSystem": "Blog System",
-    "notFound": "Page Not Found"
+    "notFound": "Page Not Found",
+    "backToHome": "Back to Home",
+    "articleNotFound": "Article Not Found"
   },
   "home": {
     "featuredArticles": "Featured Articles",
@@ -39,7 +49,10 @@
     "noArticles": "No Articles",
     "noCategories": "No Categories",
     "noTags": "No Tags",
-    "loadArticlesError": "Failed to load articles"
+    "loadArticlesError": "Failed to load articles",
+    "searchPlaceholder": "Search articles...",
+    "selectCategory": "Select Category",
+    "selectTag": "Select Tag"
   },
   "nav": {
     "home": "Home",
@@ -98,6 +111,17 @@
     "passwordSuggestion": "It is recommended to use a combination of letters, numbers and special characters",
     "passwordSimpleWarning": "Do not use overly simple passwords",
     "passwordChangeRegularly": "Change password regularly to ensure account security"
+  },
+  "toc": {
+    "title": "Table of Contents"
+  },
+  "language": {
+    "zhCN": "中文",
+    "zhCNFull": "简体中文 (Simplified Chinese)",
+    "enUS": "EN",
+    "enUSFull": "English (英语)",
+    "switchedToZhCN": "已切换到简体中文",
+    "switchedToEnUS": "Switched to English"
   },
   "article": {
     "title": "Title",

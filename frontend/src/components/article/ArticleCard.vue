@@ -4,7 +4,7 @@
     <div v-if="article.cover_image" class="article-cover">
       <img :src="article.cover_image" :alt="article.title" />
       <div v-if="article.is_top" class="top-badge">
-        <el-tag type="danger" size="small">置顶</el-tag>
+        <el-tag type="danger" size="small">{{ t('article.isTop') }}</el-tag>
       </div>
     </div>
 
@@ -57,6 +57,9 @@
 
 <script setup>
 import { Folder, PriceTag, View, Clock } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const props = defineProps({
   article: {
@@ -78,13 +81,13 @@ const formatDate = (dateStr) => {
   const diff = now - date
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
 
-  if (days === 0) return '今天'
-  if (days === 1) return '昨天'
-  if (days < 7) return `${days}天前`
-  if (days < 30) return `${Math.floor(days / 7)}周前`
-  if (days < 365) return `${Math.floor(days / 30)}个月前`
+  if (days === 0) return t('common.today')
+  if (days === 1) return t('common.yesterday')
+  if (days < 7) return `${days}${t('common.daysAgo')}`
+  if (days < 30) return `${Math.floor(days / 7)}${t('common.weeksAgo')}`
+  if (days < 365) return `${Math.floor(days / 30)}${t('common.monthsAgo')}`
   
-  return date.toLocaleDateString('zh-CN')
+  return date.toLocaleDateString(locale.value === 'zh-CN' ? 'zh-CN' : 'en-US')
 }
 </script>
 

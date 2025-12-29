@@ -1,7 +1,7 @@
 <template>
   <div class="article-detail-page">
     <div v-loading="loading" class="article-container">
-      <el-empty v-if="!loading && !article" description="文章不存在" />
+      <el-empty v-if="!loading && !article" :description="t('app.articleNotFound')" />
 
       <div v-else class="article-layout">
         <!-- 主要内容区 -->
@@ -39,7 +39,7 @@
               <!-- 浏览量 -->
               <span class="meta-item">
                 <el-icon><View /></el-icon>
-                {{ article.view_count || 0 }} 次浏览
+                {{ article.view_count || 0 }} {{ t('common.views') }}
               </span>
 
               <!-- 作者 -->
@@ -69,7 +69,7 @@
             <div class="footer-actions">
               <el-button @click="goBack">
                 <el-icon><Back /></el-icon>
-                返回列表
+                {{ t('common.backToList') }}
               </el-button>
             </div>
           </footer>
@@ -87,6 +87,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Folder, PriceTag, Clock, View, User, Back } from '@element-plus/icons-vue'
 import api from '@/api'
@@ -94,6 +95,7 @@ import TableOfContents from '@/components/article/TableOfContents.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const loading = ref(false)
 const article = ref(null)

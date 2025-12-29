@@ -4,7 +4,7 @@
     <div class="filter-bar">
       <el-input
         v-model="searchKeyword"
-        placeholder="搜索文章..."
+        :placeholder="t('home.searchPlaceholder')"
         class="search-input"
         clearable
         @keyup.enter="handleSearch"
@@ -16,7 +16,7 @@
 
       <el-select
         v-model="selectedCategory"
-        placeholder="选择分类"
+        :placeholder="t('home.selectCategory')"
         clearable
         @change="handleFilterChange"
       >
@@ -30,7 +30,7 @@
 
       <el-select
         v-model="selectedTag"
-        placeholder="选择标签"
+        :placeholder="t('home.selectTag')"
         clearable
         @change="handleFilterChange"
       >
@@ -45,7 +45,7 @@
 
     <!-- 文章列表 -->
     <div v-loading="loading" class="articles-list">
-      <el-empty v-if="!loading && articles.length === 0" description="暂无文章" />
+      <el-empty v-if="!loading && articles.length === 0" :description="t('home.noArticles')" />
       
       <div v-else class="article-grid">
         <article-card
@@ -74,12 +74,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import api from '@/api'
 import ArticleCard from '@/components/article/ArticleCard.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 
 // 数据
 const loading = ref(false)

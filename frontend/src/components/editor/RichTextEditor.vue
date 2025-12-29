@@ -13,10 +13,13 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { ElMessage } from 'element-plus'
 import api from '@/api'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -78,18 +81,18 @@ function imageHandler() {
 
     // 检查文件类型
     if (!file.type.startsWith('image/')) {
-      ElMessage.error('请选择图片文件')
+      ElMessage.error(t('common.uploadImageOnly'))
       return
     }
 
     // 检查文件大小（10MB）
     if (file.size > 10 * 1024 * 1024) {
-      ElMessage.error('图片大小不能超过10MB')
+      ElMessage.error(t('common.uploadImageSizeLimit'))
       return
     }
 
     try {
-      ElMessage.info('正在上传图片...')
+      ElMessage.info(t('common.uploading'))
       
       // 上传图片
       const response = await api.upload.uploadArticleImage(file)
@@ -109,13 +112,13 @@ function imageHandler() {
         // 光标移动到图片后面
         quill.setSelection(range.index + 1)
         
-        ElMessage.success('图片上传成功')
+        ElMessage.success(t('common.uploadSuccess'))
       } else {
-        ElMessage.error(response.message || '图片上传失败')
+        ElMessage.error(response.message || t('common.uploadError'))
       }
     } catch (error) {
       console.error('图片上传失败:', error)
-      ElMessage.error('图片上传失败')
+      ElMessage.error(t('common.uploadError'))
     }
   }
 }

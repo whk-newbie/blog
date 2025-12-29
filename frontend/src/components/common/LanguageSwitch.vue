@@ -9,10 +9,10 @@
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item command="zh-CN" :disabled="currentLang === 'zh-CN'">
-          简体中文 (Simplified Chinese)
+          {{ t('language.zhCNFull') }}
         </el-dropdown-item>
         <el-dropdown-item command="en-US" :disabled="currentLang === 'en-US'">
-          English (英语)
+          {{ t('language.enUSFull') }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -31,10 +31,10 @@ const currentLang = computed(() => locale.value)
 
 const currentLangLabel = computed(() => {
   const labels = {
-    'zh-CN': '中文',
-    'en-US': 'EN'
+    'zh-CN': t('language.zhCN'),
+    'en-US': t('language.enUS')
   }
-  return labels[currentLang.value] || '中文'
+  return labels[currentLang.value] || t('language.zhCN')
 })
 
 const changeLanguage = (lang) => {
@@ -42,8 +42,8 @@ const changeLanguage = (lang) => {
   localStorage.setItem('language', lang)
   // 提示语言切换成功 - 使用当前语言显示
   const messages = {
-    'zh-CN': '已切换到简体中文',
-    'en-US': 'Switched to English'
+    'zh-CN': t('language.switchedToZhCN'),
+    'en-US': t('language.switchedToEnUS')
   }
   ElMessage.success(messages[lang] || messages['zh-CN'])
 }

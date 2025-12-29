@@ -21,14 +21,24 @@
     "uploadImageOnly": "只能上传图片文件！",
     "uploadImageSizeLimit": "图片大小不能超过 10MB！",
     "uploadSuccess": "上传成功",
-    "uploadError": "上传失败"
+    "uploadError": "上传失败",
+    "backToList": "返回列表",
+    "views": "次浏览",
+    "today": "今天",
+    "yesterday": "昨天",
+    "daysAgo": "天前",
+    "weeksAgo": "周前",
+    "monthsAgo": "个月前",
+    "uploading": "正在上传图片..."
   },
   "app": {
     "title": "我的博客",
     "adminPanel": "后台管理",
     "adminSystem": "博客管理系统",
     "blogSystem": "博客系统",
-    "notFound": "页面未找到"
+    "notFound": "页面未找到",
+    "backToHome": "返回首页",
+    "articleNotFound": "文章不存在"
   },
   "home": {
     "featuredArticles": "推荐文章",
@@ -39,7 +49,10 @@
     "noArticles": "暂无文章",
     "noCategories": "暂无分类",
     "noTags": "暂无标签",
-    "loadArticlesError": "获取文章列表失败"
+    "loadArticlesError": "获取文章列表失败",
+    "searchPlaceholder": "搜索文章...",
+    "selectCategory": "选择分类",
+    "selectTag": "选择标签"
   },
   "nav": {
     "home": "首页",
@@ -98,6 +111,17 @@
     "passwordSuggestion": "建议使用字母、数字和特殊字符的组合",
     "passwordSimpleWarning": "不要使用过于简单的密码",
     "passwordChangeRegularly": "定期更换密码以保证账户安全"
+  },
+  "toc": {
+    "title": "目录"
+  },
+  "language": {
+    "zhCN": "简体中文",
+    "zhCNFull": "简体中文 (Simplified Chinese)",
+    "enUS": "English",
+    "enUSFull": "English (英语)",
+    "switchedToZhCN": "已切换到简体中文",
+    "switchedToEnUS": "Switched to English"
   },
   "article": {
     "title": "标题",

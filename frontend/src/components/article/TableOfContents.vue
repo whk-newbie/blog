@@ -2,7 +2,7 @@
   <div v-if="headings.length > 0" class="table-of-contents">
     <div class="toc-header">
       <el-icon><List /></el-icon>
-      <span>目录</span>
+      <span>{{ t('toc.title') }}</span>
     </div>
     <ul class="toc-list">
       <li
@@ -23,7 +23,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { List } from '@element-plus/icons-vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   container: {

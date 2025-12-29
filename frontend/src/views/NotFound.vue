@@ -1,15 +1,17 @@
 <template>
   <div class="not-found">
     <h1>404</h1>
-    <p>页面未找到</p>
-    <el-button type="primary" @click="goHome">返回首页</el-button>
+    <p>{{ t('app.notFound') }}</p>
+    <el-button type="primary" @click="goHome">{{ t('app.backToHome') }}</el-button>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const goHome = () => {
   router.push('/')
