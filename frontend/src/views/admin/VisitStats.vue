@@ -37,47 +37,6 @@
       </el-form>
     </el-card>
 
-    <!-- 数据概览 -->
-    <div v-loading="loading" class="overview-cards">
-      <el-card class="overview-card" shadow="hover">
-        <div class="overview-content">
-          <div class="overview-icon pv-icon">
-            <el-icon><View /></el-icon>
-          </div>
-          <div class="overview-info">
-            <div class="overview-label">{{ t('stats.totalPV') }}</div>
-            <div class="overview-value">{{ summary.total_pv || 0 }}</div>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card class="overview-card" shadow="hover">
-        <div class="overview-content">
-          <div class="overview-icon uv-icon">
-            <el-icon><User /></el-icon>
-          </div>
-          <div class="overview-info">
-            <div class="overview-label">{{ t('stats.totalUV') }}</div>
-            <div class="overview-value">{{ summary.total_uv || 0 }}</div>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card class="overview-card" shadow="hover">
-        <div class="overview-content">
-          <div class="overview-icon duration-icon">
-            <el-icon><Clock /></el-icon>
-          </div>
-          <div class="overview-info">
-            <div class="overview-label">{{ t('stats.avgStayDuration') }}</div>
-            <div class="overview-value">
-              {{ formatDuration(summary.avg_stay_duration) }}
-            </div>
-          </div>
-        </div>
-      </el-card>
-    </div>
-
     <!-- 访问趋势图表 -->
     <el-card class="chart-card" shadow="hover">
       <template #header>
@@ -104,19 +63,52 @@
           </div>
         </template>
         <div v-loading="loading" class="referrer-content">
-          <div ref="referrerChartRef" class="referrer-chart"></div>
-          <div class="referrer-stats">
-            <div class="referrer-stat-item">
-              <span class="stat-label">{{ t('stats.directAccess') }}</span>
-              <span class="stat-value">{{ referrerStats.direct || 0 }}</span>
+          <!-- 数据概览 -->
+          <div class="overview-stats">
+            <div class="overview-stat-item">
+              <div class="stat-icon pv-icon">
+                <el-icon><View /></el-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-label">{{ t('stats.totalPV') }}</div>
+                <div class="stat-value">{{ summary.total_pv || 0 }}</div>
+              </div>
             </div>
-            <div class="referrer-stat-item">
-              <span class="stat-label">{{ t('stats.searchEngine') }}</span>
-              <span class="stat-value">{{ referrerStats.search_engine || 0 }}</span>
+            <div class="overview-stat-item">
+              <div class="stat-icon uv-icon">
+                <el-icon><User /></el-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-label">{{ t('stats.totalUV') }}</div>
+                <div class="stat-value">{{ summary.total_uv || 0 }}</div>
+              </div>
             </div>
-            <div class="referrer-stat-item">
-              <span class="stat-label">{{ t('stats.externalLink') }}</span>
-              <span class="stat-value">{{ referrerStats.external_link || 0 }}</span>
+            <div class="overview-stat-item">
+              <div class="stat-icon duration-icon">
+                <el-icon><Clock /></el-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-label">{{ t('stats.avgStayDuration') }}</div>
+                <div class="stat-value">{{ formatDuration(summary.avg_stay_duration) }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="referrer-chart-wrapper">
+            <div ref="referrerChartRef" class="referrer-chart"></div>
+            <div class="referrer-stats">
+              <div class="referrer-stat-item">
+                <span class="stat-label">{{ t('stats.directAccess') }}</span>
+                <span class="stat-value">{{ referrerStats.direct || 0 }}</span>
+              </div>
+              <div class="referrer-stat-item">
+                <span class="stat-label">{{ t('stats.searchEngine') }}</span>
+                <span class="stat-value">{{ referrerStats.search_engine || 0 }}</span>
+              </div>
+              <div class="referrer-stat-item">
+                <span class="stat-label">{{ t('stats.externalLink') }}</span>
+                <span class="stat-value">{{ referrerStats.external_link || 0 }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -585,41 +577,105 @@ onUnmounted(() => {
       }
       
       .referrer-content {
-        display: flex;
-        gap: 16px;
-        
-        .referrer-chart {
-          width: 240px;
-          height: 240px;
-          flex-shrink: 0;
-        }
-        
-        .referrer-stats {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
+        .overview-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
           gap: 12px;
-          min-width: 0;
+          margin-bottom: 16px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid #ebeef5;
           
-          .referrer-stat-item {
+          .overview-stat-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background: #f5f7fa;
-            border-radius: 4px;
+            gap: 10px;
             
-            .stat-label {
-              font-size: 13px;
-              color: #606266;
+            .stat-icon {
+              width: 36px;
+              height: 36px;
+              border-radius: 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
               flex-shrink: 0;
+              
+              :deep(.el-icon) {
+                font-size: 18px;
+              }
+              
+              &.pv-icon {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #fff;
+              }
+              
+              &.uv-icon {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: #fff;
+              }
+              
+              &.duration-icon {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: #fff;
+              }
             }
             
-            .stat-value {
-              font-size: 18px;
-              font-weight: bold;
-              color: #303133;
+            .stat-info {
+              flex: 1;
+              min-width: 0;
+              
+              .stat-label {
+                font-size: 12px;
+                color: #909399;
+                margin-bottom: 2px;
+              }
+              
+              .stat-value {
+                font-size: 16px;
+                font-weight: bold;
+                color: #303133;
+                line-height: 1.2;
+              }
+            }
+          }
+        }
+        
+        .referrer-chart-wrapper {
+          display: flex;
+          gap: 16px;
+          
+          .referrer-chart {
+            width: 240px;
+            height: 240px;
+            flex-shrink: 0;
+          }
+          
+          .referrer-stats {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 12px;
+            min-width: 0;
+            
+            .referrer-stat-item {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 10px;
+              background: #f5f7fa;
+              border-radius: 4px;
+              
+              .stat-label {
+                font-size: 13px;
+                color: #606266;
+                flex-shrink: 0;
+              }
+              
+              .stat-value {
+                font-size: 18px;
+                font-weight: bold;
+                color: #303133;
+              }
             }
           }
         }
