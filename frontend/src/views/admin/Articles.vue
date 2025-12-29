@@ -13,7 +13,7 @@
         v-model="filters.keyword"
         :placeholder="t('article.searchPlaceholder')"
         clearable
-        style="width: 300px"
+        class="search-input"
         @keyup.enter="handleSearch"
       >
         <template #prefix>
@@ -25,6 +25,7 @@
         v-model="filters.category_id"
         :placeholder="t('article.selectCategory')"
         clearable
+        class="filter-select"
         @change="handleFilterChange"
       >
         <el-option
@@ -39,6 +40,7 @@
         v-model="filters.status"
         :placeholder="t('article.selectStatus')"
         clearable
+        class="filter-select"
         @change="handleFilterChange"
       >
         <el-option :label="t('article.draft')" value="draft" />
@@ -347,7 +349,7 @@ onMounted(() => {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
-  flex-wrap: wrap;
+  align-items: center;
   padding: 20px 24px;
   background: var(--card-bg);
   border-radius: 12px;
@@ -359,11 +361,18 @@ onMounted(() => {
     box-shadow: var(--shadow-md);
   }
 
+  .search-input {
+    flex: 0 0 auto;
+    width: 280px;
+  }
+
+  .filter-select {
+    flex: 0 0 auto;
+    width: 160px;
+  }
+
   :deep(.el-input),
   :deep(.el-select) {
-    flex: 0 0 auto;
-    min-width: 200px;
-
     .el-input__wrapper {
       border-radius: 8px;
       box-shadow: 0 0 0 1px var(--border-color) inset;
