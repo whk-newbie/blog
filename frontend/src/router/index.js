@@ -94,6 +94,18 @@ const routes = [
         name: 'CrawlerMonitor',
         component: () => import('@/views/admin/CrawlerMonitor.vue'),
         meta: { titleKey: 'nav.crawler', requiresAuth: true }
+      },
+      {
+        path: 'config',
+        name: 'ConfigManage',
+        component: () => import('@/views/admin/ConfigManage.vue'),
+        meta: { titleKey: 'nav.config', requiresAuth: true }
+      },
+      {
+        path: 'logs',
+        name: 'LogManage',
+        component: () => import('@/views/admin/LogManage.vue'),
+        meta: { titleKey: 'nav.logs', requiresAuth: true }
       }
     ]
   },
