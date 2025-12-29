@@ -8,6 +8,7 @@ import (
 	"github.com/iambaby/blog/internal/pkg/db"
 	"github.com/iambaby/blog/internal/pkg/jwt"
 	"github.com/iambaby/blog/internal/repository"
+	"github.com/iambaby/blog/internal/scheduler"
 	"github.com/iambaby/blog/internal/service"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -15,7 +16,7 @@ import (
 )
 
 // Setup 设置路由
-func Setup(cfg *config.Config) *gin.Engine {
+func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	r := gin.New()
 
 	// 使用中间件
@@ -129,5 +130,8 @@ func Setup(cfg *config.Config) *gin.Engine {
 	// 静态文件服务 - 上传的文件
 	r.Static("/uploads", "./uploads")
 
-	return r
+	// 创建调度器管理器
+	schedulerManager := scheduler.NewManager(articleService)
+
+	return r, schedulerManager
 }

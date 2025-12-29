@@ -113,7 +113,13 @@ func main() {
 	}
 
 	// 初始化路由
-	r := router.Setup(cfg)
+	r, schedulerManager := router.Setup(cfg)
+
+	// 启动调度器
+	if err := schedulerManager.Start(); err != nil {
+		logger.Fatal("Failed to start scheduler: %v", err)
+	}
+	logger.Info("Scheduler started successfully")
 
 	// 启动服务器
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
@@ -132,5 +138,8 @@ func main() {
 	<-quit
 
 	logger.Info("Shutting down server...")
-}
 
+	// 停止调度器
+	schedulerManager.Stop()
+	logger.Info("Scheduler stopped")
+}
