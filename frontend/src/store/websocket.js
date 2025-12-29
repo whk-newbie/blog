@@ -14,8 +14,8 @@ export const useWebSocketStore = defineStore('websocket', () => {
   const connected = ref(false)
   const tasks = ref([])
   const reconnectAttempts = ref(0)
-  const maxReconnectAttempts = 5
   const reconnectDelay = ref(3000) // 初始重连延迟3秒
+  const shouldReconnect = ref(true) // 是否应该重连（页面可见时）
   let reconnectTimer = null
   let heartbeatTimer = null
 
@@ -31,6 +31,9 @@ export const useWebSocketStore = defineStore('websocket', () => {
       return
     }
 
+    // 设置允许重连
+    shouldReconnect.value = true
+
     // 如果已经连接，先断开
     if (ws.value && ws.value.readyState === WebSocket.OPEN) {
       disconnect()
@@ -44,7 +47,7 @@ export const useWebSocketStore = defineStore('websocket', () => {
         console.log('WebSocket连接成功')
         connected.value = true
         reconnectAttempts.value = 0
-        reconnectDelay.value = 3000
+        reconnectDelay.value = 3000 // 连接成功后重置延迟
         startHeartbeat()
       }
 
@@ -67,17 +70,18 @@ export const useWebSocketStore = defineStore('websocket', () => {
         connected.value = false
         stopHeartbeat()
         
-        // 自动重连
-        if (reconnectAttempts.value < maxReconnectAttempts) {
+        // 自动重连（只要页面可见且允许重连，就无限重试）
+        if (shouldReconnect.value && isPageVisible()) {
           scheduleReconnect()
-        } else {
-          console.error('WebSocket重连次数已达上限')
         }
       }
     } catch (error) {
       console.error('WebSocket连接失败:', error)
       connected.value = false
-      scheduleReconnect()
+      // 如果页面可见且允许重连，则安排重连
+      if (shouldReconnect.value && isPageVisible()) {
+        scheduleReconnect()
+      }
     }
   }
 
@@ -85,6 +89,7 @@ export const useWebSocketStore = defineStore('websocket', () => {
    * 断开WebSocket连接
    */
   const disconnect = () => {
+    shouldReconnect.value = false // 停止重连
     if (reconnectTimer) {
       clearTimeout(reconnectTimer)
       reconnectTimer = null
@@ -147,18 +152,31 @@ export const useWebSocketStore = defineStore('websocket', () => {
   }
 
   /**
+   * 检查页面是否可见
+   */
+  const isPageVisible = () => {
+    if (typeof document === 'undefined') return true
+    return !document.hidden
+  }
+
+  /**
    * 安排重连
    */
   const scheduleReconnect = () => {
-    if (reconnectTimer) {
+    // 如果已经安排了重连，或者不应该重连，或者页面不可见，则返回
+    if (reconnectTimer || !shouldReconnect.value || !isPageVisible()) {
       return
     }
 
     reconnectAttempts.value++
     reconnectTimer = setTimeout(() => {
       reconnectTimer = null
-      console.log(`尝试重连 (${reconnectAttempts.value}/${maxReconnectAttempts})...`)
-      connect()
+      console.log(`尝试重连 (第${reconnectAttempts.value}次)...`)
+      
+      // 再次检查是否应该重连和页面是否可见
+      if (shouldReconnect.value && isPageVisible()) {
+        connect()
+      }
     }, reconnectDelay.value)
 
     // 指数退避：每次重连延迟翻倍，最大30秒
@@ -184,6 +202,26 @@ export const useWebSocketStore = defineStore('websocket', () => {
    */
   const setTasks = (newTasks) => {
     tasks.value = newTasks
+  }
+
+  // 监听页面可见性变化
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // 页面隐藏时，不进行重连
+        console.log('页面隐藏，暂停重连')
+      } else {
+        // 页面可见时，如果未连接则尝试连接
+        console.log('页面可见，检查连接状态')
+        if (!connected.value && shouldReconnect.value) {
+          // 如果当前没有连接且允许重连，则尝试连接
+          if (!reconnectTimer) {
+            reconnectDelay.value = 3000 // 重置延迟
+            scheduleReconnect()
+          }
+        }
+      }
+    })
   }
 
   return {
