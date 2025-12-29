@@ -76,34 +76,73 @@ const handleCommand = (command) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 60px;
 }
 
 .header-left {
   flex: 1;
+
+  :deep(.el-breadcrumb) {
+    font-size: 14px;
+
+    .el-breadcrumb__item {
+      .el-breadcrumb__inner {
+        color: var(--text-secondary);
+        font-weight: 400;
+        transition: color 0.3s;
+
+        &:hover {
+          color: var(--primary-color);
+        }
+
+        &.is-link {
+          color: var(--text-secondary);
+        }
+      }
+
+      &:last-child .el-breadcrumb__inner {
+        color: var(--text-color);
+        font-weight: 500;
+      }
+    }
+
+    .el-breadcrumb__separator {
+      color: var(--text-disabled);
+    }
+  }
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  border: 1px solid transparent;
 
   &:hover {
-    background-color: #f0f0f0;
+    background: var(--bg-blue-light);
+    border-color: var(--border-blue);
+  }
+
+  :deep(.el-avatar) {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
   }
 
   .username {
     font-size: 14px;
     color: var(--text-color);
+    font-weight: 500;
   }
 }
 </style>

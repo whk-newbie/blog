@@ -113,12 +113,14 @@ const fetchArticles = async () => {
     if (searchKeyword.value) {
       // 使用搜索接口
       const response = await api.article.search(searchKeyword.value, params)
-      articles.value = response.data.items || []
-      total.value = response.data.total || 0
+      // 后端返回的是 items，不是 list
+      articles.value = response.items || []
+      total.value = response.total || 0
     } else {
       const response = await api.article.list(params)
-      articles.value = response.data.items || []
-      total.value = response.data.total || 0
+      // 后端返回的是 items，不是 list
+      articles.value = response.items || []
+      total.value = response.total || 0
     }
   } catch (error) {
     console.error('获取文章列表失败:', error)
@@ -132,7 +134,8 @@ const fetchArticles = async () => {
 const fetchCategories = async () => {
   try {
     const response = await api.category.list({ page: 1, page_size: 100 })
-    categories.value = response.data.items || []
+    // 后端返回的是 items，不是 list
+    categories.value = response.items || []
   } catch (error) {
     console.error('获取分类列表失败:', error)
   }
@@ -142,7 +145,8 @@ const fetchCategories = async () => {
 const fetchTags = async () => {
   try {
     const response = await api.tag.list({ page: 1, page_size: 100 })
-    tags.value = response.data.items || []
+    // 后端返回的是 items，不是 list
+    tags.value = response.items || []
   } catch (error) {
     console.error('获取标签列表失败:', error)
   }
@@ -179,11 +183,29 @@ const goToArticle = (slug) => {
   router.push(`/article/${slug}`)
 }
 
+// 从URL参数初始化筛选条件
+const initFromQuery = () => {
+  const query = router.currentRoute.value.query
+  
+  if (query.category_id) {
+    selectedCategory.value = parseInt(query.category_id)
+  }
+  
+  if (query.tag_id) {
+    selectedTag.value = parseInt(query.tag_id)
+  }
+  
+  if (query.keyword) {
+    searchKeyword.value = query.keyword
+  }
+}
+
 // 初始化
 onMounted(() => {
-  fetchArticles()
+  initFromQuery()
   fetchCategories()
   fetchTags()
+  fetchArticles()
 })
 </script>
 

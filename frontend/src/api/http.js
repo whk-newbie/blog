@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 
 // 创建axios实例
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  baseURL: '/api/v1', // 使用相对路径，通过 Vite 代理转发
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

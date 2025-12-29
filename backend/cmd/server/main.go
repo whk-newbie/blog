@@ -14,7 +14,7 @@ import (
 	"github.com/whk-newbie/blog/internal/pkg/redis"
 	"github.com/whk-newbie/blog/internal/router"
 
-	// _ "github.com/whk-newbie/blog/docs" // Swagger文档 - 暂时禁用
+	_ "github.com/whk-newbie/blog/docs" // Swagger文档
 )
 
 // @title Blog API

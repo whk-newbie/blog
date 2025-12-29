@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -8,36 +10,52 @@ import (
 func CORS(allowOrigins, allowMethods, allowHeaders, exposeHeaders []string, allowCredentials bool, maxAge int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
-		
+
+		// 如果没有Origin头（同源请求），直接放行
+		if origin == "" {
+			c.Next()
+			return
+		}
+
 		// 检查是否允许该Origin
 		allowed := false
-		for _, allowedOrigin := range allowOrigins {
-			if allowedOrigin == "*" || allowedOrigin == origin {
+		allowedOrigin := ""
+		for _, ao := range allowOrigins {
+			if ao == "*" {
+				// 如果允许所有源，但需要凭据时不能使用*
+				if !allowCredentials {
+					allowed = true
+					allowedOrigin = "*"
+					break
+				}
+			} else if ao == origin {
 				allowed = true
+				allowedOrigin = origin
 				break
 			}
 		}
 
+		// 如果允许该源，设置CORS头
 		if allowed {
-			if origin != "" {
-				c.Header("Access-Control-Allow-Origin", origin)
-			} else {
-				c.Header("Access-Control-Allow-Origin", "*")
-			}
-			
+			c.Header("Access-Control-Allow-Origin", allowedOrigin)
 			c.Header("Access-Control-Allow-Methods", joinStrings(allowMethods, ", "))
 			c.Header("Access-Control-Allow-Headers", joinStrings(allowHeaders, ", "))
 			c.Header("Access-Control-Expose-Headers", joinStrings(exposeHeaders, ", "))
-			
+
 			if allowCredentials {
 				c.Header("Access-Control-Allow-Credentials", "true")
 			}
-			
+
 			if maxAge > 0 {
-				c.Header("Access-Control-Max-Age", string(rune(maxAge)))
+				c.Header("Access-Control-Max-Age", fmt.Sprintf("%d", maxAge))
 			}
+		} else {
+			// 如果不允许该源，拒绝请求
+			c.AbortWithStatus(403)
+			return
 		}
 
+		// 处理预检请求
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
@@ -57,4 +75,3 @@ func joinStrings(arr []string, sep string) string {
 	}
 	return result
 }
-

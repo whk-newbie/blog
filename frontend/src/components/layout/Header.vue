@@ -9,7 +9,10 @@
       <nav class="nav-menu">
         <router-link to="/" class="nav-item">首页</router-link>
         <router-link to="/articles" class="nav-item">文章</router-link>
-        <router-link to="/about" class="nav-item">关于</router-link>
+        <router-link v-if="isLoggedIn" to="/admin" class="nav-item admin-link">
+          <el-icon><Setting /></el-icon>
+          后台管理
+        </router-link>
       </nav>
       <div class="header-actions">
         <ThemeSwitch />
@@ -20,11 +23,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { Setting } from '@element-plus/icons-vue'
+import { useUserStore } from '@/store/user'
 import ThemeSwitch from '../common/ThemeSwitch.vue'
 import LanguageSwitch from '../common/LanguageSwitch.vue'
 
 const blogTitle = ref('我的博客')
+const userStore = useUserStore()
+
+// 判断是否已登录
+const isLoggedIn = computed(() => userStore.isLoggedIn())
 </script>
 
 <style scoped lang="less">
@@ -69,10 +78,19 @@ const blogTitle = ref('我的博客')
   color: var(--text-color);
   font-size: 16px;
   transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 
   &:hover,
   &.router-link-active {
     color: var(--primary-color);
+  }
+
+  &.admin-link {
+    .el-icon {
+      font-size: 14px;
+    }
   }
 }
 

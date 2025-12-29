@@ -1,0 +1,298 @@
+// Element Plus 白蓝色主题覆盖 - 使用 CSS 变量而不是 Less 变量
+:root {
+  // 主色调
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #60a5fa;
+  --el-color-primary-light-5: #93c5fd;
+  --el-color-primary-light-7: #bfdbfe;
+  --el-color-primary-light-8: #dbeafe;
+  --el-color-primary-light-9: #eff6ff;
+  --el-color-primary-dark-2: #1e40af;
+
+  // 成功色
+  --el-color-success: #10b981;
+  --el-color-success-light-3: #34d399;
+  --el-color-success-light-5: #6ee7b7;
+  --el-color-success-light-7: #a7f3d0;
+  --el-color-success-light-8: #d1fae5;
+  --el-color-success-light-9: #ecfdf5;
+
+  // 警告色
+  --el-color-warning: #f59e0b;
+  --el-color-warning-light-3: #fbbf24;
+  --el-color-warning-light-5: #fcd34d;
+  --el-color-warning-light-7: #fde68a;
+  --el-color-warning-light-8: #fef3c7;
+  --el-color-warning-light-9: #fef9e7;
+
+  // 危险色
+  --el-color-danger: #ef4444;
+  --el-color-danger-light-3: #f87171;
+  --el-color-danger-light-5: #fca5a5;
+  --el-color-danger-light-7: #fecaca;
+  --el-color-danger-light-8: #fee2e2;
+  --el-color-danger-light-9: #fef2f2;
+
+  // 信息色
+  --el-color-info: #3b82f6;
+
+  // 文本颜色
+  --el-text-color-primary: #1e293b;
+  --el-text-color-regular: #475569;
+  --el-text-color-secondary: #64748b;
+  --el-text-color-placeholder: #94a3b8;
+  --el-text-color-disabled: #cbd5e1;
+
+  // 边框颜色
+  --el-border-color: #e2e8f0;
+  --el-border-color-light: #f1f5f9;
+  --el-border-color-lighter: #f8fafc;
+  --el-border-color-extra-light: #f8fafc;
+  --el-border-color-dark: #cbd5e1;
+
+  // 背景色
+  --el-fill-color-blank: #ffffff;
+  --el-fill-color: #f8fafc;
+  --el-fill-color-light: #f1f5f9;
+  --el-fill-color-lighter: #f8fafc;
+  --el-fill-color-extra-light: #fafbfc;
+  --el-fill-color-dark: #e2e8f0;
+  --el-fill-color-darker: #cbd5e1;
+
+  // 背景颜色
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #f8fafc;
+  --el-bg-color-overlay: #ffffff;
+
+  // 禁用状态
+  --el-disabled-bg-color: #f1f5f9;
+  --el-disabled-text-color: #cbd5e1;
+  --el-disabled-border-color: #e2e8f0;
+
+  // 边框半径
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 6px;
+  --el-border-radius-round: 20px;
+  --el-border-radius-circle: 100%;
+
+  // 阴影
+  --el-box-shadow-light: 0 2px 8px rgba(37, 99, 235, 0.08);
+  --el-box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+  --el-box-shadow-dark: 0 6px 16px rgba(37, 99, 235, 0.16);
+
+  // 遮罩
+  --el-overlay-color-light: rgba(37, 99, 235, 0.1);
+  --el-overlay-color-lighter: rgba(37, 99, 235, 0.05);
+
+  // 过渡时间
+  --el-transition-duration: 0.3s;
+  --el-transition-duration-fast: 0.2s;
+
+  // 字体
+  --el-font-size-extra-large: 20px;
+  --el-font-size-large: 18px;
+  --el-font-size-medium: 16px;
+  --el-font-size-base: 14px;
+  --el-font-size-small: 13px;
+  --el-font-size-extra-small: 12px;
+}
+
+// 按钮
+.el-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.el-button--primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    border: none;
+
+    &:hover {
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &.el-button--success {
+    &:hover {
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+  }
+
+  &.el-button--warning {
+    &:hover {
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+    }
+  }
+
+  &.el-button--danger {
+    &:hover {
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+    }
+  }
+}
+
+// 卡片
+.el-card {
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+    border-color: #bfdbfe;
+  }
+}
+
+// 输入框
+.el-input__wrapper {
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #e2e8f0 inset;
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: 0 0 0 1px #60a5fa inset;
+  }
+
+  &.is-focus {
+    box-shadow: 0 0 0 2px #2563eb inset;
+  }
+}
+
+// 表格
+.el-table {
+  .el-table__header th {
+    background: #eff6ff;
+    color: #1e293b;
+    font-weight: 600;
+    border-bottom: 2px solid #bfdbfe;
+  }
+
+  .el-table__row:hover > td {
+    background: #eff6ff !important;
+  }
+}
+
+// 分页
+.el-pagination {
+  .el-pager li {
+    border-radius: 6px;
+    font-weight: 500;
+
+    &.is-active {
+      background: #2563eb;
+    }
+
+    &:hover {
+      color: #2563eb;
+    }
+  }
+
+  button {
+    border-radius: 6px;
+  }
+}
+
+// 标签
+.el-tag {
+  border-radius: 6px;
+  font-weight: 500;
+
+  &.el-tag--primary {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    border-color: rgba(37, 99, 235, 0.2);
+  }
+
+  &.el-tag--success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+
+  &.el-tag--warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.2);
+  }
+
+  &.el-tag--danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+  }
+}
+
+// 对话框
+.el-dialog {
+  border-radius: 12px;
+
+  .el-dialog__header {
+    border-bottom: 1px solid #f1f5f9;
+    background: #eff6ff;
+  }
+
+  .el-dialog__footer {
+    border-top: 1px solid #f1f5f9;
+  }
+}
+
+// 提示框
+.el-message {
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.15);
+
+  &.el-message--success {
+    .el-message__icon {
+      color: #10b981;
+    }
+  }
+
+  &.el-message--warning {
+    .el-message__icon {
+      color: #f59e0b;
+    }
+  }
+
+  &.el-message--error {
+    .el-message__icon {
+      color: #ef4444;
+    }
+  }
+}
+
+// 下拉菜单
+.el-dropdown-menu {
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
+  border: 1px solid #f1f5f9;
+
+  .el-dropdown-menu__item {
+    border-radius: 6px;
+    margin: 4px 8px;
+    transition: all 0.3s;
+
+    &:hover {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+  }
+}
+
+// 加载
+.el-loading-mask {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+}
+
+.el-loading-spinner {
+  .circular {
+    stroke: #2563eb;
+  }
+}
+

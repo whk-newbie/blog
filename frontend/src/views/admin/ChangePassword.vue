@@ -140,11 +140,76 @@ const handleReset = () => {
 
 <style scoped lang="less">
 .change-password-page {
-  padding: 20px;
+  padding: 0;
 }
 
 .password-card {
-  margin-top: 20px;
+  margin-top: 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+
+  :deep(.el-card__body) {
+    padding: 32px;
+  }
+}
+
+:deep(.el-form) {
+  .el-form-item__label {
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .el-input__wrapper {
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px var(--border-color) inset;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--primary-light) inset;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 2px var(--primary-color) inset;
+    }
+  }
+
+  .el-button {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 10px 24px;
+    transition: all 0.3s;
+
+    &.el-button--primary {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+
+      &:hover {
+        background: var(--primary-light);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+:deep(.el-alert) {
+  border-radius: 10px;
+  border: 1px solid var(--border-blue);
+  background: var(--bg-blue-light);
+
+  .el-alert__title {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  ul {
+    li {
+      color: var(--text-secondary);
+      margin: 8px 0;
+      font-size: 14px;
+    }
+  }
 }
 </style>
 

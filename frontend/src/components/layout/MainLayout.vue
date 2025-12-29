@@ -23,15 +23,6 @@ import Footer from './Footer.vue'
 .main-container {
   flex: 1;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-@media (max-width: 768px) {
-  .main-container {
-    padding: 10px;
-  }
 }
 </style>
 

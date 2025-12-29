@@ -118,8 +118,9 @@ const fetchTags = async () => {
       page: pagination.page,
       page_size: pagination.pageSize
     })
-    tags.value = response.data.items || []
-    pagination.total = response.data.total || 0
+    // 后端返回的是 items，不是 list
+    tags.value = response.items || []
+    pagination.total = response.total || 0
   } catch (error) {
     console.error('获取标签列表失败:', error)
     ElMessage.error('获取标签列表失败')
@@ -212,13 +213,130 @@ onMounted(() => {
 
 <style scoped lang="less">
 .admin-tags-page {
-  padding: 1.5rem;
+  padding: 0;
+}
+
+:deep(.el-card) {
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-blue);
+  }
+
+  .el-card__header {
+    background: var(--bg-blue-light);
+    border-bottom: 1px solid var(--border-blue);
+    padding: 20px 24px;
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      span {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .el-card__body {
+    padding: 24px;
+  }
+}
+
+:deep(.el-button) {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s;
+
+  &.el-button--primary {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+
+    &:hover {
+      background: var(--primary-light);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+:deep(.el-table) {
+  .el-table__header th {
+    background: var(--bg-blue-light);
+    color: var(--text-color);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-blue);
+  }
+
+  .el-table__row {
+    transition: background 0.3s;
+
+    &:hover {
+      background: var(--bg-blue-light) !important;
+    }
+  }
+
+  .el-table__cell {
+    padding: 16px 0;
+  }
+
+  .el-button--text {
+    color: var(--primary-color);
+    font-weight: 500;
+
+    &:hover {
+      background: var(--bg-blue-light);
+    }
+  }
+}
+
+:deep(.el-dialog) {
+  border-radius: 12px;
+
+  .el-dialog__header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .el-dialog__body {
+    padding: 24px;
+  }
+
+  .el-form-item__label {
+    font-weight: 500;
+    color: var(--text-color);
+  }
+
+  .el-input__wrapper {
+    border-radius: 8px;
+  }
 }
 
 .el-pagination {
-  margin-top: 1.5rem;
+  margin-top: 24px;
   display: flex;
   justify-content: flex-end;
+
+  :deep(.el-pager li) {
+    border-radius: 6px;
+    font-weight: 500;
+
+    &.is-active {
+      background: var(--primary-color);
+    }
+  }
+
+  :deep(.btn-prev),
+  :deep(.btn-next) {
+    border-radius: 6px;
+  }
 }
 </style>
 

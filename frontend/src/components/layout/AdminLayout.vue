@@ -24,27 +24,48 @@ import AdminHeader from './AdminHeader.vue'
 <style scoped lang="less">
 .admin-layout {
   min-height: 100vh;
-  background: #f0f2f5;
+  background: var(--admin-content-bg);
 }
 
 .el-aside {
-  background: #001529;
-  color: #fff;
+  background: var(--admin-sidebar-bg);
+  color: var(--text-white);
   height: 100vh;
   overflow-y: auto;
+  box-shadow: 2px 0 8px rgba(37, 99, 235, 0.1);
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
 .el-header {
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  padding: 0 20px;
+  background: var(--admin-header-bg);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .el-main {
-  padding: 20px;
+  padding: 24px;
+  background: var(--admin-content-bg);
+  min-height: calc(100vh - 60px);
 }
 </style>
 

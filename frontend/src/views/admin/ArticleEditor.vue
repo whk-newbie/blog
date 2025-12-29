@@ -240,7 +240,7 @@ const fetchArticle = async () => {
 const fetchCategories = async () => {
   try {
     const response = await api.category.list({ page: 1, page_size: 100 })
-    categories.value = response.data.items || []
+    categories.value = response.list || []
   } catch (error) {
     console.error('获取分类列表失败:', error)
   }
@@ -250,7 +250,7 @@ const fetchCategories = async () => {
 const fetchTags = async () => {
   try {
     const response = await api.tag.list({ page: 1, page_size: 100 })
-    tags.value = response.data.items || []
+    tags.value = response.list || []
   } catch (error) {
     console.error('获取标签列表失败:', error)
   }
@@ -348,33 +348,139 @@ onMounted(() => {
 
 <style scoped lang="less">
 .article-editor-page {
-  padding: 1.5rem;
+  padding: 0;
 }
 
 .article-form {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
-  background: var(--bg-color);
-  padding: 2rem;
-  border-radius: 8px;
+  background: var(--card-bg);
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
 }
 
 .cover-upload {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
 
   .cover-preview {
-    width: 200px;
-    height: 150px;
-    border-radius: 4px;
+    width: 240px;
+    height: 160px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
   }
 }
 
 .form-tip {
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--text-color-secondary);
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+:deep(.el-form) {
+  .el-form-item__label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 15px;
+  }
+
+  .el-input__wrapper,
+  .el-textarea__inner {
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px var(--border-color) inset;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--primary-light) inset;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 2px var(--primary-color) inset;
+    }
+  }
+
+  .el-select {
+    .el-select__wrapper {
+      border-radius: 10px;
+    }
+  }
+
+  .el-checkbox {
+    font-weight: 500;
+
+    .el-checkbox__label {
+      color: var(--text-color);
+    }
+  }
+
+  .el-switch {
+    .el-switch__core {
+      border-radius: 12px;
+    }
+  }
+
+  .el-button {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 12px 28px;
+    transition: all 0.3s;
+
+    &.el-button--primary {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+
+      &:hover {
+        background: var(--primary-light);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+      }
+    }
+
+    &.el-button--success {
+      background: var(--success-color);
+      border-color: var(--success-color);
+
+      &:hover {
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+      }
+    }
+  }
+}
+
+:deep(.el-upload) {
+  .el-button {
+    border-radius: 10px;
+    border: 2px dashed var(--border-color);
+    transition: all 0.3s;
+
+    &:hover {
+      border-color: var(--primary-color);
+      background: var(--bg-blue-light);
+    }
+  }
+}
+
+:deep(.el-card) {
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+
+  .el-card__header {
+    background: var(--bg-blue-light);
+    border-bottom: 2px solid var(--border-blue);
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .el-card__body {
+    padding: 24px;
+  }
 }
 </style>
 

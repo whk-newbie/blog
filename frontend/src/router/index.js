@@ -3,26 +3,32 @@ import { useUserStore } from '@/store/user'
 import { ElMessage } from 'element-plus'
 
 const routes = [
+  // 公开页面 - 使用主布局
   {
     path: '/',
-    name: 'Home',
-    component: () => import('@/views/Home.vue'),
-    meta: { title: '首页' }
+    component: () => import('@/components/layout/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: () => import('@/views/Home.vue'),
+        meta: { title: '首页' }
+      },
+      {
+        path: 'articles',
+        name: 'Articles',
+        component: () => import('@/views/Articles.vue'),
+        meta: { title: '文章列表' }
+      },
+      {
+        path: 'article/:slug',
+        name: 'ArticleDetail',
+        component: () => import('@/views/ArticleDetail.vue'),
+        meta: { title: '文章详情' }
+      }
+    ]
   },
-  // 公开页面 - 文章
-  {
-    path: '/articles',
-    name: 'Articles',
-    component: () => import('@/views/Articles.vue'),
-    meta: { title: '文章列表' }
-  },
-  {
-    path: '/article/:slug',
-    name: 'ArticleDetail',
-    component: () => import('@/views/ArticleDetail.vue'),
-    meta: { title: '文章详情' }
-  },
-  // 管理后台 - 登录
+  // 管理后台 - 登录（无布局）
   {
     path: '/admin/login',
     name: 'AdminLogin',

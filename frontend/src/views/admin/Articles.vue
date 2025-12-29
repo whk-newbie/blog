@@ -213,8 +213,9 @@ const fetchArticles = async () => {
     }
 
     const response = await api.article.adminList(params)
-    articles.value = response.data.items || []
-    pagination.total = response.data.total || 0
+    // 后端返回的是 items，不是 list
+    articles.value = response.items || []
+    pagination.total = response.total || 0
   } catch (error) {
     console.error('获取文章列表失败:', error)
     ElMessage.error('获取文章列表失败')
@@ -227,7 +228,8 @@ const fetchArticles = async () => {
 const fetchCategories = async () => {
   try {
     const response = await api.category.list({ page: 1, page_size: 100 })
-    categories.value = response.data.items || []
+    // 后端返回的是 items，不是 list
+    categories.value = response.items || []
   } catch (error) {
     console.error('获取分类列表失败:', error)
   }
@@ -333,25 +335,170 @@ onMounted(() => {
 
 <style scoped lang="less">
 .admin-articles-page {
-  padding: 1.5rem;
+  padding: 0;
 }
 
 .filter-bar {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 12px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
+  padding: 20px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+
+  :deep(.el-input),
+  :deep(.el-select) {
+    .el-input__wrapper {
+      border-radius: 8px;
+      box-shadow: 0 0 0 1px var(--border-color) inset;
+      transition: all 0.3s;
+
+      &:hover {
+        box-shadow: 0 0 0 1px var(--primary-light) inset;
+      }
+
+      &.is-focus {
+        box-shadow: 0 0 0 1px var(--primary-color) inset, var(--shadow-sm);
+      }
+    }
+  }
+
+  :deep(.el-button) {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s;
+
+    &.el-button--primary {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+
+      &:hover {
+        background: var(--primary-light);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+      }
+    }
+  }
 }
 
 .no-cover {
-  color: var(--text-color-secondary);
+  color: var(--text-disabled);
   font-size: 0.875rem;
 }
 
+:deep(.el-card) {
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-blue);
+  }
+
+  .el-card__body {
+    padding: 24px;
+  }
+}
+
+:deep(.el-table) {
+  .el-table__header th {
+    background: var(--bg-blue-light);
+    color: var(--text-color);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-blue);
+  }
+
+  .el-table__row {
+    transition: background 0.3s;
+
+    &:hover {
+      background: var(--bg-blue-light) !important;
+    }
+  }
+
+  .el-table__cell {
+    padding: 16px 0;
+  }
+
+  .el-button {
+    border-radius: 6px;
+    font-weight: 500;
+
+    &--text {
+      color: var(--primary-color);
+
+      &:hover {
+        background: var(--bg-blue-light);
+      }
+    }
+
+    &--success {
+      &.is-text {
+        color: var(--success-color);
+      }
+    }
+
+    &--warning {
+      &.is-text {
+        color: var(--warning-color);
+      }
+    }
+
+    &--danger {
+      &.is-text {
+        color: var(--danger-color);
+      }
+    }
+  }
+}
+
+:deep(.el-image) {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+:deep(.el-tag) {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 4px 12px;
+
+  &.el-tag--success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+
+  &.el-tag--info {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+    border-color: rgba(37, 99, 235, 0.2);
+  }
+}
+
 .el-pagination {
-  margin-top: 1.5rem;
+  margin-top: 24px;
   display: flex;
   justify-content: flex-end;
+
+  :deep(.el-pager li) {
+    border-radius: 6px;
+    font-weight: 500;
+
+    &.is-active {
+      background: var(--primary-color);
+    }
+  }
+
+  :deep(.btn-prev),
+  :deep(.btn-next) {
+    border-radius: 6px;
+  }
 }
 </style>
 

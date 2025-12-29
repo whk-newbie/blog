@@ -231,22 +231,45 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .dashboard {
-  padding: 20px;
+  padding: 0;
 }
 
 .stats-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .stat-card {
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-blue);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .stat-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
   }
 }
 
@@ -254,28 +277,46 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 20px;
+  padding: 24px;
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  font-size: 28px;
+  transition: all 0.3s;
 }
 
 .article-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+
+  &::before {
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+  }
 }
 
 .category-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+
+  &::before {
+    background: linear-gradient(90deg, #06b6d4, #0891b2);
+  }
 }
 
 .tag-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+
+  &::before {
+    background: linear-gradient(90deg, #8b5cf6, #6366f1);
+  }
 }
 
 .stat-info {
@@ -284,50 +325,121 @@ onMounted(() => {
 
 .stat-label {
   font-size: 14px;
-  color: #909399;
+  color: var(--text-secondary);
   margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .stat-value {
-  font-size: 32px;
-  font-weight: bold;
-  color: #303133;
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
 }
 
 .recent-articles-card {
-  margin-top: 20px;
+  margin-top: 32px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-blue);
+  }
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-blue-light);
 }
 
 .card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 10px;
+  font-size: 18px;
   font-weight: 600;
+  color: var(--text-color);
+
+  .el-icon {
+    color: var(--primary-color);
+    font-size: 20px;
+  }
 }
 
 .no-cover {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-disabled);
   display: block;
   text-align: center;
 }
 
 .empty-state {
-  padding: 40px 0;
+  padding: 60px 0;
+}
+
+:deep(.el-card__body) {
+  padding: 24px;
 }
 
 :deep(.el-table) {
   font-size: 14px;
+
+  .el-table__header th {
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    font-weight: 600;
+  }
+
+  .el-table__row:hover {
+    background: var(--bg-blue-light);
+  }
+
+  .el-table__cell {
+    padding: 14px 0;
+  }
 }
 
-:deep(.el-button + .el-button) {
-  margin-left: 8px;
+:deep(.el-button) {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s;
+
+  &.el-button--primary {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+
+    &:hover {
+      background: var(--primary-light);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+  }
+
+  &.el-button--success {
+    background: var(--success-color);
+    border-color: var(--success-color);
+  }
+
+  & + .el-button {
+    margin-left: 8px;
+  }
+}
+
+:deep(.el-image) {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+:deep(.el-tag) {
+  border-radius: 6px;
+  font-weight: 500;
 }
 </style>
