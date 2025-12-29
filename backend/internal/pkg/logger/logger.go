@@ -109,3 +109,14 @@ func WithFields(fields logrus.Fields) *logrus.Entry {
 	return log.WithFields(fields)
 }
 
+// AddHook 添加日志钩子
+func AddHook(hook logrus.Hook) {
+	if log != nil {
+		log.AddHook(hook)
+	}
+}
+
+// GetLogger 获取logrus实例（用于添加钩子等高级操作）
+func GetLogger() *logrus.Logger {
+	return log
+}

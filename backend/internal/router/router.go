@@ -7,6 +7,7 @@ import (
 	"github.com/whk-newbie/blog/internal/middleware"
 	"github.com/whk-newbie/blog/internal/pkg/db"
 	"github.com/whk-newbie/blog/internal/pkg/jwt"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
 	"github.com/whk-newbie/blog/internal/repository"
 	"github.com/whk-newbie/blog/internal/scheduler"
 	"github.com/whk-newbie/blog/internal/service"
@@ -87,6 +88,10 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 		panic("Failed to initialize config service: " + err.Error())
 	}
 	logService := service.NewLogService(logRepo)
+
+	// 注册数据库日志钩子，自动将WARN和ERROR级别日志写入数据库
+	dbHook := logger.NewDatabaseHook(logService)
+	logger.AddHook(dbHook)
 
 	// 初始化Handler
 	authHandler := handler.NewAuthHandler(authService)
