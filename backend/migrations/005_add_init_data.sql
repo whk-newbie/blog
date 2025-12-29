@@ -2,9 +2,11 @@
 -- 添加初始化数据
 
 -- 初始化管理员（密码: admin@123）
--- BCrypt hash of 'admin@123' with cost 10
-INSERT INTO admins (username, password, is_default_password) 
-VALUES ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', TRUE)
+-- 注意：SQL 可以创建管理员账号，但 Go 代码会检查并修正密码哈希
+-- Go 代码会在应用启动时验证密码哈希是否正确，如果不正确会自动更新
+-- 这样可以确保密码哈希是通过 Go 的 bcrypt 正确生成的（见 internal/pkg/db/init_admin.go）
+INSERT INTO admins (username, password, email, is_default_password) 
+VALUES ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'admin@example.com', TRUE)
 ON CONFLICT (username) DO NOTHING;
 
 -- 初始化默认分类
