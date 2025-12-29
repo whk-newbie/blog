@@ -76,6 +76,12 @@ const routes = [
         name: 'AdminTags',
         component: () => import('@/views/admin/Tags.vue'),
         meta: { titleKey: 'nav.tags', requiresAuth: true }
+      },
+      {
+        path: 'stats',
+        name: 'VisitStats',
+        component: () => import('@/views/admin/VisitStats.vue'),
+        meta: { titleKey: 'nav.visits', requiresAuth: true }
       }
     ]
   },
