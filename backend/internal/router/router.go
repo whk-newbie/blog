@@ -57,6 +57,7 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	categoryService := service.NewCategoryService(categoryRepo)
 	tagService := service.NewTagService(tagRepo)
 	articleService := service.NewArticleService(articleRepo, categoryRepo, tagRepo)
+	statsService := service.NewStatsService(articleRepo, categoryRepo, tagRepo)
 
 	// 初始化Handler
 	authHandler := handler.NewAuthHandler(authService)
@@ -64,6 +65,7 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	tagHandler := handler.NewTagHandler(tagService)
 	articleHandler := handler.NewArticleHandler(articleService)
 	uploadHandler := handler.NewUploadHandler("uploads", 10) // 10MB max size
+	statsHandler := handler.NewStatsHandler(statsService)
 
 	// API路由组
 	api := r.Group("/api/v1")
@@ -124,6 +126,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			// 文件上传
 			admin.POST("/upload/image", uploadHandler.UploadImage)
 			admin.POST("/upload/article-image", uploadHandler.UploadArticleImage)
+
+			// 统计数据
+			admin.GET("/stats/dashboard", statsHandler.GetDashboardStats)
 		}
 	}
 
