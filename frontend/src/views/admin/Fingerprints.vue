@@ -115,7 +115,7 @@
       width="1200px"
     >
       <div v-if="selectedFingerprint" class="fingerprint-detail">
-        <el-descriptions :column="2" border>
+        <el-descriptions :column="2" border :label-width="120">
           <el-descriptions-item :label="t('stats.fingerprintHash')" :span="2">
             <code>{{ selectedFingerprint.fingerprint_hash }}</code>
           </el-descriptions-item>
