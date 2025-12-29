@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/whk-newbie/blog/internal/models"
 	"github.com/whk-newbie/blog/internal/repository"
 )
@@ -9,6 +11,12 @@ import (
 type StatsService interface {
 	// 获取仪表盘统计数据
 	GetDashboardStats() (*DashboardStatsResponse, error)
+	// 获取访问统计
+	GetVisitStats(req *VisitStatsRequest) (*VisitStatsResponse, error)
+	// 获取热门文章
+	GetPopularArticles(limit, days int) ([]repository.PopularArticle, error)
+	// 获取访问来源统计
+	GetReferrerStats(startDate, endDate time.Time) (*ReferrerStatsResponse, error)
 }
 
 // DashboardStatsResponse 仪表盘统计响应
@@ -24,6 +32,7 @@ type statsService struct {
 	articleRepo  repository.ArticleRepository
 	categoryRepo repository.CategoryRepository
 	tagRepo      repository.TagRepository
+	visitService VisitService
 }
 
 // NewStatsService 创建统计服务
@@ -31,11 +40,13 @@ func NewStatsService(
 	articleRepo repository.ArticleRepository,
 	categoryRepo repository.CategoryRepository,
 	tagRepo repository.TagRepository,
+	visitService VisitService,
 ) StatsService {
 	return &statsService{
 		articleRepo:  articleRepo,
 		categoryRepo: categoryRepo,
 		tagRepo:      tagRepo,
+		visitService: visitService,
 	}
 }
 
@@ -71,4 +82,19 @@ func (s *statsService) GetDashboardStats() (*DashboardStatsResponse, error) {
 		TagCount:       tagCount,
 		RecentArticles: recentArticles,
 	}, nil
+}
+
+// GetVisitStats 获取访问统计
+func (s *statsService) GetVisitStats(req *VisitStatsRequest) (*VisitStatsResponse, error) {
+	return s.visitService.GetVisitStats(req)
+}
+
+// GetPopularArticles 获取热门文章
+func (s *statsService) GetPopularArticles(limit, days int) ([]repository.PopularArticle, error) {
+	return s.visitService.GetPopularArticles(limit, days)
+}
+
+// GetReferrerStats 获取访问来源统计
+func (s *statsService) GetReferrerStats(startDate, endDate time.Time) (*ReferrerStatsResponse, error) {
+	return s.visitService.GetReferrerStats(startDate, endDate)
 }

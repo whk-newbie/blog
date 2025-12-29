@@ -65,13 +65,15 @@ type ReferrerStatsResponse struct {
 
 // visitService 访问记录服务实现
 type visitService struct {
-	visitRepo repository.VisitRepository
+	visitRepo     repository.VisitRepository
+	cacheService  VisitCacheService
 }
 
 // NewVisitService 创建访问记录服务
-func NewVisitService(visitRepo repository.VisitRepository) VisitService {
+func NewVisitService(visitRepo repository.VisitRepository, cacheService VisitCacheService) VisitService {
 	return &visitService{
-		visitRepo: visitRepo,
+		visitRepo:    visitRepo,
+		cacheService: cacheService,
 	}
 }
 
@@ -104,6 +106,13 @@ func (s *visitService) GetVisitStats(req *VisitStatsRequest) (*VisitStatsRespons
 	// 设置默认统计类型
 	if req.Type == "" {
 		req.Type = "daily"
+	}
+
+	// 尝试从缓存获取
+	if s.cacheService != nil {
+		if cached, err := s.cacheService.GetCachedVisitStats(req); err == nil {
+			return cached, nil
+		}
 	}
 
 	// 获取PV统计
@@ -194,6 +203,11 @@ func (s *visitService) GetVisitStats(req *VisitStatsRequest) (*VisitStatsRespons
 	response.Summary.TotalUV = totalUV
 	response.Summary.AvgStayDuration = avgStayDuration
 
+	// 缓存结果（缓存5分钟）
+	if s.cacheService != nil {
+		_ = s.cacheService.CacheVisitStats(req, response, 5*time.Minute)
+	}
+
 	return response, nil
 }
 
@@ -206,7 +220,24 @@ func (s *visitService) GetPopularArticles(limit, days int) ([]repository.Popular
 		days = 7
 	}
 
-	return s.visitRepo.GetPopularArticles(limit, days)
+	// 尝试从缓存获取
+	if s.cacheService != nil {
+		if cached, err := s.cacheService.GetCachedPopularArticles(limit, days); err == nil {
+			return cached, nil
+		}
+	}
+
+	articles, err := s.visitRepo.GetPopularArticles(limit, days)
+	if err != nil {
+		return nil, err
+	}
+
+	// 缓存结果（缓存10分钟）
+	if s.cacheService != nil {
+		_ = s.cacheService.CachePopularArticles(limit, days, articles, 10*time.Minute)
+	}
+
+	return articles, nil
 }
 
 // GetReferrerStats 获取访问来源统计
@@ -218,15 +249,29 @@ func (s *visitService) GetReferrerStats(startDate, endDate time.Time) (*Referrer
 		endDate = time.Now()
 	}
 
+	// 尝试从缓存获取
+	if s.cacheService != nil {
+		if cached, err := s.cacheService.GetCachedReferrerStats(startDate, endDate); err == nil {
+			return cached, nil
+		}
+	}
+
 	stats, err := s.visitRepo.GetReferrerStats(startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ReferrerStatsResponse{
+	response := &ReferrerStatsResponse{
 		Direct:       stats.Direct,
 		SearchEngine: stats.SearchEngine,
 		ExternalLink: stats.ExternalLink,
 		TopReferrers: stats.TopReferrers,
-	}, nil
+	}
+
+	// 缓存结果（缓存10分钟）
+	if s.cacheService != nil {
+		_ = s.cacheService.CacheReferrerStats(startDate, endDate, response, 10*time.Minute)
+	}
+
+	return response, nil
 }
