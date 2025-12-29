@@ -48,8 +48,8 @@
           <el-icon><Setting /></el-icon>
           <span>{{ t('nav.system') }}</span>
         </template>
-        <el-menu-item index="/admin/system/config">{{ t('nav.config') }}</el-menu-item>
-        <el-menu-item index="/admin/system/logs">{{ t('nav.logs') }}</el-menu-item>
+        <el-menu-item index="/admin/config">{{ t('nav.config') }}</el-menu-item>
+        <el-menu-item index="/admin/logs">{{ t('nav.logs') }}</el-menu-item>
         <el-menu-item index="/admin/system/backup">{{ t('nav.backup') }}</el-menu-item>
       </el-sub-menu>
 
