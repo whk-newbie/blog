@@ -26,6 +26,17 @@
     "blogSystem": "博客系统",
     "notFound": "页面未找到"
   },
+  "home": {
+    "featuredArticles": "推荐文章",
+    "latestArticles": "最新文章",
+    "viewAll": "查看全部",
+    "categories": "文章分类",
+    "hotTags": "热们标签",
+    "noArticles": "暂无文章",
+    "noCategories": "暂无分类",
+    "noTags": "暂无标签",
+    "loadArticlesError": "获取文章列表失败"
+  },
   "nav": {
     "home": "首页",
     "articles": "文章",

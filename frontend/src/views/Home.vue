@@ -6,7 +6,7 @@
         <div class="section-header">
           <h2 class="section-title">
             <el-icon><Star /></el-icon>
-            推荐文章
+            {{ t('home.featuredArticles') }}
           </h2>
         </div>
         <div class="featured-grid">
@@ -27,15 +27,15 @@
             <div class="section-header">
               <h2 class="section-title">
                 <el-icon><Clock /></el-icon>
-                最新文章
+                {{ t('home.latestArticles') }}
               </h2>
               <el-button text @click="goToArticles">
-                查看全部 <el-icon><ArrowRight /></el-icon>
+                {{ t('home.viewAll') }} <el-icon><ArrowRight /></el-icon>
               </el-button>
             </div>
             
             <div v-loading="loading" class="articles-list">
-              <el-empty v-if="!loading && latestArticles.length === 0" description="暂无文章" />
+              <el-empty v-if="!loading && latestArticles.length === 0" :description="t('home.noArticles')" />
               
               <div v-else class="article-grid">
                 <article-card
@@ -56,11 +56,11 @@
             <template #header>
               <div class="card-header">
                 <el-icon><Folder /></el-icon>
-                <span>文章分类</span>
+                <span>{{ t('home.categories') }}</span>
               </div>
             </template>
             <div v-loading="loadingCategories" class="categories-list">
-              <el-empty v-if="!loadingCategories && categories.length === 0" description="暂无分类" :image-size="60" />
+              <el-empty v-if="!loadingCategories && categories.length === 0" :description="t('home.noCategories')" :image-size="60" />
               <div v-else class="category-items">
                 <div
                   v-for="category in categories"
@@ -80,11 +80,11 @@
             <template #header>
               <div class="card-header">
                 <el-icon><PriceTag /></el-icon>
-                <span>热门标签</span>
+                <span>{{ t('home.hotTags') }}</span>
               </div>
             </template>
             <div v-loading="loadingTags" class="tags-cloud">
-              <el-empty v-if="!loadingTags && tags.length === 0" description="暂无标签" :image-size="60" />
+              <el-empty v-if="!loadingTags && tags.length === 0" :description="t('home.noTags')" :image-size="60" />
               <div v-else class="tag-items">
                 <el-tag
                   v-for="tag in tags"
@@ -107,6 +107,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import {
   Star,
@@ -119,6 +120,7 @@ import api from '@/api'
 import ArticleCard from '@/components/article/ArticleCard.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 
 // 数据
 const loading = ref(false)
@@ -156,7 +158,7 @@ const fetchLatestArticles = async () => {
     latestArticles.value = response.items || []
   } catch (error) {
     console.error('获取最新文章失败:', error)
-    ElMessage.error('获取文章列表失败')
+    ElMessage.error(t('home.loadArticlesError'))
   } finally {
     loading.value = false
   }

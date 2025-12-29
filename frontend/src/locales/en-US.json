@@ -26,6 +26,17 @@
     "blogSystem": "Blog System",
     "notFound": "Page Not Found"
   },
+  "home": {
+    "featuredArticles": "Featured Articles",
+    "latestArticles": "Latest Articles",
+    "viewAll": "View All",
+    "categories": "Categories",
+    "hotTags": "Hot Tags",
+    "noArticles": "No Articles",
+    "noCategories": "No Categories",
+    "noTags": "No Tags",
+    "loadArticlesError": "Failed to load articles"
+  },
   "nav": {
     "home": "Home",
     "articles": "Articles",
