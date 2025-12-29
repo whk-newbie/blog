@@ -118,7 +118,12 @@ func (h *ConfigHandler) CreateConfig(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "配置创建成功", config)
+	// 创建成功返回201状态码
+	c.JSON(201, gin.H{
+		"code":    0,
+		"message": "配置创建成功",
+		"data":    config,
+	})
 }
 
 // UpdateConfig 更新配置

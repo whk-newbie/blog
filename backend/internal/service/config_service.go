@@ -283,12 +283,20 @@ func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensit
 	configValue := config.ConfigValue
 
 	// 敏感信息脱敏
-	if maskSensitive && config.IsEncrypted && configValue != "" {
-		// 对于加密的配置，显示脱敏信息
-		if len(configValue) > 8 {
-			configValue = "***" + configValue[len(configValue)-8:]
+	if maskSensitive && configValue != "" {
+		if config.IsEncrypted {
+			// 加密的配置：尝试解密后脱敏
+			decrypted, err := s.crypto.Decrypt(configValue)
+			if err == nil {
+				// 解密成功，根据配置类型进行智能脱敏
+				configValue = s.maskSensitiveValue(decrypted, config.ConfigType)
+			} else {
+				// 解密失败，使用默认脱敏
+				configValue = "***"
+			}
 		} else {
-			configValue = "***"
+			// 未加密的配置：直接根据类型脱敏
+			configValue = s.maskSensitiveValue(configValue, config.ConfigType)
 		}
 	}
 
@@ -302,5 +310,35 @@ func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensit
 		Description: config.Description,
 		CreatedAt:   config.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   config.UpdatedAt.Format(time.RFC3339),
+	}
+}
+
+// maskSensitiveValue 根据配置类型智能脱敏
+func (s *configService) maskSensitiveValue(value string, configType string) string {
+	if value == "" {
+		return "***"
+	}
+
+	switch configType {
+	case models.ConfigTypeEmail:
+		// 邮箱脱敏：***@example.com
+		for i := 0; i < len(value); i++ {
+			if value[i] == '@' {
+				return "***" + value[i:]
+			}
+		}
+		return "***@***"
+	case models.ConfigTypeAPIToken, models.ConfigTypeCrawlerToken:
+		// Token脱敏：显示前4位和后4位
+		if len(value) > 8 {
+			return value[:4] + "***" + value[len(value)-4:]
+		}
+		return "***"
+	default:
+		// 默认脱敏：显示后8位
+		if len(value) > 8 {
+			return "***" + value[len(value)-8:]
+		}
+		return "***"
 	}
 }
