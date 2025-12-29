@@ -93,7 +93,7 @@ make swag
 
 ```bash
 # 安装 Air
-go install github.com/cosmtrek/air@latest
+go install github.com/air-verse/air@latest
 
 # 运行
 air

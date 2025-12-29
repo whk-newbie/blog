@@ -12,7 +12,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add --no-cache git
 
 # 安装Air热重载工具和Swag文档生成工具
-RUN go install github.com/cosmtrek/air@latest && \
+RUN go install github.com/air-verse/air@latest && \
     go install github.com/swaggo/swag/cmd/swag@latest
 
 # 设置工作目录
