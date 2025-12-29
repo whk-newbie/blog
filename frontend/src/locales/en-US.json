@@ -29,7 +29,12 @@
     "daysAgo": "days ago",
     "weeksAgo": "weeks ago",
     "monthsAgo": "months ago",
-    "uploading": "Uploading image..."
+    "uploading": "Uploading image...",
+    "unauthorized": "Unauthorized, please login again",
+    "forbidden": "Access Forbidden",
+    "notFound": "Resource Not Found",
+    "serverError": "Server Error",
+    "networkError": "Network error, please check your connection"
   },
   "app": {
     "title": "My Blog",

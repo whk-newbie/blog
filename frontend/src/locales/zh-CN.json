@@ -29,7 +29,12 @@
     "daysAgo": "天前",
     "weeksAgo": "周前",
     "monthsAgo": "个月前",
-    "uploading": "正在上传图片..."
+    "uploading": "正在上传图片...",
+    "unauthorized": "未授权，请重新登录",
+    "forbidden": "拒绝访问",
+    "notFound": "请求的资源不存在",
+    "serverError": "服务器错误",
+    "networkError": "网络错误，请检查网络连接"
   },
   "app": {
     "title": "我的博客",

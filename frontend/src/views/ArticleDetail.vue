@@ -95,7 +95,7 @@ import TableOfContents from '@/components/article/TableOfContents.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const loading = ref(false)
 const article = ref(null)
@@ -108,7 +108,7 @@ const fetchArticle = async () => {
     const slug = route.params.slug
     
     if (!slug) {
-      ElMessage.error('文章不存在')
+      ElMessage.error(t('app.articleNotFound'))
       router.push('/articles')
       return
     }
@@ -125,7 +125,7 @@ const fetchArticle = async () => {
     }, 300)
   } catch (error) {
     console.error('获取文章详情失败:', error)
-    ElMessage.error('获取文章详情失败')
+    ElMessage.error(t('article.loadError'))
     setTimeout(() => {
       router.push('/articles')
     }, 1500)
@@ -138,7 +138,7 @@ const fetchArticle = async () => {
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN', {
+  return date.toLocaleString(locale.value === 'zh-CN' ? 'zh-CN' : 'en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

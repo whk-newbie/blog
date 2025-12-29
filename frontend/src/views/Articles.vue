@@ -126,7 +126,7 @@ const fetchArticles = async () => {
     }
   } catch (error) {
     console.error('获取文章列表失败:', error)
-    ElMessage.error('获取文章列表失败')
+    ElMessage.error(t('home.loadArticlesError'))
   } finally {
     loading.value = false
   }

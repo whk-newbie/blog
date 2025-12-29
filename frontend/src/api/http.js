@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import i18n from '@/locales'
 
 // 创建axios实例
 const http = axios.create({
@@ -40,8 +41,8 @@ http.interceptors.response.use(
     }
     
     // 业务失败
-    ElMessage.error(message || '请求失败')
-    return Promise.reject(new Error(message || '请求失败'))
+    ElMessage.error(message || i18n.global.t('common.error'))
+    return Promise.reject(new Error(message || i18n.global.t('common.error')))
   },
   (error) => {
     // HTTP错误
@@ -50,26 +51,26 @@ http.interceptors.response.use(
       
       switch (status) {
         case 401:
-          ElMessage.error('未授权，请重新登录')
+          ElMessage.error(i18n.global.t('common.unauthorized'))
           localStorage.removeItem('token')
-          window.location.href = '/admin/login'
+          window.location.href = '/'
           break
         case 403:
-          ElMessage.error('拒绝访问')
+          ElMessage.error(i18n.global.t('common.forbidden'))
           break
         case 404:
-          ElMessage.error('请求的资源不存在')
+          ElMessage.error(i18n.global.t('common.notFound'))
           break
         case 500:
-          ElMessage.error('服务器错误')
+          ElMessage.error(i18n.global.t('common.serverError'))
           break
         default:
-          ElMessage.error(data?.message || '请求失败')
+          ElMessage.error(data?.message || i18n.global.t('common.error'))
       }
     } else if (error.request) {
-      ElMessage.error('网络错误，请检查网络连接')
+      ElMessage.error(i18n.global.t('common.networkError'))
     } else {
-      ElMessage.error(error.message || '请求失败')
+      ElMessage.error(error.message || i18n.global.t('common.error'))
     }
     
     return Promise.reject(error)
