@@ -13,9 +13,8 @@ import (
 	"github.com/whk-newbie/blog/internal/pkg/logger"
 	"github.com/whk-newbie/blog/internal/pkg/redis"
 	"github.com/whk-newbie/blog/internal/router"
-	"github.com/whk-newbie/blog/internal/scheduler"
 
-	_ "github.com/whk-newbie/blog/docs" // Swagger文档
+	// _ "github.com/whk-newbie/blog/docs" // Swagger文档 - 暂时禁用
 )
 
 // @title Blog API
@@ -139,9 +138,8 @@ func main() {
 	<-quit
 
 	logger.Info("Shutting down server...")
-	
+
 	// 停止调度器
 	schedulerManager.Stop()
 	logger.Info("Scheduler stopped")
 }
-

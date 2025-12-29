@@ -29,7 +29,7 @@ func NewArticleHandler(articleService service.ArticleService) *ArticleHandler {
 // @Produce json
 // @Security BearerAuth
 // @Param body body service.CreateArticleRequest true "文章信息"
-// @Success 200 {object} response.Response{data=models.Article} "创建成功"
+// @Success 200 {object} response.Response "创建成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 500 {object} response.Response "服务器内部错误"
@@ -60,7 +60,7 @@ func (h *ArticleHandler) Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "文章ID"
-// @Success 200 {object} response.Response{data=models.Article} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 400 {object} response.Response "参数错误"
 // @Failure 404 {object} response.Response "文章不存在"
 // @Failure 500 {object} response.Response "服务器内部错误"
@@ -98,7 +98,7 @@ func (h *ArticleHandler) GetByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param slug path string true "文章Slug"
-// @Success 200 {object} response.Response{data=models.Article} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 404 {object} response.Response "文章不存在"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /articles/slug/{slug} [get]
@@ -136,7 +136,7 @@ func (h *ArticleHandler) GetBySlug(c *gin.Context) {
 // @Security BearerAuth
 // @Param id path int true "文章ID"
 // @Param body body service.UpdateArticleRequest true "文章信息"
-// @Success 200 {object} response.Response{data=models.Article} "更新成功"
+// @Success 200 {object} response.Response "更新成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 404 {object} response.Response "文章不存在"
@@ -219,7 +219,7 @@ func (h *ArticleHandler) Delete(c *gin.Context) {
 // @Param is_top query bool false "是否置顶"
 // @Param is_featured query bool false "是否推荐"
 // @Param keyword query string false "搜索关键词"
-// @Success 200 {object} response.Response{data=service.ArticleListResponse} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /admin/articles [get]
@@ -290,7 +290,7 @@ func (h *ArticleHandler) List(c *gin.Context) {
 // @Param tag_id query int false "标签ID"
 // @Param is_featured query bool false "是否推荐"
 // @Param keyword query string false "搜索关键词"
-// @Success 200 {object} response.Response{data=service.ArticleListResponse} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /articles [get]
 func (h *ArticleHandler) ListPublished(c *gin.Context) {
@@ -414,7 +414,7 @@ func (h *ArticleHandler) Unpublish(c *gin.Context) {
 // @Param keyword query string true "搜索关键词"
 // @Param page query int false "页码" default(1)
 // @Param page_size query int false "每页数量" default(10)
-// @Success 200 {object} response.Response{data=service.ArticleListResponse} "搜索成功"
+// @Success 200 {object} response.Response "搜索成功"
 // @Failure 400 {object} response.Response "参数错误"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /articles/search [get]

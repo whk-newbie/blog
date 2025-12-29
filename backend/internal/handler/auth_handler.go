@@ -37,7 +37,7 @@ type ChangePasswordRequest struct {
 // @Accept json
 // @Produce json
 // @Param body body LoginRequest true "登录信息"
-// @Success 200 {object} response.Response{data=service.LoginResponse} "登录成功"
+// @Success 200 {object} response.Response "登录成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "用户名或密码错误"
 // @Failure 500 {object} response.Response "服务器内部错误"
@@ -114,7 +114,7 @@ func (h *AuthHandler) ChangePassword(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.Response{data=map[string]interface{}} "Token有效"
+// @Success 200 {object} response.Response "Token有效"
 // @Failure 401 {object} response.Response "Token无效或已过期"
 // @Router /auth/verify [get]
 func (h *AuthHandler) VerifyToken(c *gin.Context) {
@@ -136,7 +136,7 @@ func (h *AuthHandler) VerifyToken(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.Response{data=map[string]string} "刷新成功"
+// @Success 200 {object} response.Response "刷新成功"
 // @Failure 401 {object} response.Response "Token无效或已过期"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /auth/refresh [post]

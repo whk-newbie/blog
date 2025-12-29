@@ -28,7 +28,7 @@ func NewTagHandler(tagService service.TagService) *TagHandler {
 // @Produce json
 // @Security BearerAuth
 // @Param body body service.CreateTagRequest true "标签信息"
-// @Success 200 {object} response.Response{data=models.Tag} "创建成功"
+// @Success 200 {object} response.Response "创建成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 500 {object} response.Response "服务器内部错误"
@@ -59,7 +59,7 @@ func (h *TagHandler) Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "标签ID"
-// @Success 200 {object} response.Response{data=models.Tag} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 400 {object} response.Response "参数错误"
 // @Failure 404 {object} response.Response "标签不存在"
 // @Failure 500 {object} response.Response "服务器内部错误"
@@ -92,7 +92,7 @@ func (h *TagHandler) GetByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param slug path string true "标签Slug"
-// @Success 200 {object} response.Response{data=models.Tag} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 404 {object} response.Response "标签不存在"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /tags/slug/{slug} [get]
@@ -125,7 +125,7 @@ func (h *TagHandler) GetBySlug(c *gin.Context) {
 // @Security BearerAuth
 // @Param id path int true "标签ID"
 // @Param body body service.UpdateTagRequest true "标签信息"
-// @Success 200 {object} response.Response{data=models.Tag} "更新成功"
+// @Success 200 {object} response.Response "更新成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 404 {object} response.Response "标签不存在"
@@ -201,7 +201,7 @@ func (h *TagHandler) Delete(c *gin.Context) {
 // @Produce json
 // @Param page query int false "页码" default(1)
 // @Param page_size query int false "每页数量" default(10)
-// @Success 200 {object} response.Response{data=service.TagListResponse} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /tags [get]
 func (h *TagHandler) List(c *gin.Context) {

@@ -25,7 +25,7 @@ func NewStatsHandler(statsService service.StatsService) *StatsHandler {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.Response{data=service.DashboardStatsResponse} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /admin/stats/dashboard [get]

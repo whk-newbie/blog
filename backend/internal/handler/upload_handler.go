@@ -48,7 +48,7 @@ type UploadImageResponse struct {
 // @Produce json
 // @Security BearerAuth
 // @Param file formData file true "图片文件"
-// @Success 200 {object} response.Response{data=UploadImageResponse} "上传成功"
+// @Success 200 {object} response.Response "上传成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 413 {object} response.Response "文件太大"
@@ -111,7 +111,7 @@ func (h *UploadHandler) UploadImage(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param file formData file true "图片文件"
-// @Success 200 {object} response.Response{data=UploadImageResponse} "上传成功"
+// @Success 200 {object} response.Response "上传成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 413 {object} response.Response "文件太大"

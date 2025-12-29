@@ -28,7 +28,7 @@ func NewCategoryHandler(categoryService service.CategoryService) *CategoryHandle
 // @Produce json
 // @Security BearerAuth
 // @Param body body service.CreateCategoryRequest true "分类信息"
-// @Success 200 {object} response.Response{data=models.Category} "创建成功"
+// @Success 200 {object} response.Response "创建成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 500 {object} response.Response "服务器内部错误"
@@ -59,7 +59,7 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "分类ID"
-// @Success 200 {object} response.Response{data=models.Category} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 400 {object} response.Response "参数错误"
 // @Failure 404 {object} response.Response "分类不存在"
 // @Failure 500 {object} response.Response "服务器内部错误"
@@ -92,7 +92,7 @@ func (h *CategoryHandler) GetByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param slug path string true "分类Slug"
-// @Success 200 {object} response.Response{data=models.Category} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 404 {object} response.Response "分类不存在"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /categories/slug/{slug} [get]
@@ -125,7 +125,7 @@ func (h *CategoryHandler) GetBySlug(c *gin.Context) {
 // @Security BearerAuth
 // @Param id path int true "分类ID"
 // @Param body body service.UpdateCategoryRequest true "分类信息"
-// @Success 200 {object} response.Response{data=models.Category} "更新成功"
+// @Success 200 {object} response.Response "更新成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 401 {object} response.Response "未授权"
 // @Failure 404 {object} response.Response "分类不存在"
@@ -201,7 +201,7 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 // @Produce json
 // @Param page query int false "页码" default(1)
 // @Param page_size query int false "每页数量" default(10)
-// @Success 200 {object} response.Response{data=service.CategoryListResponse} "获取成功"
+// @Success 200 {object} response.Response "获取成功"
 // @Failure 500 {object} response.Response "服务器内部错误"
 // @Router /categories [get]
 func (h *CategoryHandler) List(c *gin.Context) {
