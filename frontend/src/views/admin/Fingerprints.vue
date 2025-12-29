@@ -45,11 +45,22 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="t('common.operation')" width="150" fixed="right">
+        <el-table-column :label="t('common.operation')" width="220" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleViewDetail(row)">
               {{ t('common.view') }}
             </el-button>
+            <el-button size="small" type="primary" @click="handleEdit(row)">
+              {{ t('common.edit') }}
+            </el-button>
+            <el-popconfirm
+              :title="t('common.deleteConfirm')"
+              @confirm="handleDelete(row.id)"
+            >
+              <template #reference>
+                <el-button size="small" type="danger">{{ t('common.delete') }}</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -65,6 +76,37 @@
       @size-change="handleSizeChange"
       @current-change="handlePageChange"
     />
+
+    <!-- 编辑对话框 -->
+    <el-dialog
+      v-model="editDialogVisible"
+      :title="t('common.edit')"
+      width="600px"
+    >
+      <el-form
+        ref="editFormRef"
+        :model="editForm"
+        :rules="editRules"
+        label-width="120px"
+      >
+        <el-form-item :label="t('stats.userAgent')" prop="user_agent">
+          <el-input
+            v-model="editForm.user_agent"
+            type="textarea"
+            :rows="3"
+            :placeholder="t('stats.userAgent')"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="editDialogVisible = false">{{ t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="handleUpdate">
+            {{ t('common.save') }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
 
     <!-- 详情对话框 -->
     <el-dialog
@@ -111,7 +153,18 @@ const { t } = useI18n()
 const loading = ref(false)
 const fingerprints = ref([])
 const detailDialogVisible = ref(false)
+const editDialogVisible = ref(false)
 const selectedFingerprint = ref(null)
+const editFormRef = ref(null)
+const editForm = reactive({
+  id: null,
+  user_agent: ''
+})
+const editRules = computed(() => ({
+  user_agent: [
+    { required: true, message: t('validation.required'), trigger: 'blur' }
+  ]
+}))
 
 const pagination = reactive({
   page: 1,
@@ -154,6 +207,45 @@ const handleSizeChange = () => {
 const handleViewDetail = (row) => {
   selectedFingerprint.value = row
   detailDialogVisible.value = true
+}
+
+// 编辑
+const handleEdit = (row) => {
+  editForm.id = row.id
+  editForm.user_agent = row.user_agent || ''
+  editDialogVisible.value = true
+}
+
+// 更新
+const handleUpdate = async () => {
+  if (!editFormRef.value) return
+  
+  try {
+    await editFormRef.value.validate()
+    await fingerprintApi.update(editForm.id, {
+      user_agent: editForm.user_agent
+    })
+    ElMessage.success(t('common.success'))
+    editDialogVisible.value = false
+    fetchFingerprints()
+  } catch (error) {
+    if (error !== false) { // 验证失败时error为false
+      console.error('更新指纹失败:', error)
+      ElMessage.error(t('common.error'))
+    }
+  }
+}
+
+// 删除
+const handleDelete = async (id) => {
+  try {
+    await fingerprintApi.delete(id)
+    ElMessage.success(t('common.success'))
+    fetchFingerprints()
+  } catch (error) {
+    console.error('删除指纹失败:', error)
+    ElMessage.error(t('common.error'))
+  }
 }
 
 // 格式化日期

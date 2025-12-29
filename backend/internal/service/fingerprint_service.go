@@ -14,10 +14,16 @@ import (
 type FingerprintService interface {
 	// 收集并存储指纹
 	CollectFingerprint(fingerprintData interface{}, userAgent string) (*FingerprintResponse, error)
+	// 根据ID获取指纹
+	GetByID(id uint) (*models.Fingerprint, error)
 	// 根据哈希查找指纹
 	GetByHash(hash string) (*models.Fingerprint, error)
 	// 获取指纹列表
 	List(page, pageSize int) (*FingerprintListResponse, error)
+	// 更新指纹
+	Update(id uint, userAgent string) error
+	// 删除指纹
+	Delete(id uint) error
 }
 
 // FingerprintResponse 指纹响应
@@ -137,4 +143,25 @@ func (s *fingerprintService) List(page, pageSize int) (*FingerprintListResponse,
 		PageSize:   pageSize,
 		TotalPages: totalPages,
 	}, nil
+}
+
+// GetByID 根据ID获取指纹
+func (s *fingerprintService) GetByID(id uint) (*models.Fingerprint, error) {
+	return s.fingerprintRepo.FindByID(id)
+}
+
+// Update 更新指纹
+func (s *fingerprintService) Update(id uint, userAgent string) error {
+	fingerprint, err := s.fingerprintRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	fingerprint.UserAgent = userAgent
+	return s.fingerprintRepo.Update(fingerprint)
+}
+
+// Delete 删除指纹
+func (s *fingerprintService) Delete(id uint) error {
+	return s.fingerprintRepo.Delete(id)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/whk-newbie/blog/internal/repository"
 	"github.com/whk-newbie/blog/internal/scheduler"
 	"github.com/whk-newbie/blog/internal/service"
+	"github.com/whk-newbie/blog/internal/websocket"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -152,6 +153,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 
 			// 指纹管理
 			admin.GET("/fingerprints", fingerprintHandler.ListFingerprints)
+			admin.GET("/fingerprints/:id", fingerprintHandler.GetFingerprint)
+			admin.PUT("/fingerprints/:id", fingerprintHandler.UpdateFingerprint)
+			admin.DELETE("/fingerprints/:id", fingerprintHandler.DeleteFingerprint)
 		}
 	}
 

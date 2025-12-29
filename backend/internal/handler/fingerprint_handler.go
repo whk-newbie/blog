@@ -101,6 +101,120 @@ func (h *FingerprintHandler) ListFingerprints(c *gin.Context) {
 	response.Success(c, result)
 }
 
+// GetFingerprint 获取指纹详情
+// @Summary 获取指纹详情
+// @Description 根据ID获取指纹详细信息（管理员）
+// @Tags 指纹
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "指纹ID"
+// @Success 200 {object} response.Response "获取成功"
+// @Failure 401 {object} response.Response "未授权"
+// @Failure 404 {object} response.Response "指纹不存在"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /admin/fingerprints/{id} [get]
+func (h *FingerprintHandler) GetFingerprint(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := parseInt(idStr)
+	if err != nil {
+		response.BadRequest(c, "无效的指纹ID")
+		return
+	}
+
+	fingerprint, err := h.fingerprintService.GetByID(uint(id))
+	if err != nil {
+		if err.Error() == "fingerprint not found" {
+			response.NotFound(c, "指纹不存在")
+			return
+		}
+		response.InternalServerError(c, "获取指纹失败: "+err.Error())
+		return
+	}
+
+	response.Success(c, fingerprint)
+}
+
+// UpdateFingerprint 更新指纹
+// @Summary 更新指纹
+// @Description 更新指纹信息（管理员）
+// @Tags 指纹
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "指纹ID"
+// @Param body body map[string]string true "更新数据"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 401 {object} response.Response "未授权"
+// @Failure 404 {object} response.Response "指纹不存在"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /admin/fingerprints/{id} [put]
+func (h *FingerprintHandler) UpdateFingerprint(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := parseInt(idStr)
+	if err != nil {
+		response.BadRequest(c, "无效的指纹ID")
+		return
+	}
+
+	var req map[string]string
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "请求参数错误: "+err.Error())
+		return
+	}
+
+	userAgent := req["user_agent"]
+	if userAgent == "" {
+		response.BadRequest(c, "user_agent不能为空")
+		return
+	}
+
+	if err := h.fingerprintService.Update(uint(id), userAgent); err != nil {
+		if err.Error() == "fingerprint not found" {
+			response.NotFound(c, "指纹不存在")
+			return
+		}
+		response.InternalServerError(c, "更新指纹失败: "+err.Error())
+		return
+	}
+
+	response.Success(c, nil)
+}
+
+// DeleteFingerprint 删除指纹
+// @Summary 删除指纹
+// @Description 删除指纹（管理员）
+// @Tags 指纹
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "指纹ID"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 401 {object} response.Response "未授权"
+// @Failure 404 {object} response.Response "指纹不存在"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /admin/fingerprints/{id} [delete]
+func (h *FingerprintHandler) DeleteFingerprint(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := parseInt(idStr)
+	if err != nil {
+		response.BadRequest(c, "无效的指纹ID")
+		return
+	}
+
+	if err := h.fingerprintService.Delete(uint(id)); err != nil {
+		if err.Error() == "fingerprint not found" {
+			response.NotFound(c, "指纹不存在")
+			return
+		}
+		response.InternalServerError(c, "删除指纹失败: "+err.Error())
+		return
+	}
+
+	response.Success(c, nil)
+}
+
 // parseInt 解析整数
 func parseInt(s string) (int, error) {
 	return strconv.Atoi(s)

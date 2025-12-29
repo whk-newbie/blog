@@ -14,6 +14,7 @@
     "noData": "暂无数据",
     "operation": "操作",
     "view": "查看",
+    "deleteConfirm": "确定要删除吗？",
     "success": "操作成功",
     "error": "操作失败",
     "warning": "警告",

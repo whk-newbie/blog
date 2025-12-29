@@ -16,12 +16,18 @@ var (
 type FingerprintRepository interface {
 	// 创建指纹
 	Create(fingerprint *models.Fingerprint) error
+	// 根据ID查找指纹
+	FindByID(id uint) (*models.Fingerprint, error)
 	// 根据哈希查找指纹
 	FindByHash(hash string) (*models.Fingerprint, error)
 	// 更新指纹（更新最后访问时间和访问次数）
 	UpdateLastSeen(id uint) error
 	// 增加访问次数
 	IncrementVisitCount(id uint) error
+	// 更新指纹信息
+	Update(fingerprint *models.Fingerprint) error
+	// 删除指纹
+	Delete(id uint) error
 	// 获取指纹列表
 	List(offset, limit int) ([]models.Fingerprint, int64, error)
 }
@@ -92,4 +98,27 @@ func (r *fingerprintRepository) List(offset, limit int) ([]models.Fingerprint, i
 	}
 
 	return fingerprints, total, nil
+}
+
+// FindByID 根据ID查找指纹
+func (r *fingerprintRepository) FindByID(id uint) (*models.Fingerprint, error) {
+	var fingerprint models.Fingerprint
+	err := r.db.First(&fingerprint, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrFingerprintNotFound
+		}
+		return nil, err
+	}
+	return &fingerprint, nil
+}
+
+// Update 更新指纹信息
+func (r *fingerprintRepository) Update(fingerprint *models.Fingerprint) error {
+	return r.db.Model(fingerprint).Updates(fingerprint).Error
+}
+
+// Delete 删除指纹
+func (r *fingerprintRepository) Delete(id uint) error {
+	return r.db.Delete(&models.Fingerprint{}, id).Error
 }
