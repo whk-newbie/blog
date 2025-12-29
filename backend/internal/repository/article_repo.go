@@ -53,6 +53,14 @@ type ArticleRepository interface {
 	Search(keyword string, offset, limit int) ([]models.Article, int64, error)
 	// 获取需要发布的文章（定时发布）
 	GetPendingPublish() ([]models.Article, error)
+	// 获取按日期统计的文章发布数量
+	GetPublishStatsByDate(startDate, endDate time.Time) ([]PublishStat, error)
+}
+
+// PublishStat 文章发布统计
+type PublishStat struct {
+	Date  string `json:"date"`  // 日期 (YYYY-MM-DD)
+	Count int64  `json:"count"` // 发布数量
 }
 
 // articleRepository 文章仓库实现
@@ -345,4 +353,20 @@ func (r *articleRepository) GetPendingPublish() ([]models.Article, error) {
 		Find(&articles).Error
 
 	return articles, err
+}
+
+// GetPublishStatsByDate 获取按日期统计的文章发布数量
+func (r *articleRepository) GetPublishStatsByDate(startDate, endDate time.Time) ([]PublishStat, error) {
+	var stats []PublishStat
+
+	// 使用 COALESCE 处理 publish_at 为 NULL 的情况，使用 created_at
+	err := r.db.Model(&models.Article{}).
+		Select("DATE(COALESCE(publish_at, created_at)) as date, COUNT(*) as count").
+		Where("DATE(COALESCE(publish_at, created_at)) >= ?", startDate.Format("2006-01-02")).
+		Where("DATE(COALESCE(publish_at, created_at)) <= ?", endDate.Format("2006-01-02")).
+		Group("DATE(COALESCE(publish_at, created_at))").
+		Order("date ASC").
+		Scan(&stats).Error
+
+	return stats, err
 }

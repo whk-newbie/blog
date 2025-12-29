@@ -2,46 +2,7 @@
   <div class="dashboard">
     <page-header :title="t('nav.dashboard')" />
 
-    <!-- 统计卡片 -->
-    <div v-loading="loading" class="stats-cards">
-      <el-card class="stat-card" shadow="hover">
-        <div class="stat-content">
-          <div class="stat-icon article-icon">
-            <el-icon :size="32"><Document /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">{{ t('stats.articleCount') }}</div>
-            <div class="stat-value">{{ stats.article_count || 0 }}</div>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card class="stat-card" shadow="hover">
-        <div class="stat-content">
-          <div class="stat-icon category-icon">
-            <el-icon :size="32"><Folder /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">{{ t('stats.categoryCount') }}</div>
-            <div class="stat-value">{{ stats.category_count || 0 }}</div>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card class="stat-card" shadow="hover">
-        <div class="stat-content">
-          <div class="stat-icon tag-icon">
-            <el-icon :size="32"><PriceTag /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">{{ t('stats.tagCount') }}</div>
-            <div class="stat-value">{{ stats.tag_count || 0 }}</div>
-          </div>
-        </div>
-      </el-card>
-    </div>
-
-    <!-- 数据图表占位 -->
+    <!-- 数据图表 -->
     <el-card class="chart-card" shadow="hover">
       <template #header>
         <div class="card-header">
@@ -49,13 +10,26 @@
             <el-icon><DataAnalysis /></el-icon>
             {{ t('stats.chartTitle') }}
           </span>
+          <div class="header-stats">
+            <div class="header-stat-item">
+              <el-icon class="stat-icon-small article-icon-small"><Document /></el-icon>
+              <span class="stat-label-small">{{ t('stats.articleCount') }}</span>
+              <span class="stat-value-small">{{ stats.article_count || 0 }}</span>
+            </div>
+            <div class="header-stat-item">
+              <el-icon class="stat-icon-small category-icon-small"><Folder /></el-icon>
+              <span class="stat-label-small">{{ t('stats.categoryCount') }}</span>
+              <span class="stat-value-small">{{ stats.category_count || 0 }}</span>
+            </div>
+            <div class="header-stat-item">
+              <el-icon class="stat-icon-small tag-icon-small"><PriceTag /></el-icon>
+              <span class="stat-label-small">{{ t('stats.tagCount') }}</span>
+              <span class="stat-value-small">{{ stats.tag_count || 0 }}</span>
+            </div>
+          </div>
         </div>
       </template>
-      <div class="chart-placeholder">
-        <el-icon :size="64" class="placeholder-icon"><DataAnalysis /></el-icon>
-        <p class="placeholder-text">{{ t('stats.chartPlaceholder') }}</p>
-        <p class="placeholder-desc">{{ t('stats.chartDescription') }}</p>
-      </div>
+      <div v-loading="chartLoading" ref="chartRef" class="chart-container"></div>
     </el-card>
 
     <!-- 最近文章列表 -->
@@ -149,10 +123,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick, onBeforeUnmount, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import * as echarts from 'echarts'
 import {
   Document,
   Folder,
@@ -166,38 +141,271 @@ import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import statsApi from '@/api/stats'
 import articleApi from '@/api/article'
+import { useThemeStore } from '@/store/theme'
 
 const router = useRouter()
 const { t } = useI18n()
+const themeStore = useThemeStore()
 
 // 数据
 const loading = ref(false)
+const chartLoading = ref(false)
 const stats = ref({
   article_count: 0,
   category_count: 0,
-  tag_count: 0
+  tag_count: 0,
+  chart_data: null
 })
 const recentArticles = ref([])
+const chartRef = ref(null)
+let chartInstance = null
 
 // 加载统计数据
 const loadStats = async () => {
   loading.value = true
+  chartLoading.value = true
   try {
     const res = await statsApi.getDashboardStats()
     if (res) {
       stats.value = {
         article_count: res.article_count || 0,
         category_count: res.category_count || 0,
-        tag_count: res.tag_count || 0
+        tag_count: res.tag_count || 0,
+        chart_data: res.chart_data || null
       }
       recentArticles.value = res.recent_articles || []
+      
+      // 渲染图表
+      if (res.chart_data) {
+        await nextTick()
+        renderChart(res.chart_data)
+      }
     }
   } catch (error) {
     console.error('加载统计数据失败:', error)
     ElMessage.error(t('stats.loadStatsError'))
   } finally {
     loading.value = false
+    chartLoading.value = false
   }
+}
+
+// 获取图表颜色配置（根据主题）
+const getChartColors = () => {
+  const isDark = themeStore.theme === 'dark'
+  
+  if (isDark) {
+    return {
+      pv: '#6b9bd2',        // 柔和的蓝色
+      uv: '#6bb89c',        // 柔和的绿色
+      publish: '#8b5cf6',   // 柔和的紫色
+      text: '#d4d4d4',      // 柔和的浅灰色
+      grid: '#3a3a3a',      // 深灰色网格
+      bg: 'transparent'     // 透明背景
+    }
+  } else {
+    return {
+      pv: '#2563eb',        // 蓝色
+      uv: '#10b981',        // 绿色
+      publish: '#8b5cf6',   // 紫色
+      text: '#1e293b',      // 深灰色
+      grid: '#e2e8f0',      // 浅灰色网格
+      bg: 'transparent'     // 透明背景
+    }
+  }
+}
+
+// 渲染图表
+const renderChart = (chartData) => {
+  if (!chartRef.value) return
+  
+  // 初始化图表
+  if (!chartInstance) {
+    chartInstance = echarts.init(chartRef.value)
+  }
+  
+  // 处理访问趋势数据
+  const visitTrend = chartData.visit_trend || []
+  const visitDates = visitTrend.map(item => item.date)
+  const pvData = visitTrend.map(item => item.pv || 0)
+  const uvData = visitTrend.map(item => item.uv || 0)
+  
+  // 处理文章发布趋势数据
+  const publishTrend = chartData.publish_trend || []
+  const publishDates = publishTrend.map(item => item.date)
+  const publishCounts = publishTrend.map(item => item.count || 0)
+  
+  // 合并日期，确保所有日期都在图表中显示
+  const allDates = [...new Set([...visitDates, ...publishDates])].sort()
+  
+  // 创建数据映射，填充缺失的日期
+  const pvMap = new Map(visitTrend.map(item => [item.date, item.pv || 0]))
+  const uvMap = new Map(visitTrend.map(item => [item.date, item.uv || 0]))
+  const publishMap = new Map(publishTrend.map(item => [item.date, item.count || 0]))
+  
+  const finalPvData = allDates.map(date => pvMap.get(date) || 0)
+  const finalUvData = allDates.map(date => uvMap.get(date) || 0)
+  const finalPublishData = allDates.map(date => publishMap.get(date) || 0)
+  
+  const colors = getChartColors()
+  const isDark = themeStore.theme === 'dark'
+  
+  const option = {
+    backgroundColor: colors.bg,
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross'
+      },
+      backgroundColor: isDark ? 'rgba(37, 37, 37, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+      borderColor: isDark ? '#3a3a3a' : '#e2e8f0',
+      textStyle: {
+        color: colors.text
+      }
+    },
+    legend: {
+      data: [t('stats.pv'), t('stats.uv'), t('stats.articleCount')],
+      top: 10,
+      textStyle: {
+        color: colors.text
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      top: '15%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: allDates,
+      axisLabel: {
+        rotate: 45,
+        interval: Math.floor(allDates.length / 10), // 显示部分日期标签，避免拥挤
+        color: colors.text
+      },
+      axisLine: {
+        lineStyle: {
+          color: colors.grid
+        }
+      },
+      splitLine: {
+        show: false
+      }
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: t('stats.pv'),
+        position: 'left',
+        axisLabel: {
+          formatter: '{value}',
+          color: colors.text
+        },
+        axisLine: {
+          lineStyle: {
+            color: colors.grid
+          }
+        },
+        splitLine: {
+          lineStyle: {
+            color: isDark ? '#2d2d2d' : '#f1f5f9',
+            type: 'dashed'
+          }
+        }
+      },
+      {
+        type: 'value',
+        name: t('stats.articleCount'),
+        position: 'right',
+        axisLabel: {
+          formatter: '{value}',
+          color: colors.text
+        },
+        axisLine: {
+          lineStyle: {
+            color: colors.grid
+          }
+        },
+        splitLine: {
+          show: false
+        }
+      }
+    ],
+    series: [
+      {
+        name: t('stats.pv'),
+        type: 'line',
+        data: finalPvData,
+        smooth: true,
+        itemStyle: {
+          color: colors.pv
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: isDark ? [
+              { offset: 0, color: 'rgba(107, 155, 210, 0.25)' },
+              { offset: 1, color: 'rgba(107, 155, 210, 0.05)' }
+            ] : [
+              { offset: 0, color: 'rgba(37, 99, 235, 0.3)' },
+              { offset: 1, color: 'rgba(37, 99, 235, 0.05)' }
+            ]
+          }
+        }
+      },
+      {
+        name: t('stats.uv'),
+        type: 'line',
+        data: finalUvData,
+        smooth: true,
+        itemStyle: {
+          color: colors.uv
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: isDark ? [
+              { offset: 0, color: 'rgba(107, 184, 156, 0.25)' },
+              { offset: 1, color: 'rgba(107, 184, 156, 0.05)' }
+            ] : [
+              { offset: 0, color: 'rgba(16, 185, 129, 0.3)' },
+              { offset: 1, color: 'rgba(16, 185, 129, 0.05)' }
+            ]
+          }
+        }
+      },
+      {
+        name: t('stats.articleCount'),
+        type: 'bar',
+        yAxisIndex: 1,
+        data: finalPublishData,
+        itemStyle: {
+          color: colors.publish,
+          borderRadius: [4, 4, 0, 0]
+        }
+      }
+    ]
+  }
+  
+  chartInstance.setOption(option)
+  
+  // 响应式调整
+  window.addEventListener('resize', () => {
+    if (chartInstance) {
+      chartInstance.resize()
+    }
+  })
 }
 
 // 格式化日期
@@ -243,9 +451,30 @@ const handlePublish = async (id) => {
   }
 }
 
+// 监听主题变化，重新渲染图表
+watch(() => themeStore.theme, () => {
+  if (chartInstance && stats.value.chart_data) {
+    renderChart(stats.value.chart_data)
+  }
+})
+
 // 初始化
 onMounted(() => {
   loadStats()
+})
+
+// 组件卸载时销毁图表
+onBeforeUnmount(() => {
+  if (chartInstance) {
+    chartInstance.dispose()
+    chartInstance = null
+  }
+  // 移除窗口大小调整监听器
+  window.removeEventListener('resize', () => {
+    if (chartInstance) {
+      chartInstance.resize()
+    }
+  })
 })
 </script>
 
@@ -254,110 +483,58 @@ onMounted(() => {
   padding: 0;
 }
 
-.stats-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.stat-card {
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  &:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-blue);
-
-    &::before {
-      opacity: 1;
-    }
-
-    .stat-icon {
-      transform: scale(1.1) rotate(5deg);
-    }
-  }
-}
-
-.stat-content {
+.header-stats {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px;
+  gap: 24px;
+  
+  @media (max-width: 768px) {
+    gap: 16px;
+  }
 }
 
-.stat-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 14px;
+.header-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-icon-small {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 28px;
-  transition: all 0.3s;
-}
-
-.article-icon {
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
-
-  &::before {
-    background: linear-gradient(90deg, #2563eb, #3b82f6);
-  }
-}
-
-.category-icon {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
-
-  &::before {
-    background: linear-gradient(90deg, #06b6d4, #0891b2);
-  }
-}
-
-.tag-icon {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
-
-  &::before {
-    background: linear-gradient(90deg, #8b5cf6, #6366f1);
-  }
-}
-
-.stat-info {
-  flex: 1;
-}
-
-.stat-label {
   font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-  font-weight: 500;
+  flex-shrink: 0;
 }
 
-.stat-value {
-  font-size: 36px;
+.article-icon-small {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+}
+
+.category-icon-small {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.tag-icon-small {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+}
+
+.stat-label-small {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.stat-value-small {
+  font-size: 16px;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -1px;
+  color: var(--primary-color);
+  white-space: nowrap;
 }
 
 .chart-card {
@@ -373,36 +550,10 @@ onMounted(() => {
   }
 }
 
-.chart-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  min-height: 300px;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-}
-
-.placeholder-icon {
-  color: var(--text-disabled);
-  margin-bottom: 16px;
-  opacity: 0.5;
-}
-
-.placeholder-text {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin: 0 0 8px 0;
-}
-
-.placeholder-desc {
-  font-size: 14px;
-  color: var(--text-disabled);
-  margin: 0;
-  text-align: center;
-  max-width: 400px;
+.chart-container {
+  width: 100%;
+  height: 400px;
+  min-height: 400px;
 }
 
 .recent-articles-card {
@@ -421,9 +572,15 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 16px 24px;
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-blue-light);
+  flex-wrap: wrap;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    padding: 12px 16px;
+  }
 }
 
 .card-title {

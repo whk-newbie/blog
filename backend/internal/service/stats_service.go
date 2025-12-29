@@ -25,6 +25,13 @@ type DashboardStatsResponse struct {
 	CategoryCount  int64            `json:"category_count"`  // 分类总数
 	TagCount       int64            `json:"tag_count"`       // 标签总数
 	RecentArticles []models.Article `json:"recent_articles"` // 最近文章列表
+	ChartData      *ChartData       `json:"chart_data"`      // 图表数据
+}
+
+// ChartData 图表数据
+type ChartData struct {
+	VisitTrend    []DailyStat      `json:"visit_trend"`    // 访问趋势（最近30天）
+	PublishTrend  []repository.PublishStat `json:"publish_trend"`  // 文章发布趋势（最近30天）
 }
 
 // statsService 统计服务实现
@@ -76,11 +83,51 @@ func (s *statsService) GetDashboardStats() (*DashboardStatsResponse, error) {
 		return nil, err
 	}
 
+	// 获取图表数据（最近30天）
+	chartData, err := s.getChartData()
+	if err != nil {
+		// 如果获取图表数据失败，不阻塞主流程，返回空数据
+		chartData = &ChartData{
+			VisitTrend:   []DailyStat{},
+			PublishTrend: []repository.PublishStat{},
+		}
+	}
+
 	return &DashboardStatsResponse{
 		ArticleCount:   articleCount,
 		CategoryCount:  categoryCount,
 		TagCount:       tagCount,
 		RecentArticles: recentArticles,
+		ChartData:      chartData,
+	}, nil
+}
+
+// getChartData 获取图表数据
+func (s *statsService) getChartData() (*ChartData, error) {
+	// 计算最近30天的日期范围
+	endDate := time.Now()
+	startDate := endDate.AddDate(0, 0, -30)
+
+	// 获取访问趋势数据
+	visitStatsReq := &VisitStatsRequest{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Type:      "daily",
+	}
+	visitStats, err := s.visitService.GetVisitStats(visitStatsReq)
+	if err != nil {
+		return nil, err
+	}
+
+	// 获取文章发布趋势数据
+	publishStats, err := s.articleRepo.GetPublishStatsByDate(startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ChartData{
+		VisitTrend:   visitStats.DailyStats,
+		PublishTrend: publishStats,
 	}, nil
 }
 
