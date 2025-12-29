@@ -306,6 +306,10 @@ const handleCleanup = () => {
 const handleCleanupSubmit = async () => {
   try {
     await cleanupFormRef.value.validate()
+    // 先关闭对话框，避免确认弹窗位置错误
+    cleanupDialogVisible.value = false
+    // 等待对话框关闭动画完成后再显示确认弹窗
+    await new Promise(resolve => setTimeout(resolve, 300))
     await ElMessageBox.confirm(
       t('log.cleanupConfirm', { days: cleanupForm.retention_days }),
       t('log.cleanupLogs'),
@@ -319,12 +323,13 @@ const handleCleanupSubmit = async () => {
       retention_days: cleanupForm.retention_days
     })
     ElMessage.success(t('log.cleanupSuccess', { count: response.deleted_count || 0 }))
-    cleanupDialogVisible.value = false
     loadLogs()
   } catch (error) {
     if (error !== 'cancel') {
       console.error('清理日志失败:', error)
       ElMessage.error(t('log.cleanupError'))
+      // 如果取消或出错，重新打开对话框
+      cleanupDialogVisible.value = true
     }
   }
 }
