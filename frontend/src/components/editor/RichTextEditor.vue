@@ -278,5 +278,91 @@ watch(() => props.modelValue, (newValue) => {
     fill: #409eff;
   }
 }
+
+// 暗色主题样式
+:root[data-theme='dark'] .rich-text-editor {
+  :deep(.ql-toolbar) {
+    background-color: #252525;
+    border-color: #3a3a3a;
+  }
+
+  :deep(.ql-container) {
+    border-color: #3a3a3a;
+    background-color: #1a1a1a;
+  }
+
+  :deep(.ql-editor) {
+    color: #d4d4d4;
+
+    &.ql-blank::before {
+      color: #6e6e6e;
+    }
+
+    // 代码块样式
+    pre.ql-syntax {
+      background-color: #2d2d2d;
+      color: #d4d4d4;
+    }
+
+    // 引用样式
+    blockquote {
+      border-left-color: #6b9bd2;
+      color: #a8a8a8;
+    }
+
+    // 链接样式
+    a {
+      color: #6b9bd2;
+    }
+
+    // 表格样式
+    table {
+      td, th {
+        border-color: #3a3a3a;
+      }
+
+      th {
+        background-color: #252525;
+      }
+    }
+  }
+
+  // 工具栏按钮样式
+  :deep(.ql-toolbar button:hover),
+  :deep(.ql-toolbar button:focus),
+  :deep(.ql-toolbar .ql-picker-label:hover),
+  :deep(.ql-toolbar .ql-picker-label.ql-active),
+  :deep(.ql-toolbar button.ql-active) {
+    color: #6b9bd2;
+  }
+
+  :deep(.ql-toolbar button:hover .ql-stroke),
+  :deep(.ql-toolbar button:focus .ql-stroke),
+  :deep(.ql-toolbar button.ql-active .ql-stroke),
+  :deep(.ql-toolbar .ql-picker-label:hover .ql-stroke),
+  :deep(.ql-toolbar .ql-picker-label.ql-active .ql-stroke) {
+    stroke: #6b9bd2;
+  }
+
+  :deep(.ql-toolbar button:hover .ql-fill),
+  :deep(.ql-toolbar button:focus .ql-fill),
+  :deep(.ql-toolbar button.ql-active .ql-fill),
+  :deep(.ql-toolbar .ql-picker-label:hover .ql-fill),
+  :deep(.ql-toolbar .ql-picker-label.ql-active .ql-fill) {
+    fill: #6b9bd2;
+  }
+
+  :deep(.ql-toolbar .ql-stroke) {
+    stroke: #a8a8a8;
+  }
+
+  :deep(.ql-toolbar .ql-fill) {
+    fill: #a8a8a8;
+  }
+
+  :deep(.ql-toolbar .ql-picker-label) {
+    color: #d4d4d4;
+  }
+}
 </style>
 

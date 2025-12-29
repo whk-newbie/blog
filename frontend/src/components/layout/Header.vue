@@ -162,7 +162,7 @@ const goToAdmin = () => {
 
     &:hover {
       color: var(--primary-color);
-      background: rgba(0, 0, 0, 0.05) !important;
+      background: var(--hover-bg) !important;
     }
 
     .el-icon {

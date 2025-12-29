@@ -80,10 +80,10 @@ defineProps({
 
 :root[data-theme='dark'] {
   .loading-overlay {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(26, 26, 26, 0.95);
 
     &:not(.fullscreen) {
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(26, 26, 26, 0.85);
     }
   }
 }

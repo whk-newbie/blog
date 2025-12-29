@@ -67,29 +67,48 @@
   --transition-slow: 0.5s;
 }
 
-// 暗色主题
+// 暗色主题 - 护眼配色
 :root[data-theme='dark'] {
-  // 文本颜色
-  --text-color: #e8e8e8;
-  --text-secondary: #b8b8b8;
-  --text-disabled: #888888;
+  // 主色调 - 降低饱和度，使用更柔和的颜色
+  --primary-color: #6b9bd2;
+  --primary-light: #7fa8d6;
+  --primary-lighter: #93b5da;
+  --primary-dark: #5a8bc0;
+  --primary-darker: #4a7aae;
+  
+  --secondary-color: #7db3c8;
+  --success-color: #6bb89c;
+  --warning-color: #d4a574;
+  --danger-color: #d47d7d;
+  --info-color: #7fa8d6;
 
-  // 背景颜色
-  --bg-color: #141414;
-  --bg-secondary: #1f1f1f;
-  --bg-tertiary: #262626;
-  --header-bg: #1f1f1f;
-  --footer-bg: #1f1f1f;
-  --hover-bg: #2a2a2a;
+  // 文本颜色 - 柔和的浅灰色，避免纯白色
+  --text-color: #d4d4d4;
+  --text-secondary: #a8a8a8;
+  --text-disabled: #6e6e6e;
+  --text-white: #e8e8e8;
 
-  // 边框颜色
-  --border-color: #434343;
-  --border-light: #303030;
+  // 背景颜色 - 深灰色系，避免纯黑
+  --bg-color: #1a1a1a;
+  --bg-secondary: #252525;
+  --bg-tertiary: #2d2d2d;
+  --bg-blue-light: #2a2a2a;
+  --bg-blue-lighter: #2f2f2f;
+  --header-bg: #252525;
+  --footer-bg: #252525;
+  --hover-bg: #2f2f2f;
+  --active-bg: #353535;
 
-  // 阴影
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  // 边框颜色 - 深灰色
+  --border-color: #3a3a3a;
+  --border-light: #2d2d2d;
+  --border-blue: #4a5a6a;
+
+  // 阴影 - 柔和的黑色阴影
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-blue: 0 4px 14px rgba(107, 155, 210, 0.15);
 }
 
 // 导出 Less 变量供 Element Plus 使用
@@ -108,5 +127,16 @@
   --admin-content-bg: #f8fafc;
   --card-bg: #ffffff;
   --card-hover: #f8fafc;
+}
+
+// 管理后台暗色主题
+:root[data-theme='dark'] {
+  --admin-sidebar-bg: linear-gradient(180deg, #2a2a2a 0%, #252525 100%);
+  --admin-sidebar-active: rgba(107, 155, 210, 0.2);
+  --admin-sidebar-hover: rgba(107, 155, 210, 0.1);
+  --admin-header-bg: #252525;
+  --admin-content-bg: #1a1a1a;
+  --card-bg: #252525;
+  --card-hover: #2d2d2d;
 }
 

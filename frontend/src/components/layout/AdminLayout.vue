@@ -75,7 +75,7 @@ onMounted(() => {
   color: var(--text-white);
   height: 100vh;
   overflow-y: auto;
-  box-shadow: 2px 0 8px rgba(37, 99, 235, 0.1);
+  box-shadow: var(--shadow-sm);
   
   &::-webkit-scrollbar {
     width: 6px;
@@ -97,7 +97,7 @@ onMounted(() => {
 
 .el-header {
   background: var(--admin-header-bg);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  box-shadow: var(--shadow-sm);
   padding: 0 24px;
   display: flex;
   align-items: center;
