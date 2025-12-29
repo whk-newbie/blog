@@ -35,7 +35,7 @@
           <span>{{ t('nav.stats') }}</span>
         </template>
         <el-menu-item index="/admin/stats">{{ t('nav.visits') }}</el-menu-item>
-        <!-- <el-menu-item index="/admin/stats/fingerprints">{{ t('nav.fingerprints') }}</el-menu-item> -->
+        <el-menu-item index="/admin/fingerprints">{{ t('nav.fingerprints') }}</el-menu-item>
       </el-sub-menu>
 
       <el-menu-item index="/admin/crawler">

@@ -82,6 +82,12 @@ const routes = [
         name: 'VisitStats',
         component: () => import('@/views/admin/VisitStats.vue'),
         meta: { titleKey: 'nav.visits', requiresAuth: true }
+      },
+      {
+        path: 'fingerprints',
+        name: 'Fingerprints',
+        component: () => import('@/views/admin/Fingerprints.vue'),
+        meta: { titleKey: 'nav.fingerprints', requiresAuth: true }
       }
     ]
   },

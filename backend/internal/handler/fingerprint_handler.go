@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/whk-newbie/blog/internal/pkg/response"
 	"github.com/whk-newbie/blog/internal/service"
@@ -59,4 +61,47 @@ func (h *FingerprintHandler) CollectFingerprint(c *gin.Context) {
 	}
 
 	response.Success(c, result)
+}
+
+// ListFingerprints 获取指纹列表
+// @Summary 获取指纹列表
+// @Description 获取浏览器指纹列表（管理员）
+// @Tags 指纹
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param page query int false "页码" default(1)
+// @Param page_size query int false "每页数量" default(10)
+// @Success 200 {object} response.Response "获取成功"
+// @Failure 401 {object} response.Response "未授权"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /admin/fingerprints [get]
+func (h *FingerprintHandler) ListFingerprints(c *gin.Context) {
+	page := 1
+	pageSize := 10
+
+	// 解析分页参数
+	if pageStr := c.Query("page"); pageStr != "" {
+		if parsed, err := parseInt(pageStr); err == nil && parsed > 0 {
+			page = parsed
+		}
+	}
+	if pageSizeStr := c.Query("page_size"); pageSizeStr != "" {
+		if parsed, err := parseInt(pageSizeStr); err == nil && parsed > 0 && parsed <= 100 {
+			pageSize = parsed
+		}
+	}
+
+	result, err := h.fingerprintService.List(page, pageSize)
+	if err != nil {
+		response.InternalServerError(c, "获取指纹列表失败: "+err.Error())
+		return
+	}
+
+	response.Success(c, result)
+}
+
+// parseInt 解析整数
+func parseInt(s string) (int, error) {
+	return strconv.Atoi(s)
 }

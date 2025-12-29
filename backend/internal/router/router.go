@@ -149,6 +149,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			admin.GET("/stats/visits", statsHandler.GetVisitStats)
 			admin.GET("/stats/popular-articles", statsHandler.GetPopularArticles)
 			admin.GET("/stats/referrers", statsHandler.GetReferrerStats)
+
+			// 指纹管理
+			admin.GET("/fingerprints", fingerprintHandler.ListFingerprints)
 		}
 	}
 
