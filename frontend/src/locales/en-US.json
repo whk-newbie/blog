@@ -16,7 +16,12 @@
     "success": "Success",
     "error": "Error",
     "warning": "Warning",
-    "tip": "Tip"
+    "tip": "Tip",
+    "languageSwitched": "Switched to English"
+  },
+  "app": {
+    "title": "My Blog",
+    "adminPanel": "Admin Panel"
   },
   "nav": {
     "home": "Home",

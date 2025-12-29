@@ -7,11 +7,11 @@
         </router-link>
       </div>
       <nav class="nav-menu">
-        <router-link to="/" class="nav-item">首页</router-link>
-        <router-link to="/articles" class="nav-item">文章</router-link>
+        <router-link to="/" class="nav-item">{{ t('nav.home') }}</router-link>
+        <router-link to="/articles" class="nav-item">{{ t('nav.articles') }}</router-link>
         <router-link v-if="isLoggedIn" to="/admin" class="nav-item admin-link">
           <el-icon><Setting /></el-icon>
-          后台管理
+          {{ t('nav.dashboard') }}
         </router-link>
       </nav>
       <div class="header-actions">
@@ -25,12 +25,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/store/user'
 import ThemeSwitch from '../common/ThemeSwitch.vue'
 import LanguageSwitch from '../common/LanguageSwitch.vue'
 
-const blogTitle = ref('我的博客')
+const { t } = useI18n()
 const userStore = useUserStore()
+
+// 博客标题 - 可以根据语言切换
+const blogTitle = computed(() => t('app.title'))
 
 // 判断是否已登录
 const isLoggedIn = computed(() => userStore.isLoggedIn())
