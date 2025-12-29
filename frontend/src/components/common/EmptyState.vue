@@ -12,7 +12,7 @@
 import { computed } from 'vue'
 import { Document } from '@element-plus/icons-vue'
 
-const props = withDefaults(defineProps({
+const props = defineProps({
   icon: {
     type: Object,
     default: () => Document
@@ -29,10 +29,6 @@ const props = withDefaults(defineProps({
     type: Number,
     default: 80
   }
-}), {
-  icon: Document,
-  text: '暂无数据',
-  size: 80
 })
 
 // 如果提供了description，优先使用description
