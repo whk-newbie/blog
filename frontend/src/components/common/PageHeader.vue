@@ -33,6 +33,11 @@ defineProps({
 <style scoped lang="less">
 .page-header {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .page-header-title {
@@ -40,6 +45,7 @@ defineProps({
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
+  flex: 1;
 
   h2 {
     margin: 0;
@@ -57,10 +63,14 @@ defineProps({
   margin: 0 0 16px;
   color: var(--text-secondary);
   font-size: 14px;
+  width: 100%;
 }
 
 .page-header-extra {
-  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 0;
 }
 </style>
 

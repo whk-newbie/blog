@@ -1,19 +1,23 @@
 <template>
   <div class="admin-tags-page">
     <page-header title="标签管理">
-      <el-button type="primary" @click="handleCreate">
-        <el-icon><Plus /></el-icon>
-        新建标签
-      </el-button>
+      <template #extra>
+        <el-button type="primary" @click="handleCreate">
+          <el-icon><Plus /></el-icon>
+          新建标签
+        </el-button>
+      </template>
     </page-header>
 
     <!-- 标签表格 -->
-    <el-table
-      v-loading="loading"
-      :data="tags"
-      style="width: 100%"
-      border
-    >
+    <el-card class="table-card" shadow="never">
+      <el-table
+        v-loading="loading"
+        :data="tags"
+        style="width: 100%"
+        :stripe="true"
+        :header-cell-style="{ background: 'var(--bg-secondary)', color: 'var(--text-color)' }"
+      >
       <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="name" label="标签名称" width="200" />
       <el-table-column prop="slug" label="Slug" width="200" />
@@ -38,7 +42,8 @@
           </el-popconfirm>
         </template>
       </el-table-column>
-    </el-table>
+      </el-table>
+    </el-card>
 
     <!-- 分页 -->
     <el-pagination
@@ -216,37 +221,19 @@ onMounted(() => {
   padding: 0;
 }
 
-:deep(.el-card) {
+.table-card {
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
+  overflow: hidden;
   transition: all 0.3s;
 
   &:hover {
     box-shadow: var(--shadow-md);
-    border-color: var(--border-blue);
   }
 
-  .el-card__header {
-    background: var(--bg-blue-light);
-    border-bottom: 1px solid var(--border-blue);
-    padding: 20px 24px;
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      span {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--text-color);
-      }
-    }
-  }
-
-  .el-card__body {
-    padding: 24px;
+  :deep(.el-card__body) {
+    padding: 0;
   }
 }
 
@@ -254,55 +241,128 @@ onMounted(() => {
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.3s;
+  padding: 10px 20px;
+  height: auto;
 
   &.el-button--primary {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 
     &:hover {
-      background: var(--primary-light);
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
       transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 }
 
 :deep(.el-table) {
-  .el-table__header th {
-    background: var(--bg-blue-light);
-    color: var(--text-color);
-    font-weight: 600;
-    border-bottom: 2px solid var(--border-blue);
-  }
+  border-radius: 0;
 
-  .el-table__row {
-    transition: background 0.3s;
+  .el-table__header-wrapper {
+    .el-table__header {
+      th {
+        background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 12px;
+        padding: 16px 12px;
+        border-bottom: 2px solid var(--border-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
 
-    &:hover {
-      background: var(--bg-blue-light) !important;
+        &:first-child {
+          padding-left: 24px;
+        }
+
+        &:last-child {
+          padding-right: 24px;
+        }
+      }
     }
   }
 
-  .el-table__cell {
-    padding: 16px 0;
+  .el-table__body-wrapper {
+    .el-table__body {
+      tr {
+        transition: all 0.2s;
+
+        &:hover {
+          background: var(--bg-blue-light) !important;
+          transform: scale(1.001);
+          box-shadow: 0 2px 8px rgba(37, 99, 235, 0.05);
+        }
+
+        td {
+          padding: 16px 12px;
+          border-bottom: 1px solid var(--border-light);
+          vertical-align: middle;
+
+          &:first-child {
+            padding-left: 24px;
+          }
+
+          &:last-child {
+            padding-right: 24px;
+          }
+        }
+      }
+
+      .el-table__row {
+        &:last-child td {
+          border-bottom: none;
+        }
+      }
+    }
   }
 
-  .el-button--text {
-    color: var(--primary-color);
+  .el-button {
+    border-radius: 6px;
     font-weight: 500;
+    padding: 6px 14px;
+    margin-right: 8px;
+    transition: all 0.2s;
+
+    &:last-child {
+      margin-right: 0;
+    }
 
     &:hover {
-      background: var(--bg-blue-light);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    &--small {
+      padding: 5px 12px;
+      font-size: 12px;
+    }
+
+    &--danger {
+      background: var(--danger-color);
+      border-color: var(--danger-color);
+      color: white;
+
+      &:hover {
+        background: #dc2626;
+        border-color: #dc2626;
+      }
     }
   }
 }
 
 :deep(.el-dialog) {
   border-radius: 12px;
+  box-shadow: var(--shadow-lg);
 
   .el-dialog__header {
     padding: 20px 24px;
     border-bottom: 1px solid var(--border-light);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-color) 100%);
   }
 
   .el-dialog__body {
@@ -316,6 +376,15 @@ onMounted(() => {
 
   .el-input__wrapper {
     border-radius: 8px;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--primary-light) inset;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 2px var(--primary-color) inset;
+    }
   }
 }
 
@@ -323,19 +392,46 @@ onMounted(() => {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
 
-  :deep(.el-pager li) {
-    border-radius: 6px;
-    font-weight: 500;
+  :deep(.el-pager) {
+    li {
+      border-radius: 6px;
+      font-weight: 500;
+      margin: 0 4px;
+      transition: all 0.2s;
 
-    &.is-active {
-      background: var(--primary-color);
+      &:hover {
+        background: var(--primary-light);
+        color: white;
+      }
+
+      &.is-active {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      }
     }
   }
 
   :deep(.btn-prev),
   :deep(.btn-next) {
     border-radius: 6px;
+    margin: 0 4px;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--primary-light);
+      color: white;
+    }
+  }
+
+  :deep(.el-pagination__total),
+  :deep(.el-pagination__jump) {
+    color: var(--text-secondary);
+    font-weight: 500;
   }
 }
 </style>

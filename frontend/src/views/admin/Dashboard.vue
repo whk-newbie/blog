@@ -164,13 +164,13 @@ const loadStats = async () => {
   loading.value = true
   try {
     const res = await statsApi.getDashboardStats()
-    if (res.data) {
+    if (res) {
       stats.value = {
-        article_count: res.data.article_count || 0,
-        category_count: res.data.category_count || 0,
-        tag_count: res.data.tag_count || 0
+        article_count: res.article_count || 0,
+        category_count: res.category_count || 0,
+        tag_count: res.tag_count || 0
       }
-      recentArticles.value = res.data.recent_articles || []
+      recentArticles.value = res.recent_articles || []
     }
   } catch (error) {
     console.error('加载统计数据失败:', error)

@@ -28,7 +28,8 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        // 在Docker环境中使用服务名backend-dev，本地开发可通过环境变量覆盖为127.0.0.1
+        target: process.env.VITE_API_PROXY_TARGET || 'http://backend-dev:8080',
         changeOrigin: true,
         rewrite: (path) => path,
       },

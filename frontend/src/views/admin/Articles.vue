@@ -50,12 +50,14 @@
     </div>
 
     <!-- 文章表格 -->
-    <el-table
-      v-loading="loading"
-      :data="articles"
-      style="width: 100%"
-      border
-    >
+    <el-card class="table-card" shadow="never">
+      <el-table
+        v-loading="loading"
+        :data="articles"
+        style="width: 100%"
+        :stripe="true"
+        :header-cell-style="{ background: 'var(--bg-secondary)', color: 'var(--text-color)' }"
+      >
       <el-table-column prop="id" label="ID" width="80" />
       
       <el-table-column label="封面" width="100">
@@ -150,7 +152,8 @@
           </el-popconfirm>
         </template>
       </el-table-column>
-    </el-table>
+      </el-table>
+    </el-card>
 
     <!-- 分页 -->
     <el-pagination
@@ -341,27 +344,38 @@ onMounted(() => {
 .filter-bar {
   display: flex;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
-  padding: 20px;
+  padding: 20px 24px;
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
 
   :deep(.el-input),
   :deep(.el-select) {
+    flex: 0 0 auto;
+    min-width: 200px;
+
     .el-input__wrapper {
       border-radius: 8px;
       box-shadow: 0 0 0 1px var(--border-color) inset;
       transition: all 0.3s;
+      background: var(--bg-color);
 
       &:hover {
         box-shadow: 0 0 0 1px var(--primary-light) inset;
+        border-color: var(--primary-light);
       }
 
       &.is-focus {
-        box-shadow: 0 0 0 1px var(--primary-color) inset, var(--shadow-sm);
+        box-shadow: 0 0 0 2px var(--primary-color) inset;
+        border-color: var(--primary-color);
       }
     }
   }
@@ -370,88 +384,168 @@ onMounted(() => {
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.3s;
+    padding: 10px 20px;
+    height: auto;
 
     &.el-button--primary {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+      border: none;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 
       &:hover {
-        background: var(--primary-light);
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         transform: translateY(-2px);
       }
+
+      &:active {
+        transform: translateY(0);
+      }
     }
+  }
+}
+
+.table-card {
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  :deep(.el-card__body) {
+    padding: 0;
   }
 }
 
 .no-cover {
   color: var(--text-disabled);
   font-size: 0.875rem;
-}
-
-:deep(.el-card) {
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
-  transition: all 0.3s;
-
-  &:hover {
-    box-shadow: var(--shadow-md);
-    border-color: var(--border-blue);
-  }
-
-  .el-card__body {
-    padding: 24px;
-  }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
 }
 
 :deep(.el-table) {
-  .el-table__header th {
-    background: var(--bg-blue-light);
-    color: var(--text-color);
-    font-weight: 600;
-    border-bottom: 2px solid var(--border-blue);
-  }
+  border-radius: 0;
 
-  .el-table__row {
-    transition: background 0.3s;
+  .el-table__header-wrapper {
+    .el-table__header {
+      th {
+        background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 14px;
+        padding: 16px 12px;
+        border-bottom: 2px solid var(--border-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 12px;
 
-    &:hover {
-      background: var(--bg-blue-light) !important;
+        &:first-child {
+          padding-left: 24px;
+        }
+
+        &:last-child {
+          padding-right: 24px;
+        }
+      }
     }
   }
 
-  .el-table__cell {
-    padding: 16px 0;
+  .el-table__body-wrapper {
+    .el-table__body {
+      tr {
+        transition: all 0.2s;
+
+        &:hover {
+          background: var(--bg-blue-light) !important;
+          transform: scale(1.001);
+          box-shadow: 0 2px 8px rgba(37, 99, 235, 0.05);
+        }
+
+        td {
+          padding: 16px 12px;
+          border-bottom: 1px solid var(--border-light);
+          vertical-align: middle;
+
+          &:first-child {
+            padding-left: 24px;
+          }
+
+          &:last-child {
+            padding-right: 24px;
+          }
+        }
+      }
+
+      .el-table__row {
+        &:last-child td {
+          border-bottom: none;
+        }
+      }
+    }
   }
 
   .el-button {
     border-radius: 6px;
     font-weight: 500;
+    padding: 6px 14px;
+    margin-right: 8px;
+    transition: all 0.2s;
 
-    &--text {
-      color: var(--primary-color);
+    &:last-child {
+      margin-right: 0;
+    }
 
-      &:hover {
-        background: var(--bg-blue-light);
-      }
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    &--small {
+      padding: 5px 12px;
+      font-size: 12px;
     }
 
     &--success {
-      &.is-text {
-        color: var(--success-color);
+      background: var(--success-color);
+      border-color: var(--success-color);
+      color: white;
+
+      &:hover {
+        background: #059669;
+        border-color: #059669;
       }
     }
 
     &--warning {
-      &.is-text {
-        color: var(--warning-color);
+      background: var(--warning-color);
+      border-color: var(--warning-color);
+      color: white;
+
+      &:hover {
+        background: #d97706;
+        border-color: #d97706;
       }
     }
 
     &--danger {
-      &.is-text {
-        color: var(--danger-color);
+      background: var(--danger-color);
+      border-color: var(--danger-color);
+      color: white;
+
+      &:hover {
+        background: #dc2626;
+        border-color: #dc2626;
       }
     }
   }
@@ -461,23 +555,45 @@ onMounted(() => {
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--border-light);
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  }
 }
 
 :deep(.el-tag) {
   border-radius: 6px;
   font-weight: 500;
   padding: 4px 12px;
+  border: none;
+  margin-right: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 
   &.el-tag--success {
-    background: rgba(16, 185, 129, 0.1);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
     color: var(--success-color);
-    border-color: rgba(16, 185, 129, 0.2);
   }
 
   &.el-tag--info {
-    background: rgba(37, 99, 235, 0.1);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(37, 99, 235, 0.1) 100%);
     color: var(--primary-color);
-    border-color: rgba(37, 99, 235, 0.2);
+  }
+
+  &.el-tag--danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+    color: var(--danger-color);
+  }
+
+  &.el-tag--warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+    color: var(--warning-color);
   }
 }
 
@@ -485,19 +601,46 @@ onMounted(() => {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
 
-  :deep(.el-pager li) {
-    border-radius: 6px;
-    font-weight: 500;
+  :deep(.el-pager) {
+    li {
+      border-radius: 6px;
+      font-weight: 500;
+      margin: 0 4px;
+      transition: all 0.2s;
 
-    &.is-active {
-      background: var(--primary-color);
+      &:hover {
+        background: var(--primary-light);
+        color: white;
+      }
+
+      &.is-active {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      }
     }
   }
 
   :deep(.btn-prev),
   :deep(.btn-next) {
     border-radius: 6px;
+    margin: 0 4px;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--primary-light);
+      color: white;
+    }
+  }
+
+  :deep(.el-pagination__total),
+  :deep(.el-pagination__jump) {
+    color: var(--text-secondary);
+    font-weight: 500;
   }
 }
 </style>
