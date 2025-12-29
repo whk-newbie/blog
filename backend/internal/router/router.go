@@ -58,6 +58,7 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	articleRepo := repository.NewArticleRepository(gormDB)
 	fingerprintRepo := repository.NewFingerprintRepository(gormDB)
 	visitRepo := repository.NewVisitRepository(gormDB)
+	crawlTaskRepo := repository.NewCrawlTaskRepository(gormDB)
 
 	// 初始化Service
 	authService := service.NewAuthService(adminRepo, jwtManager, cfg.JWT.ExpireTime)
@@ -71,6 +72,13 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	fingerprintService := service.NewFingerprintService(fingerprintRepo)
 	statsService := service.NewStatsService(articleRepo, categoryRepo, tagRepo, visitService)
 
+	// 初始化WebSocket Hub
+	wsHub := websocket.NewHub()
+	go wsHub.Run()
+
+	// 初始化爬虫任务服务（需要Hub）
+	crawlService := service.NewCrawlService(crawlTaskRepo, wsHub)
+
 	// 初始化Handler
 	authHandler := handler.NewAuthHandler(authService)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
@@ -80,6 +88,10 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	statsHandler := handler.NewStatsHandler(statsService)
 	fingerprintHandler := handler.NewFingerprintHandler(fingerprintService)
 	visitHandler := handler.NewVisitHandler(visitService)
+	crawlerHandler := handler.NewCrawlerHandler(crawlService)
+
+	// 初始化WebSocket Handler
+	wsHandler := handler.NewWebSocketHandler(wsHub, jwtManager)
 
 	// API路由组
 	api := r.Group("/api/v1")
@@ -119,6 +131,16 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 		api.POST("/fingerprint", fingerprintHandler.CollectFingerprint)
 		api.POST("/visit", visitHandler.RecordVisit)
 
+		// 爬虫任务接口（需要Bearer Token认证）
+		crawler := api.Group("/crawler")
+		crawler.Use(middleware.CrawlerAuth())
+		{
+			crawler.POST("/tasks", crawlerHandler.RegisterTask)
+			crawler.PUT("/tasks/:id", crawlerHandler.UpdateTaskStatus)
+			crawler.PUT("/tasks/:id/complete", crawlerHandler.CompleteTask)
+			crawler.PUT("/tasks/:id/fail", crawlerHandler.FailTask)
+		}
+
 		// 管理接口（需要认证）
 		admin := api.Group("/admin")
 		admin.Use(middleware.Auth(jwtManager))
@@ -156,8 +178,15 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			admin.GET("/fingerprints/:id", fingerprintHandler.GetFingerprint)
 			admin.PUT("/fingerprints/:id", fingerprintHandler.UpdateFingerprint)
 			admin.DELETE("/fingerprints/:id", fingerprintHandler.DeleteFingerprint)
+
+			// 爬虫任务管理
+			admin.GET("/crawler/tasks", crawlerHandler.ListTasks)
+			admin.GET("/crawler/tasks/:task_id", crawlerHandler.GetTaskByID)
 		}
 	}
+
+	// WebSocket路由
+	r.GET("/ws/crawler/tasks", wsHandler.HandleCrawlerTasks)
 
 	// 静态文件服务 - 上传的文件
 	r.Static("/uploads", "./uploads")
