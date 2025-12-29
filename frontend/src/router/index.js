@@ -29,52 +29,55 @@ const routes = [
     component: () => import('@/views/admin/Login.vue'),
     meta: { title: '管理员登录' }
   },
-  // 管理后台 - 仪表盘
+  // 管理后台 - 使用布局
   {
     path: '/admin',
-    name: 'Admin',
-    component: () => import('@/views/admin/Dashboard.vue'),
-    meta: { title: '管理后台', requiresAuth: true }
-  },
-  // 管理后台 - 修改密码
-  {
-    path: '/admin/password',
-    name: 'ChangePassword',
-    component: () => import('@/views/admin/ChangePassword.vue'),
-    meta: { title: '修改密码', requiresAuth: true }
-  },
-  // 管理后台 - 文章管理
-  {
-    path: '/admin/articles',
-    name: 'AdminArticles',
-    component: () => import('@/views/admin/Articles.vue'),
-    meta: { title: '文章管理', requiresAuth: true }
-  },
-  {
-    path: '/admin/articles/create',
-    name: 'CreateArticle',
-    component: () => import('@/views/admin/ArticleEditor.vue'),
-    meta: { title: '新建文章', requiresAuth: true }
-  },
-  {
-    path: '/admin/articles/edit/:id',
-    name: 'EditArticle',
-    component: () => import('@/views/admin/ArticleEditor.vue'),
-    meta: { title: '编辑文章', requiresAuth: true }
-  },
-  // 管理后台 - 分类管理
-  {
-    path: '/admin/categories',
-    name: 'AdminCategories',
-    component: () => import('@/views/admin/Categories.vue'),
-    meta: { title: '分类管理', requiresAuth: true }
-  },
-  // 管理后台 - 标签管理
-  {
-    path: '/admin/tags',
-    name: 'AdminTags',
-    component: () => import('@/views/admin/Tags.vue'),
-    meta: { title: '标签管理', requiresAuth: true }
+    component: () => import('@/components/layout/AdminLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'Admin',
+        component: () => import('@/views/admin/Dashboard.vue'),
+        meta: { title: '仪表盘', requiresAuth: true }
+      },
+      {
+        path: 'password',
+        name: 'ChangePassword',
+        component: () => import('@/views/admin/ChangePassword.vue'),
+        meta: { title: '修改密码', requiresAuth: true }
+      },
+      {
+        path: 'articles',
+        name: 'AdminArticles',
+        component: () => import('@/views/admin/Articles.vue'),
+        meta: { title: '文章管理', requiresAuth: true }
+      },
+      {
+        path: 'articles/new',
+        name: 'CreateArticle',
+        component: () => import('@/views/admin/ArticleEditor.vue'),
+        meta: { title: '新建文章', requiresAuth: true }
+      },
+      {
+        path: 'articles/edit/:id',
+        name: 'EditArticle',
+        component: () => import('@/views/admin/ArticleEditor.vue'),
+        meta: { title: '编辑文章', requiresAuth: true }
+      },
+      {
+        path: 'categories',
+        name: 'AdminCategories',
+        component: () => import('@/views/admin/Categories.vue'),
+        meta: { title: '分类管理', requiresAuth: true }
+      },
+      {
+        path: 'tags',
+        name: 'AdminTags',
+        component: () => import('@/views/admin/Tags.vue'),
+        meta: { title: '标签管理', requiresAuth: true }
+      }
+    ]
   },
   {
     path: '/:pathMatch(.*)*',
