@@ -112,15 +112,12 @@
     <el-dialog
       v-model="detailDialogVisible"
       :title="t('stats.fingerprintInfo')"
-      width="800px"
+      width="1200px"
     >
       <div v-if="selectedFingerprint" class="fingerprint-detail">
-        <el-descriptions :column="1" border>
-          <el-descriptions-item :label="t('stats.fingerprintHash')">
+        <el-descriptions :column="2" border>
+          <el-descriptions-item :label="t('stats.fingerprintHash')" :span="2">
             <code>{{ selectedFingerprint.fingerprint_hash }}</code>
-          </el-descriptions-item>
-          <el-descriptions-item :label="t('stats.userAgent')">
-            {{ selectedFingerprint.user_agent || '-' }}
           </el-descriptions-item>
           <el-descriptions-item :label="t('stats.visitCount')">
             {{ selectedFingerprint.visit_count || 0 }}
@@ -131,7 +128,10 @@
           <el-descriptions-item :label="t('stats.lastSeen')">
             {{ formatDate(selectedFingerprint.last_seen_at) }}
           </el-descriptions-item>
-          <el-descriptions-item :label="t('stats.fingerprintInfo')">
+          <el-descriptions-item :label="t('stats.userAgent')" :span="2">
+            <div class="user-agent-text">{{ selectedFingerprint.user_agent || '-' }}</div>
+          </el-descriptions-item>
+          <el-descriptions-item :label="t('stats.fingerprintInfo')" :span="2">
             <pre class="fingerprint-data">{{ formatFingerprintData(selectedFingerprint.fingerprint_data) }}</pre>
           </el-descriptions-item>
         </el-descriptions>
@@ -306,6 +306,7 @@ onMounted(() => {
       overflow-y: auto;
       white-space: pre-wrap;
       word-break: break-all;
+      margin: 0;
     }
 
     code {
@@ -314,6 +315,12 @@ onMounted(() => {
       border-radius: 3px;
       font-family: 'Courier New', monospace;
       font-size: 12px;
+      word-break: break-all;
+    }
+
+    .user-agent-text {
+      word-break: break-all;
+      line-height: 1.6;
     }
   }
 }
