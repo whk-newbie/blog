@@ -240,9 +240,10 @@ const fetchArticle = async () => {
 const fetchCategories = async () => {
   try {
     const response = await api.category.list({ page: 1, page_size: 100 })
-    categories.value = response.list || []
+    categories.value = response.items || []
   } catch (error) {
     console.error('获取分类列表失败:', error)
+    ElMessage.error('获取分类列表失败')
   }
 }
 
@@ -250,9 +251,10 @@ const fetchCategories = async () => {
 const fetchTags = async () => {
   try {
     const response = await api.tag.list({ page: 1, page_size: 100 })
-    tags.value = response.list || []
+    tags.value = response.items || []
   } catch (error) {
     console.error('获取标签列表失败:', error)
+    ElMessage.error('获取标签列表失败')
   }
 }
 
