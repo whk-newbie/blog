@@ -497,27 +497,31 @@ onUnmounted(() => {
   .overview-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 16px;
     
     .overview-card {
       :deep(.el-card__body) {
-        padding: 16px;
+        padding: 12px 16px;
       }
       
       .overview-content {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
         
         .overview-icon {
-          width: 50px;
-          height: 50px;
+          width: 40px;
+          height: 40px;
           border-radius: 6px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          
+          :deep(.el-icon) {
+            font-size: 20px;
+          }
           
           &.pv-icon {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -540,16 +544,17 @@ onUnmounted(() => {
           min-width: 0;
           
           .overview-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #909399;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
           }
           
           .overview-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             color: #303133;
             word-break: break-all;
+            line-height: 1.2;
           }
         }
       }
