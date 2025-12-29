@@ -72,7 +72,7 @@
         </el-table-column>
         <el-table-column prop="message" :label="t('log.message')" min-width="300" show-overflow-tooltip />
         <el-table-column prop="source" :label="t('log.source')" width="150" show-overflow-tooltip />
-        <el-table-column prop="ip_address" label="IP地址" width="150" show-overflow-tooltip />
+        <el-table-column prop="ip_address" :label="t('log.ipAddress')" width="150" show-overflow-tooltip />
         <el-table-column :label="t('log.createTime')" width="180">
           <template #default="{ row }">
             {{ formatDate(row.created_at) }}

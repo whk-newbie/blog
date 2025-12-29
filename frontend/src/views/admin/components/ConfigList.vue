@@ -8,8 +8,8 @@
       :header-cell-style="{ background: 'var(--bg-secondary)', color: 'var(--text-color)' }"
     >
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="config_key" label="配置键" min-width="200" show-overflow-tooltip />
-      <el-table-column label="配置值" min-width="250">
+      <el-table-column prop="config_key" :label="t('config.configKey')" min-width="200" show-overflow-tooltip />
+      <el-table-column :label="t('config.configValue')" min-width="250">
         <template #default="{ row }">
           <span v-if="row.is_encrypted" class="masked-value">
             {{ maskValue(row.config_value) }}
@@ -17,8 +17,8 @@
           <span v-else>{{ row.config_value || '-' }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
-      <el-table-column label="状态" width="100" align="center">
+      <el-table-column prop="description" :label="t('config.description')" min-width="200" show-overflow-tooltip />
+      <el-table-column :label="t('config.status')" width="100" align="center">
         <template #default="{ row }">
           <el-switch
             v-model="row.is_active"
@@ -26,27 +26,27 @@
           />
         </template>
       </el-table-column>
-      <el-table-column label="加密" width="80" align="center">
+      <el-table-column :label="t('config.encrypted')" width="80" align="center">
         <template #default="{ row }">
           <el-tag :type="row.is_encrypted ? 'success' : 'info'" size="small">
-            {{ row.is_encrypted ? '是' : '否' }}
+            {{ row.is_encrypted ? t('common.yes') : t('common.no') }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="180">
+      <el-table-column :label="t('config.createTime')" width="180">
         <template #default="{ row }">
           {{ formatDate(row.created_at) }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180" fixed="right">
+      <el-table-column :label="t('common.operation')" width="180" fixed="right">
         <template #default="{ row }">
-          <el-button size="small" @click="$emit('edit', row)">编辑</el-button>
+          <el-button size="small" @click="$emit('edit', row)">{{ t('common.edit') }}</el-button>
           <el-popconfirm
-            title="确定要删除这个配置吗？"
+            :title="t('config.deleteConfirm')"
             @confirm="$emit('delete', row.id)"
           >
             <template #reference>
-              <el-button size="small" type="danger">删除</el-button>
+              <el-button size="small" type="danger">{{ t('common.delete') }}</el-button>
             </template>
           </el-popconfirm>
         </template>
@@ -54,13 +54,15 @@
     </el-table>
 
     <div v-if="!loading && configs.length === 0" class="empty-state">
-      <el-empty description="暂无配置" />
+      <el-empty :description="t('config.noData')" />
     </div>
   </el-card>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   configs: {
