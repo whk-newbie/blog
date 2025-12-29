@@ -33,6 +33,16 @@ http.interceptors.request.use(
 // 响应拦截器
 http.interceptors.response.use(
   (response) => {
+    // 204 No Content - 删除成功，没有响应体
+    if (response.status === 204) {
+      return null
+    }
+    
+    // 201 Created 或其他成功状态码，检查响应体
+    if (!response.data) {
+      return null
+    }
+    
     const { code, message, data } = response.data
     
     // 业务成功

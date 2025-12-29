@@ -91,12 +91,9 @@ func Created(c *gin.Context, message string, data interface{}) {
 	})
 }
 
-// NoContent 204删除成功响应
+// NoContent 204删除成功响应（无响应体，符合HTTP规范）
 func NoContent(c *gin.Context, message string) {
-	c.JSON(http.StatusNoContent, Response{
-		Code:    0,
-		Message: message,
-	})
+	c.Status(http.StatusNoContent)
 }
 
 // PageSuccess 分页成功响应
