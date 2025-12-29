@@ -4,6 +4,8 @@ import tag from './tag'
 import article from './article'
 import upload from './upload'
 import stats from './stats'
+import fingerprint from './fingerprint'
+import visit from './visit'
 
 export default {
   auth,
@@ -11,6 +13,8 @@ export default {
   tag,
   article,
   upload,
-  stats
+  stats,
+  fingerprint,
+  visit
 }
 
