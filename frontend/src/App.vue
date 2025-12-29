@@ -2,6 +2,7 @@
   <el-config-provider :locale="elementLocale">
     <div id="app">
       <router-view />
+      <FloatingActions />
     </div>
   </el-config-provider>
 </template>
@@ -10,6 +11,7 @@
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { elementPlusLocales } from './locales'
+import FloatingActions from './components/common/FloatingActions.vue'
 
 const { locale } = useI18n()
 

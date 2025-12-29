@@ -34,7 +34,10 @@
     "forbidden": "Access Forbidden",
     "notFound": "Resource Not Found",
     "serverError": "Server Error",
-    "networkError": "Network error, please check your connection"
+    "networkError": "Network error, please check your connection",
+    "backToTop": "Back to Top",
+    "switchToLight": "Switch to Light Mode",
+    "switchToDark": "Switch to Dark Mode"
   },
   "app": {
     "title": "My Blog",
@@ -126,7 +129,8 @@
     "enUS": "EN",
     "enUSFull": "English (英语)",
     "switchedToZhCN": "已切换到简体中文",
-    "switchedToEnUS": "Switched to English"
+    "switchedToEnUS": "Switched to English",
+    "switchLanguage": "Switch Language"
   },
   "article": {
     "title": "Title",

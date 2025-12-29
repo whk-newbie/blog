@@ -15,8 +15,6 @@
         </router-link>
       </nav>
       <div class="header-actions">
-        <ThemeSwitch />
-        <LanguageSwitch />
         <el-button
           v-if="!isLoggedIn"
           type="primary"
@@ -37,8 +35,6 @@ import { useRouter } from 'vue-router'
 import { Setting } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/store/user'
-import ThemeSwitch from '../common/ThemeSwitch.vue'
-import LanguageSwitch from '../common/LanguageSwitch.vue'
 import LoginDialog from '../common/LoginDialog.vue'
 
 const { t } = useI18n()
