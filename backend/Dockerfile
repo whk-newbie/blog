@@ -27,7 +27,7 @@ RUN go install github.com/swaggo/swag/cmd/swag@latest
 COPY . .
 
 # 生成Swagger文档
-RUN swag init -g cmd/server/main.go -o docs --parseDependency --parseInternal
+RUN swag init -g cmd/server/main.go -o docs --parseDependency --parseInternal --outputFileName doc.json
 
 # 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o blog-server ./cmd/server

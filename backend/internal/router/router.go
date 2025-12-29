@@ -39,8 +39,12 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 		})
 	})
 
-	// Swagger文档
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("swagger.json")))
+	// Swagger文档 - 使用相对路径指向swagger.json
+	url := ginSwagger.URL("/docs/swagger.json")
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+
+	// 直接提供docs目录的静态文件服务
+	r.Static("/docs", "./docs")
 
 	// 初始化依赖
 	gormDB, _ := db.GetSQLDB()
