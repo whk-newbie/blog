@@ -2,7 +2,10 @@
   <div class="not-found">
     <h1>404</h1>
     <p>{{ t('app.notFound') }}</p>
-    <el-button type="primary" @click="goHome">{{ t('app.backToHome') }}</el-button>
+    <div class="button-group">
+      <el-button @click="goBack">{{ t('common.back') }}</el-button>
+      <el-button type="primary" @click="goHome">{{ t('app.backToHome') }}</el-button>
+    </div>
   </div>
 </template>
 
@@ -12,6 +15,10 @@ import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const { t } = useI18n()
+
+const goBack = () => {
+  router.back()
+}
 
 const goHome = () => {
   router.push('/')
@@ -36,6 +43,11 @@ const goHome = () => {
     font-size: 1.5rem;
     margin-bottom: 2rem;
     color: #666;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 1rem;
   }
 }
 </style>
