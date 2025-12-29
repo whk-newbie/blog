@@ -483,31 +483,40 @@ onUnmounted(() => {
 
 <style lang="less" scoped>
 .visit-stats {
-  padding: 20px;
+  padding: 16px;
   
   .filter-card {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    
+    :deep(.el-card__body) {
+      padding: 16px;
+    }
   }
   
   .overview-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 16px;
     
     .overview-card {
+      :deep(.el-card__body) {
+        padding: 16px;
+      }
+      
       .overview-content {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
         
         .overview-icon {
-          width: 60px;
-          height: 60px;
-          border-radius: 8px;
+          width: 50px;
+          height: 50px;
+          border-radius: 6px;
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
           
           &.pv-icon {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -527,17 +536,19 @@ onUnmounted(() => {
         
         .overview-info {
           flex: 1;
+          min-width: 0;
           
           .overview-label {
-            font-size: 14px;
+            font-size: 13px;
             color: #909399;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
           }
           
           .overview-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #303133;
+            word-break: break-all;
           }
         }
       }
@@ -545,27 +556,36 @@ onUnmounted(() => {
   }
   
   .chart-card {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    
+    :deep(.el-card__body) {
+      padding: 16px;
+    }
     
     .chart-container {
       width: 100%;
-      height: 400px;
+      height: 320px;
     }
   }
   
   .bottom-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 16px;
     
     .referrer-card {
+      :deep(.el-card__body) {
+        padding: 16px;
+      }
+      
       .referrer-content {
         display: flex;
-        gap: 20px;
+        gap: 16px;
         
         .referrer-chart {
-          width: 300px;
-          height: 300px;
+          width: 240px;
+          height: 240px;
+          flex-shrink: 0;
         }
         
         .referrer-stats {
@@ -573,23 +593,25 @@ onUnmounted(() => {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          gap: 20px;
+          gap: 12px;
+          min-width: 0;
           
           .referrer-stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
+            padding: 10px;
             background: #f5f7fa;
             border-radius: 4px;
             
             .stat-label {
-              font-size: 14px;
+              font-size: 13px;
               color: #606266;
+              flex-shrink: 0;
             }
             
             .stat-value {
-              font-size: 20px;
+              font-size: 18px;
               font-weight: bold;
               color: #303133;
             }
@@ -599,10 +621,22 @@ onUnmounted(() => {
     }
     
     .popular-articles-card {
+      :deep(.el-card__body) {
+        padding: 16px;
+      }
+      
       .card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+      }
+      
+      :deep(.el-table) {
+        font-size: 13px;
+        
+        .el-table__cell {
+          padding: 8px 0;
+        }
       }
     }
   }
@@ -616,7 +650,7 @@ onUnmounted(() => {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 500;
     }
   }
@@ -626,23 +660,46 @@ onUnmounted(() => {
   .visit-stats {
     .bottom-section {
       grid-template-columns: 1fr;
+      
+      .referrer-card {
+        .referrer-content {
+          .referrer-chart {
+            width: 200px;
+            height: 200px;
+          }
+        }
+      }
     }
   }
 }
 
 @media (max-width: 768px) {
   .visit-stats {
+    padding: 12px;
+    
     .overview-cards {
       grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    
+    .chart-card {
+      .chart-container {
+        height: 280px;
+      }
     }
     
     .bottom-section {
+      gap: 12px;
+      
       .referrer-card {
         .referrer-content {
           flex-direction: column;
           
           .referrer-chart {
             width: 100%;
+            max-width: 300px;
+            height: 200px;
+            margin: 0 auto;
           }
         }
       }
