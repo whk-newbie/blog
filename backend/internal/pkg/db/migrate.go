@@ -20,8 +20,6 @@ type Migration struct {
 
 // RunMigrations 运行数据库迁移
 func RunMigrations(db *sql.DB, migrationsPath string) error {
-	log := logger.GetLogger()
-
 	// 创建迁移记录表
 	if err := createMigrationsTable(db); err != nil {
 		return fmt.Errorf("创建迁移表失败: %w", err)
@@ -42,11 +40,11 @@ func RunMigrations(db *sql.DB, migrationsPath string) error {
 	// 执行未执行的迁移
 	for _, migration := range migrations {
 		if _, executed := executedMigrations[migration.Version]; executed {
-			log.Info(fmt.Sprintf("迁移 %s 已执行，跳过", migration.Version))
+			logger.Info("迁移 %s 已执行，跳过", migration.Version)
 			continue
 		}
 
-		log.Info(fmt.Sprintf("执行迁移 %s: %s", migration.Version, migration.Name))
+		logger.Info("执行迁移 %s: %s", migration.Version, migration.Name)
 
 		// 开启事务
 		tx, err := db.Begin()
@@ -74,10 +72,10 @@ func RunMigrations(db *sql.DB, migrationsPath string) error {
 			return fmt.Errorf("提交迁移 %s 失败: %w", migration.Version, err)
 		}
 
-		log.Info(fmt.Sprintf("迁移 %s 执行成功", migration.Version))
+		logger.Info("迁移 %s 执行成功", migration.Version)
 	}
 
-	log.Info("所有迁移执行完成")
+	logger.Info("所有迁移执行完成")
 	return nil
 }
 

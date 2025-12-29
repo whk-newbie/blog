@@ -45,10 +45,29 @@ func main() {
 	}
 
 	// 初始化日志
-	logger.Init(cfg.Log)
+	logger.Init(logger.LogConfig{
+		Level:      cfg.Log.Level,
+		Format:     cfg.Log.Format,
+		Output:     cfg.Log.Output,
+		FilePath:   cfg.Log.FilePath,
+		MaxSize:    cfg.Log.MaxSize,
+		MaxBackups: cfg.Log.MaxBackups,
+		MaxAge:     cfg.Log.MaxAge,
+		Compress:   cfg.Log.Compress,
+	})
 
 	// 初始化数据库
-	if err := db.Init(cfg.Database); err != nil {
+	if err := db.Init(db.DatabaseConfig{
+		Host:            cfg.Database.Host,
+		Port:            cfg.Database.Port,
+		User:            cfg.Database.User,
+		Password:        cfg.Database.Password,
+		DBName:          cfg.Database.DBName,
+		SSLMode:         cfg.Database.SSLMode,
+		MaxOpenConns:    cfg.Database.MaxOpenConns,
+		MaxIdleConns:    cfg.Database.MaxIdleConns,
+		ConnMaxLifetime: cfg.Database.ConnMaxLifetime,
+	}); err != nil {
 		logger.Fatal("Failed to initialize database: %v", err)
 	}
 	defer db.Close()
@@ -72,7 +91,18 @@ func main() {
 	}
 
 	// 初始化Redis
-	if err := redis.Init(cfg.Redis); err != nil {
+	if err := redis.Init(redis.RedisConfig{
+		Host:         cfg.Redis.Host,
+		Port:         cfg.Redis.Port,
+		Password:     cfg.Redis.Password,
+		DB:           cfg.Redis.DB,
+		PoolSize:     cfg.Redis.PoolSize,
+		MinIdleConns: cfg.Redis.MinIdleConns,
+		MaxRetries:   cfg.Redis.MaxRetries,
+		DialTimeout:  cfg.Redis.DialTimeout,
+		ReadTimeout:  cfg.Redis.ReadTimeout,
+		WriteTimeout: cfg.Redis.WriteTimeout,
+	}); err != nil {
 		logger.Fatal("Failed to initialize redis: %v", err)
 	}
 	defer redis.Close()

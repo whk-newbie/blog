@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/iambaby/blog/internal/models"
 	"github.com/iambaby/blog/internal/pkg/jwt"
 	"github.com/iambaby/blog/internal/repository"
 	"golang.org/x/crypto/bcrypt"
