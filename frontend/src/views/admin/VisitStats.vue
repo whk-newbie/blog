@@ -42,7 +42,7 @@
       <el-card class="overview-card" shadow="hover">
         <div class="overview-content">
           <div class="overview-icon pv-icon">
-            <el-icon :size="32"><View /></el-icon>
+            <el-icon><View /></el-icon>
           </div>
           <div class="overview-info">
             <div class="overview-label">{{ t('stats.totalPV') }}</div>
@@ -54,7 +54,7 @@
       <el-card class="overview-card" shadow="hover">
         <div class="overview-content">
           <div class="overview-icon uv-icon">
-            <el-icon :size="32"><User /></el-icon>
+            <el-icon><User /></el-icon>
           </div>
           <div class="overview-info">
             <div class="overview-label">{{ t('stats.totalUV') }}</div>
@@ -66,7 +66,7 @@
       <el-card class="overview-card" shadow="hover">
         <div class="overview-content">
           <div class="overview-icon duration-icon">
-            <el-icon :size="32"><Clock /></el-icon>
+            <el-icon><Clock /></el-icon>
           </div>
           <div class="overview-info">
             <div class="overview-label">{{ t('stats.avgStayDuration') }}</div>
