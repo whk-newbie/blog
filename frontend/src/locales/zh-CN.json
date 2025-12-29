@@ -39,7 +39,8 @@
     "networkError": "网络错误，请检查网络连接",
     "backToTop": "回到顶部",
     "switchToLight": "切换到浅色模式",
-    "switchToDark": "切换到深色模式"
+    "switchToDark": "切换到深色模式",
+    "refresh": "刷新"
   },
   "app": {
     "title": "我的博客",
@@ -251,6 +252,7 @@
     "lastSeen": "最后访问"
   },
   "crawler": {
+    "title": "爬虫任务监控",
     "taskId": "任务ID",
     "taskName": "任务名称",
     "status": "状态",
@@ -258,9 +260,25 @@
     "startTime": "开始时间",
     "endTime": "结束时间",
     "duration": "运行时长",
+    "message": "消息",
     "running": "运行中",
     "completed": "已完成",
-    "failed": "失败"
+    "failed": "失败",
+    "statusRunning": "运行中",
+    "statusCompleted": "已完成",
+    "statusFailed": "失败",
+    "taskList": "任务列表",
+    "taskDetail": "任务详情",
+    "taskIdPlaceholder": "请输入任务ID",
+    "wsDisconnected": "WebSocket未连接，实时更新可能不可用",
+    "loadTasksError": "加载任务列表失败",
+    "loadTaskDetailError": "加载任务详情失败",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "metadata": "元数据",
+    "hour": "小时",
+    "minute": "分钟",
+    "second": "秒"
   },
   "system": {
     "emailConfig": "邮箱配置",

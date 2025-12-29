@@ -39,7 +39,8 @@
     "networkError": "Network error, please check your connection",
     "backToTop": "Back to Top",
     "switchToLight": "Switch to Light Mode",
-    "switchToDark": "Switch to Dark Mode"
+    "switchToDark": "Switch to Dark Mode",
+    "refresh": "Refresh"
   },
   "app": {
     "title": "My Blog",
@@ -284,6 +285,7 @@
     "lastSeen": "Last Seen"
   },
   "crawler": {
+    "title": "Crawler Task Monitor",
     "taskId": "Task ID",
     "taskName": "Task Name",
     "status": "Status",
@@ -291,9 +293,25 @@
     "startTime": "Start Time",
     "endTime": "End Time",
     "duration": "Duration",
+    "message": "Message",
     "running": "Running",
     "completed": "Completed",
-    "failed": "Failed"
+    "failed": "Failed",
+    "statusRunning": "Running",
+    "statusCompleted": "Completed",
+    "statusFailed": "Failed",
+    "taskList": "Task List",
+    "taskDetail": "Task Detail",
+    "taskIdPlaceholder": "Please enter task ID",
+    "wsDisconnected": "WebSocket disconnected, real-time updates may not be available",
+    "loadTasksError": "Failed to load task list",
+    "loadTaskDetailError": "Failed to load task detail",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "metadata": "Metadata",
+    "hour": "h",
+    "minute": "m",
+    "second": "s"
   },
   "system": {
     "emailConfig": "Email Config",
