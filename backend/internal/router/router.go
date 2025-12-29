@@ -59,6 +59,8 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	fingerprintRepo := repository.NewFingerprintRepository(gormDB)
 	visitRepo := repository.NewVisitRepository(gormDB)
 	crawlTaskRepo := repository.NewCrawlTaskRepository(gormDB)
+	configRepo := repository.NewConfigRepository(gormDB)
+	logRepo := repository.NewLogRepository(gormDB)
 
 	// 初始化Service
 	authService := service.NewAuthService(adminRepo, jwtManager, cfg.JWT.ExpireTime)
@@ -79,6 +81,13 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	// 初始化爬虫任务服务（需要Hub）
 	crawlService := service.NewCrawlService(crawlTaskRepo, wsHub)
 
+	// 初始化配置和日志服务
+	configService, err := service.NewConfigService(configRepo, cfg.Crypto.MasterKey)
+	if err != nil {
+		panic("Failed to initialize config service: " + err.Error())
+	}
+	logService := service.NewLogService(logRepo)
+
 	// 初始化Handler
 	authHandler := handler.NewAuthHandler(authService)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
@@ -89,6 +98,8 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	fingerprintHandler := handler.NewFingerprintHandler(fingerprintService)
 	visitHandler := handler.NewVisitHandler(visitService)
 	crawlerHandler := handler.NewCrawlerHandler(crawlService)
+	configHandler := handler.NewConfigHandler(configService)
+	logHandler := handler.NewLogHandler(logService)
 
 	// 初始化WebSocket Handler
 	wsHandler := handler.NewWebSocketHandler(wsHub, jwtManager)
@@ -182,6 +193,19 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			// 爬虫任务管理
 			admin.GET("/crawler/tasks", crawlerHandler.ListTasks)
 			admin.GET("/crawler/tasks/:task_id", crawlerHandler.GetTaskByID)
+
+			// 配置管理
+			admin.GET("/configs", configHandler.GetConfigs)
+			admin.GET("/configs/:id", configHandler.GetConfigByID)
+			admin.POST("/configs", configHandler.CreateConfig)
+			admin.PUT("/configs/:id", configHandler.UpdateConfig)
+			admin.DELETE("/configs/:id", configHandler.DeleteConfig)
+			admin.POST("/configs/generate-crawler-token", configHandler.GenerateCrawlerToken)
+
+			// 日志管理
+			admin.GET("/logs", logHandler.GetLogs)
+			admin.GET("/logs/:id", logHandler.GetLogByID)
+			admin.POST("/logs/cleanup", logHandler.CleanupLogs)
 		}
 	}
 
@@ -191,8 +215,8 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	// 静态文件服务 - 上传的文件
 	r.Static("/uploads", "./uploads")
 
-	// 创建调度器管理器
-	schedulerManager := scheduler.NewManager(articleService)
+	// 创建调度器管理器（日志保留90天）
+	schedulerManager := scheduler.NewManager(articleService, logService, 90)
 
 	return r, schedulerManager
 }
