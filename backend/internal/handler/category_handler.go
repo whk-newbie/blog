@@ -49,7 +49,7 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "创建成功", category)
+	response.Created(c, "创建成功", category)
 }
 
 // GetByID 获取分类详情
@@ -190,7 +190,7 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "删除成功", nil)
+	response.NoContent(c, "删除成功")
 }
 
 // List 获取分类列表

@@ -82,6 +82,23 @@ func InternalServerError(c *gin.Context, message string) {
 	Error(c, http.StatusInternalServerError, message)
 }
 
+// Created 201创建成功响应
+func Created(c *gin.Context, message string, data interface{}) {
+	c.JSON(http.StatusCreated, Response{
+		Code:    0,
+		Message: message,
+		Data:    data,
+	})
+}
+
+// NoContent 204删除成功响应
+func NoContent(c *gin.Context, message string) {
+	c.JSON(http.StatusNoContent, Response{
+		Code:    0,
+		Message: message,
+	})
+}
+
 // PageSuccess 分页成功响应
 func PageSuccess(c *gin.Context, list interface{}, total int64, page, pageSize int) {
 	totalPages := int(total) / pageSize
@@ -97,4 +114,3 @@ func PageSuccess(c *gin.Context, list interface{}, total int64, page, pageSize i
 		TotalPages: totalPages,
 	})
 }
-

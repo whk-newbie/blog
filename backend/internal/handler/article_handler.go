@@ -50,7 +50,7 @@ func (h *ArticleHandler) Create(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "创建成功", article)
+	response.Created(c, "创建成功", article)
 }
 
 // GetByID 获取文章详情
@@ -201,7 +201,7 @@ func (h *ArticleHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "删除成功", nil)
+	response.NoContent(c, "删除成功")
 }
 
 // List 获取文章列表（管理员）

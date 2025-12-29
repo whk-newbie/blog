@@ -49,7 +49,7 @@ func (h *TagHandler) Create(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "创建成功", tag)
+	response.Created(c, "创建成功", tag)
 }
 
 // GetByID 获取标签详情
@@ -190,7 +190,7 @@ func (h *TagHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "删除成功", nil)
+	response.NoContent(c, "删除成功")
 }
 
 // List 获取标签列表

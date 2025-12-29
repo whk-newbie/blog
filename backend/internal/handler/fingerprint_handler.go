@@ -212,7 +212,7 @@ func (h *FingerprintHandler) DeleteFingerprint(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, nil)
+	response.NoContent(c, "删除成功")
 }
 
 // parseInt 解析整数

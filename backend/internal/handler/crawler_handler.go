@@ -55,7 +55,7 @@ func (h *CrawlerHandler) RegisterTask(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "任务注册成功", task)
+	response.Created(c, "任务注册成功", task)
 }
 
 // UpdateTaskStatus 更新任务状态

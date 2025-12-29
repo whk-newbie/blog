@@ -118,12 +118,7 @@ func (h *ConfigHandler) CreateConfig(c *gin.Context) {
 		return
 	}
 
-	// 创建成功返回201状态码
-	c.JSON(201, gin.H{
-		"code":    0,
-		"message": "配置创建成功",
-		"data":    config,
-	})
+	response.Created(c, "配置创建成功", config)
 }
 
 // UpdateConfig 更新配置
@@ -207,7 +202,7 @@ func (h *ConfigHandler) DeleteConfig(c *gin.Context) {
 		return
 	}
 
-	response.SuccessWithMessage(c, "配置删除成功", nil)
+	response.NoContent(c, "配置删除成功")
 }
 
 // GenerateCrawlerToken 生成爬虫Token
