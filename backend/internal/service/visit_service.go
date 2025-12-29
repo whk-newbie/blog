@@ -65,8 +65,8 @@ type ReferrerStatsResponse struct {
 
 // visitService 访问记录服务实现
 type visitService struct {
-	visitRepo     repository.VisitRepository
-	cacheService  VisitCacheService
+	visitRepo    repository.VisitRepository
+	cacheService VisitCacheService
 }
 
 // NewVisitService 创建访问记录服务

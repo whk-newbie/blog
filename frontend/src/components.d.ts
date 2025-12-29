@@ -49,6 +49,7 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     EmptyState: typeof import('./components/common/EmptyState.vue')['default']
+    FingerprintCollector: typeof import('./components/fingerprint/FingerprintCollector.vue')['default']
     FloatingActions: typeof import('./components/common/FloatingActions.vue')['default']
     Footer: typeof import('./components/layout/Footer.vue')['default']
     Header: typeof import('./components/layout/Header.vue')['default']
