@@ -716,16 +716,24 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .visit-stats {
-    .bottom-section {
+    .main-section {
       grid-template-columns: 1fr;
+      
+      .chart-card {
+        .chart-container {
+          height: 300px;
+        }
+      }
       
       .referrer-card {
         .referrer-content {
-          .referrer-chart {
-            width: 200px;
-            height: 200px;
+          .referrer-chart-wrapper {
+            .referrer-chart {
+              width: 200px;
+              height: 200px;
+            }
           }
         }
       }
@@ -737,29 +745,31 @@ onUnmounted(() => {
   .visit-stats {
     padding: 12px;
     
-    .overview-cards {
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    
-    .chart-card {
-      .chart-container {
-        height: 280px;
-      }
-    }
-    
-    .bottom-section {
+    .main-section {
       gap: 12px;
+      
+      .chart-card {
+        .chart-container {
+          height: 280px;
+        }
+      }
       
       .referrer-card {
         .referrer-content {
-          flex-direction: column;
+          .overview-stats {
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
           
-          .referrer-chart {
-            width: 100%;
-            max-width: 300px;
-            height: 200px;
-            margin: 0 auto;
+          .referrer-chart-wrapper {
+            flex-direction: column;
+            
+            .referrer-chart {
+              width: 100%;
+              max-width: 300px;
+              height: 200px;
+              margin: 0 auto;
+            }
           }
         }
       }
