@@ -88,6 +88,12 @@ const routes = [
         name: 'Fingerprints',
         component: () => import('@/views/admin/Fingerprints.vue'),
         meta: { titleKey: 'nav.fingerprints', requiresAuth: true }
+      },
+      {
+        path: 'crawler',
+        name: 'CrawlerMonitor',
+        component: () => import('@/views/admin/CrawlerMonitor.vue'),
+        meta: { titleKey: 'nav.crawler', requiresAuth: true }
       }
     ]
   },
