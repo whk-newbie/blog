@@ -164,7 +164,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { Search, Refresh, Delete } from '@element-plus/icons-vue'
 import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
@@ -306,31 +306,15 @@ const handleCleanup = () => {
 const handleCleanupSubmit = async () => {
   try {
     await cleanupFormRef.value.validate()
-    // 先关闭对话框，避免确认弹窗位置错误
-    cleanupDialogVisible.value = false
-    // 等待对话框关闭动画完成后再显示确认弹窗
-    await new Promise(resolve => setTimeout(resolve, 300))
-    await ElMessageBox.confirm(
-      t('log.cleanupConfirm', { days: cleanupForm.retention_days }),
-      t('log.cleanupLogs'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning'
-      }
-    )
     const response = await api.log.cleanupLogs({
       retention_days: cleanupForm.retention_days
     })
     ElMessage.success(t('log.cleanupSuccess', { count: response.deleted_count || 0 }))
+    cleanupDialogVisible.value = false
     loadLogs()
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('清理日志失败:', error)
-      ElMessage.error(t('log.cleanupError'))
-      // 如果取消或出错，重新打开对话框
-      cleanupDialogVisible.value = true
-    }
+    console.error('清理日志失败:', error)
+    ElMessage.error(t('log.cleanupError'))
   }
 }
 
