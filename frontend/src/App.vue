@@ -1,11 +1,22 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <el-config-provider :locale="elementLocale">
+    <div id="app">
+      <router-view />
+    </div>
+  </el-config-provider>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { elementPlusLocales } from './locales'
+
+const { locale } = useI18n()
+
+// Element Plus 的 locale
+const elementLocale = computed(() => {
+  return elementPlusLocales[locale.value] || elementPlusLocales['zh-CN']
+})
 
 onMounted(() => {
   console.log('Blog App Mounted')

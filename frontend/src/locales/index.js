@@ -6,6 +6,12 @@ import enUS from './en-US.json'
 import zhCnLocale from 'element-plus/dist/locale/zh-cn.mjs'
 import enLocale from 'element-plus/dist/locale/en.mjs'
 
+// 导出 Element Plus 的 locale，供组件使用
+export const elementPlusLocales = {
+  'zh-CN': zhCnLocale,
+  'en-US': enLocale
+}
+
 const messages = {
   'zh-CN': {
     ...zhCN,

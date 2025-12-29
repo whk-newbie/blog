@@ -23,8 +23,9 @@
 import { computed } from 'vue'
 import { Grid } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
+import { ElMessage } from 'element-plus'
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 const currentLang = computed(() => locale.value)
 
@@ -39,6 +40,8 @@ const currentLangLabel = computed(() => {
 const changeLanguage = (lang) => {
   locale.value = lang
   localStorage.setItem('language', lang)
+  // 提示语言切换成功
+  ElMessage.success(lang === 'zh-CN' ? '已切换到简体中文' : 'Switched to English')
 }
 </script>
 
