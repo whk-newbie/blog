@@ -134,7 +134,7 @@ func (r *categoryRepository) List(offset, limit int) ([]models.Category, int64, 
 	}
 
 	// 获取分类列表
-	query := r.db.Order("sort_order ASC, created_at DESC")
+	query := r.db.Model(&models.Category{}).Order("sort_order ASC, created_at DESC")
 	if limit > 0 {
 		query = query.Limit(limit).Offset(offset)
 	}

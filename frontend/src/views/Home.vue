@@ -213,7 +213,7 @@ const goToTagArticles = (tagId) => {
 }
 
 // 随机标签类型（用于标签云样式）
-const tagTypes = ['', 'success', 'info', 'warning', 'danger']
+const tagTypes = ['success', 'info', 'warning', 'danger']
 let tagTypeIndex = 0
 const getRandomTagType = () => {
   const type = tagTypes[tagTypeIndex % tagTypes.length]

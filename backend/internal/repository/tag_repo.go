@@ -146,7 +146,7 @@ func (r *tagRepository) List(offset, limit int) ([]models.Tag, int64, error) {
 	}
 
 	// 获取标签列表
-	query := r.db.Order("article_count DESC, created_at DESC")
+	query := r.db.Model(&models.Tag{}).Order("article_count DESC, created_at DESC")
 	if limit > 0 {
 		query = query.Limit(limit).Offset(offset)
 	}
