@@ -32,6 +32,11 @@
 - ✅ Auth Handler（认证API接口）
 - ✅ 认证中间件（Token验证）
 - ✅ 默认管理员初始化
+- ✅ Fingerprint Repository和Service（指纹收集、哈希计算、存储）
+- ✅ Visit Repository和Service（访问记录、PV/UV统计、来源分析、热门文章）
+- ✅ 访问统计服务（支持按日/周/月统计）
+- ✅ Redis缓存访问统计（访问统计、热门文章、来源统计）
+- ✅ 指纹和访问统计API（公开接口和管理接口）
 
 ### 前端
 - ✅ Vue 3 + Vite项目初始化
