@@ -12,10 +12,16 @@ declare module 'vue' {
     ArticleCard: typeof import('./components/article/ArticleCard.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElCard: typeof import('element-plus/es')['ElCard']
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
+    ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
+    ElTable: typeof import('element-plus/es')['ElTable']
+    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElTag: typeof import('element-plus/es')['ElTag']
     EmptyState: typeof import('./components/common/EmptyState.vue')['default']
     Footer: typeof import('./components/layout/Footer.vue')['default']
     Header: typeof import('./components/layout/Header.vue')['default']
@@ -28,5 +34,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./components/layout/Sidebar.vue')['default']
     ThemeSwitch: typeof import('./components/common/ThemeSwitch.vue')['default']
+  }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }
