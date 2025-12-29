@@ -117,7 +117,18 @@
     "articleCount": "文章数量",
     "createCategory": "创建分类",
     "editCategory": "编辑分类",
-    "deleteCategory": "删除分类"
+    "deleteCategory": "删除分类",
+    "namePlaceholder": "请输入分类名称",
+    "slugPlaceholder": "留空自动生成",
+    "descriptionPlaceholder": "请输入分类描述",
+    "deleteConfirm": "确定要删除这个分类吗？",
+    "createSuccess": "创建成功",
+    "updateSuccess": "更新成功",
+    "deleteSuccess": "删除成功",
+    "createError": "创建失败",
+    "updateError": "更新失败",
+    "deleteError": "删除失败",
+    "loadError": "获取分类列表失败"
   },
   "tag": {
     "name": "标签名称",
@@ -125,7 +136,17 @@
     "articleCount": "文章数量",
     "createTag": "创建标签",
     "editTag": "编辑标签",
-    "deleteTag": "删除标签"
+    "deleteTag": "删除标签",
+    "namePlaceholder": "请输入标签名称",
+    "slugPlaceholder": "留空自动生成",
+    "deleteConfirm": "确定要删除这个标签吗？",
+    "createSuccess": "创建成功",
+    "updateSuccess": "更新成功",
+    "deleteSuccess": "删除成功",
+    "createError": "创建失败",
+    "updateError": "更新失败",
+    "deleteError": "删除失败",
+    "loadError": "获取标签列表失败"
   },
   "stats": {
     "pv": "浏览量",

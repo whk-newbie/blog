@@ -1,10 +1,10 @@
 <template>
   <div class="admin-tags-page">
-    <page-header title="标签管理">
+    <page-header :title="t('nav.tags')">
       <template #extra>
         <el-button type="primary" @click="handleCreate">
           <el-icon><Plus /></el-icon>
-          新建标签
+          {{ t('tag.createTag') }}
         </el-button>
       </template>
     </page-header>
@@ -19,25 +19,25 @@
         :header-cell-style="{ background: 'var(--bg-secondary)', color: 'var(--text-color)' }"
       >
       <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="标签名称" width="200" />
+      <el-table-column prop="name" :label="t('tag.name')" width="200" />
       <el-table-column prop="slug" label="Slug" width="200" />
-      <el-table-column prop="article_count" label="文章数" width="100" />
+      <el-table-column prop="article_count" :label="t('tag.articleCount')" width="100" />
       
-      <el-table-column label="创建时间" width="180">
+      <el-table-column :label="t('stats.createTime')" width="180">
         <template #default="{ row }">
           {{ formatDate(row.created_at) }}
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" width="180" fixed="right">
+      <el-table-column :label="t('common.operation')" width="180" fixed="right">
         <template #default="{ row }">
-          <el-button size="small" @click="handleEdit(row)">编辑</el-button>
+          <el-button size="small" @click="handleEdit(row)">{{ t('common.edit') }}</el-button>
           <el-popconfirm
-            title="确定要删除这个标签吗？"
+            :title="t('tag.deleteConfirm')"
             @confirm="handleDelete(row.id)"
           >
             <template #reference>
-              <el-button size="small" type="danger">删除</el-button>
+              <el-button size="small" type="danger">{{ t('common.delete') }}</el-button>
             </template>
           </el-popconfirm>
         </template>
@@ -59,7 +59,7 @@
     <!-- 创建/编辑对话框 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="isEdit ? '编辑标签' : '新建标签'"
+      :title="isEdit ? t('tag.editTag') : t('tag.createTag')"
       width="500px"
     >
       <el-form
@@ -68,30 +68,32 @@
         :rules="rules"
         label-width="100px"
       >
-        <el-form-item label="标签名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入标签名称" />
+        <el-form-item :label="t('tag.name')" prop="name">
+          <el-input v-model="form.name" :placeholder="t('tag.namePlaceholder')" />
         </el-form-item>
 
         <el-form-item label="URL Slug" prop="slug">
-          <el-input v-model="form.slug" placeholder="留空自动生成" />
+          <el-input v-model="form.slug" :placeholder="t('tag.slugPlaceholder')" />
         </el-form-item>
       </el-form>
 
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
 
+const { t } = useI18n()
 const loading = ref(false)
 const tags = ref([])
 const dialogVisible = ref(false)
@@ -103,11 +105,11 @@ const form = reactive({
   slug: ''
 })
 
-const rules = {
+const rules = computed(() => ({
   name: [
-    { required: true, message: '请输入标签名称', trigger: 'blur' }
+    { required: true, message: t('tag.namePlaceholder'), trigger: 'blur' }
   ]
-}
+}))
 
 const pagination = reactive({
   page: 1,
@@ -128,7 +130,7 @@ const fetchTags = async () => {
     pagination.total = response.total || 0
   } catch (error) {
     console.error('获取标签列表失败:', error)
-    ElMessage.error('获取标签列表失败')
+    ElMessage.error(t('tag.loadError'))
   } finally {
     loading.value = false
   }
@@ -175,10 +177,10 @@ const handleSubmit = async () => {
 
     if (isEdit.value) {
       await api.tag.update(form.id, data)
-      ElMessage.success('更新成功')
+      ElMessage.success(t('tag.updateSuccess'))
     } else {
       await api.tag.create(data)
-      ElMessage.success('创建成功')
+      ElMessage.success(t('tag.createSuccess'))
     }
 
     dialogVisible.value = false
@@ -186,7 +188,7 @@ const handleSubmit = async () => {
   } catch (error) {
     if (error instanceof Error) {
       console.error('提交失败:', error)
-      ElMessage.error('提交失败')
+      ElMessage.error(isEdit.value ? t('tag.updateError') : t('tag.createError'))
     }
   }
 }
@@ -195,11 +197,11 @@ const handleSubmit = async () => {
 const handleDelete = async (id) => {
   try {
     await api.tag.delete(id)
-    ElMessage.success('删除成功')
+    ElMessage.success(t('tag.deleteSuccess'))
     fetchTags()
   } catch (error) {
     console.error('删除失败:', error)
-    ElMessage.error('删除失败')
+    ElMessage.error(t('tag.deleteError'))
   }
 }
 

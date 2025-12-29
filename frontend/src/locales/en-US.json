@@ -107,7 +107,19 @@
     "createArticle": "Create Article",
     "editArticle": "Edit Article",
     "deleteArticle": "Delete Article",
-    "publishArticle": "Publish Article"
+    "publishArticle": "Publish Article",
+    "searchPlaceholder": "Search article title...",
+    "selectCategory": "Select Category",
+    "selectStatus": "Select Status",
+    "unpublish": "Unpublish",
+    "deleteConfirm": "Are you sure you want to delete this article?",
+    "loadError": "Failed to load articles",
+    "deleteSuccess": "Deleted successfully",
+    "deleteError": "Failed to delete",
+    "publishSuccess": "Published successfully",
+    "unpublishSuccess": "Unpublished successfully",
+    "publishError": "Failed to publish",
+    "unpublishError": "Failed to unpublish"
   },
   "category": {
     "name": "Name",
@@ -117,7 +129,18 @@
     "articleCount": "Article Count",
     "createCategory": "Create Category",
     "editCategory": "Edit Category",
-    "deleteCategory": "Delete Category"
+    "deleteCategory": "Delete Category",
+    "namePlaceholder": "Please enter category name",
+    "slugPlaceholder": "Leave empty to auto-generate",
+    "descriptionPlaceholder": "Please enter category description",
+    "deleteConfirm": "Are you sure you want to delete this category?",
+    "createSuccess": "Created successfully",
+    "updateSuccess": "Updated successfully",
+    "deleteSuccess": "Deleted successfully",
+    "createError": "Failed to create",
+    "updateError": "Failed to update",
+    "deleteError": "Failed to delete",
+    "loadError": "Failed to load categories"
   },
   "tag": {
     "name": "Name",
@@ -125,7 +148,17 @@
     "articleCount": "Article Count",
     "createTag": "Create Tag",
     "editTag": "Edit Tag",
-    "deleteTag": "Delete Tag"
+    "deleteTag": "Delete Tag",
+    "namePlaceholder": "Please enter tag name",
+    "slugPlaceholder": "Leave empty to auto-generate",
+    "deleteConfirm": "Are you sure you want to delete this tag?",
+    "createSuccess": "Created successfully",
+    "updateSuccess": "Updated successfully",
+    "deleteSuccess": "Deleted successfully",
+    "createError": "Failed to create",
+    "updateError": "Failed to update",
+    "deleteError": "Failed to delete",
+    "loadError": "Failed to load tags"
   },
   "stats": {
     "pv": "Page Views",

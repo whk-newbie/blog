@@ -1,9 +1,9 @@
 <template>
   <div class="admin-articles-page">
-    <page-header title="文章管理">
+    <page-header :title="t('nav.articleManage')">
       <el-button type="primary" @click="goToCreate">
         <el-icon><Plus /></el-icon>
-        新建文章
+        {{ t('nav.newArticle') }}
       </el-button>
     </page-header>
 
@@ -11,7 +11,7 @@
     <div class="filter-bar">
       <el-input
         v-model="filters.keyword"
-        placeholder="搜索文章标题..."
+        :placeholder="t('article.searchPlaceholder')"
         clearable
         style="width: 300px"
         @keyup.enter="handleSearch"
@@ -23,7 +23,7 @@
 
       <el-select
         v-model="filters.category_id"
-        placeholder="选择分类"
+        :placeholder="t('article.selectCategory')"
         clearable
         @change="handleFilterChange"
       >
@@ -37,16 +37,16 @@
 
       <el-select
         v-model="filters.status"
-        placeholder="选择状态"
+        :placeholder="t('article.selectStatus')"
         clearable
         @change="handleFilterChange"
       >
-        <el-option label="草稿" value="draft" />
-        <el-option label="已发布" value="published" />
+        <el-option :label="t('article.draft')" value="draft" />
+        <el-option :label="t('article.published')" value="published" />
       </el-select>
 
-      <el-button type="primary" @click="handleSearch">搜索</el-button>
-      <el-button @click="handleReset">重置</el-button>
+      <el-button type="primary" @click="handleSearch">{{ t('common.search') }}</el-button>
+      <el-button @click="handleReset">{{ t('common.reset') }}</el-button>
     </div>
 
     <!-- 文章表格 -->
@@ -60,7 +60,7 @@
       >
       <el-table-column prop="id" label="ID" width="80" />
       
-      <el-table-column label="封面" width="100">
+      <el-table-column :label="t('stats.cover')" width="100">
         <template #default="{ row }">
           <el-image
             v-if="row.cover_image"
@@ -68,13 +68,13 @@
             style="width: 60px; height: 60px; border-radius: 4px"
             fit="cover"
           />
-          <span v-else class="no-cover">无封面</span>
+          <span v-else class="no-cover">{{ t('stats.noCover') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
+      <el-table-column prop="title" :label="t('article.title')" min-width="200" show-overflow-tooltip />
 
-      <el-table-column label="分类" width="120">
+      <el-table-column :label="t('article.category')" width="120">
         <template #default="{ row }">
           <el-tag v-if="row.category" size="small">
             {{ row.category.name }}
@@ -83,7 +83,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="标签" width="200">
+      <el-table-column :label="t('article.tags')" width="200">
         <template #default="{ row }">
           <el-tag
             v-for="tag in row.tags"
@@ -97,32 +97,32 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="状态" width="100">
+      <el-table-column :label="t('article.status')" width="100">
         <template #default="{ row }">
           <el-tag :type="row.status === 'published' ? 'success' : 'info'" size="small">
-            {{ row.status === 'published' ? '已发布' : '草稿' }}
+            {{ row.status === 'published' ? t('article.published') : t('article.draft') }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="标记" width="120">
+      <el-table-column :label="t('article.isTop')" width="120">
         <template #default="{ row }">
-          <el-tag v-if="row.is_top" type="danger" size="small">置顶</el-tag>
-          <el-tag v-if="row.is_featured" type="warning" size="small">推荐</el-tag>
+          <el-tag v-if="row.is_top" type="danger" size="small">{{ t('article.isTop') }}</el-tag>
+          <el-tag v-if="row.is_featured" type="warning" size="small">{{ t('article.isFeatured') }}</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column prop="view_count" label="浏览量" width="100" />
+      <el-table-column prop="view_count" :label="t('article.viewCount')" width="100" />
 
-      <el-table-column label="创建时间" width="180">
+      <el-table-column :label="t('stats.createTime')" width="180">
         <template #default="{ row }">
           {{ formatDate(row.created_at) }}
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" width="250" fixed="right">
+      <el-table-column :label="t('common.operation')" width="250" fixed="right">
         <template #default="{ row }">
-          <el-button size="small" @click="handleEdit(row.id)">编辑</el-button>
+          <el-button size="small" @click="handleEdit(row.id)">{{ t('common.edit') }}</el-button>
           
           <el-button
             v-if="row.status === 'draft'"
@@ -130,7 +130,7 @@
             type="success"
             @click="handlePublish(row.id)"
           >
-            发布
+            {{ t('article.publishArticle') }}
           </el-button>
 
           <el-button
@@ -139,15 +139,15 @@
             type="warning"
             @click="handleUnpublish(row.id)"
           >
-            取消发布
+            {{ t('article.unpublish') }}
           </el-button>
 
           <el-popconfirm
-            title="确定要删除这篇文章吗？"
+            :title="t('article.deleteConfirm')"
             @confirm="handleDelete(row.id)"
           >
             <template #reference>
-              <el-button size="small" type="danger">删除</el-button>
+              <el-button size="small" type="danger">{{ t('common.delete') }}</el-button>
             </template>
           </el-popconfirm>
         </template>
@@ -171,12 +171,14 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Plus, Search } from '@element-plus/icons-vue'
 import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const loading = ref(false)
 const articles = ref([])
@@ -221,7 +223,7 @@ const fetchArticles = async () => {
     pagination.total = response.total || 0
   } catch (error) {
     console.error('获取文章列表失败:', error)
-    ElMessage.error('获取文章列表失败')
+    ElMessage.error(t('article.loadError'))
   } finally {
     loading.value = false
   }
@@ -284,11 +286,11 @@ const handleEdit = (id) => {
 const handlePublish = async (id) => {
   try {
     await api.article.publish(id)
-    ElMessage.success('发布成功')
+    ElMessage.success(t('article.publishSuccess'))
     fetchArticles()
   } catch (error) {
     console.error('发布失败:', error)
-    ElMessage.error('发布失败')
+    ElMessage.error(t('article.publishError'))
   }
 }
 
@@ -296,11 +298,11 @@ const handlePublish = async (id) => {
 const handleUnpublish = async (id) => {
   try {
     await api.article.unpublish(id)
-    ElMessage.success('取消发布成功')
+    ElMessage.success(t('article.unpublishSuccess'))
     fetchArticles()
   } catch (error) {
     console.error('取消发布失败:', error)
-    ElMessage.error('取消发布失败')
+    ElMessage.error(t('article.unpublishError'))
   }
 }
 
@@ -308,11 +310,11 @@ const handleUnpublish = async (id) => {
 const handleDelete = async (id) => {
   try {
     await api.article.delete(id)
-    ElMessage.success('删除成功')
+    ElMessage.success(t('article.deleteSuccess'))
     fetchArticles()
   } catch (error) {
     console.error('删除失败:', error)
-    ElMessage.error('删除失败')
+    ElMessage.error(t('article.deleteError'))
   }
 }
 
