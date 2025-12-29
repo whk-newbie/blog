@@ -17,6 +17,15 @@
       <div class="header-actions">
         <ThemeSwitch />
         <LanguageSwitch />
+        <el-button
+          v-if="!isLoggedIn"
+          type="primary"
+          size="default"
+          @click="showLoginDialog = true"
+        >
+          {{ t('login.title') }}
+        </el-button>
+        <LoginDialog v-model="showLoginDialog" @success="handleLoginSuccess" />
       </div>
     </div>
   </header>
@@ -24,20 +33,34 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { Setting } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/store/user'
 import ThemeSwitch from '../common/ThemeSwitch.vue'
 import LanguageSwitch from '../common/LanguageSwitch.vue'
+import LoginDialog from '../common/LoginDialog.vue'
 
 const { t } = useI18n()
+const router = useRouter()
 const userStore = useUserStore()
+
+const showLoginDialog = ref(false)
 
 // 博客标题 - 可以根据语言切换
 const blogTitle = computed(() => t('app.title'))
 
 // 判断是否已登录
 const isLoggedIn = computed(() => userStore.isLoggedIn())
+
+// 登录成功回调
+const handleLoginSuccess = () => {
+  showLoginDialog.value = false
+  // 如果当前在首页，可以选择跳转到管理后台
+  if (router.currentRoute.value.path === '/') {
+    router.push('/admin')
+  }
+}
 </script>
 
 <style scoped lang="less">
@@ -102,6 +125,12 @@ const isLoggedIn = computed(() => userStore.isLoggedIn())
   display: flex;
   align-items: center;
   gap: 15px;
+
+  .el-button {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 10px 20px;
+  }
 }
 
 @media (max-width: 768px) {

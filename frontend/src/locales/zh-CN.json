@@ -51,12 +51,27 @@
     "forgot": "忘记密码",
     "submit": "登录",
     "success": "登录成功",
+    "error": "登录失败",
     "usernameRequired": "请输入用户名",
-    "passwordRequired": "请输入密码"
+    "passwordRequired": "请输入密码",
+    "oldPassword": "旧密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认密码",
+    "oldPasswordPlaceholder": "请输入旧密码",
+    "newPasswordPlaceholder": "请输入新密码（至少6位）",
+    "confirmPasswordPlaceholder": "请再次输入新密码",
+    "oldPasswordRequired": "请输入旧密码",
+    "newPasswordRequired": "请输入新密码",
+    "confirmPasswordRequired": "请再次输入新密码",
+    "passwordMismatch": "两次输入的密码不一致",
+    "changePasswordWarning": "检测到您正在使用默认密码",
+    "changePasswordDescription": "为了账户安全，请立即修改密码"
   },
   "user": {
     "profile": "个人资料",
     "changePassword": "修改密码",
+    "changePasswordSuccess": "密码修改成功",
+    "changePasswordError": "修改密码失败",
     "logout": "退出登录",
     "logoutSuccess": "退出成功"
   },

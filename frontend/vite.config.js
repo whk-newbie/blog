@@ -35,6 +35,18 @@ export default defineConfig({
       },
     },
   },
+  // 优化依赖预构建
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'pinia', 'element-plus'],
+    esbuildOptions: {
+      // 禁用 source map 以减少警告
+      sourcemap: false,
+    },
+  },
+  // 开发环境 source map 配置
+  css: {
+    devSourcemap: false,
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,

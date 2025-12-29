@@ -13,12 +13,55 @@
         </el-main>
       </el-container>
     </el-container>
+    <!-- 登录对话框 - 未登录时自动显示 -->
+    <LoginDialog v-model="showLoginDialog" @success="handleLoginSuccess" />
   </div>
 </template>
 
 <script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
 import Sidebar from './Sidebar.vue'
 import AdminHeader from './AdminHeader.vue'
+import LoginDialog from '../common/LoginDialog.vue'
+
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+
+const showLoginDialog = ref(false)
+
+// 检查是否需要显示登录对话框
+const checkLoginStatus = () => {
+  if (route.meta.requiresAuth && !userStore.isLoggedIn()) {
+    showLoginDialog.value = true
+  }
+}
+
+// 监听路由变化
+watch(() => route.path, () => {
+  checkLoginStatus()
+})
+
+// 监听登录状态变化
+watch(() => userStore.isLoggedIn(), (isLoggedIn) => {
+  if (isLoggedIn) {
+    showLoginDialog.value = false
+  } else if (route.meta.requiresAuth) {
+    showLoginDialog.value = true
+  }
+})
+
+// 登录成功回调
+const handleLoginSuccess = () => {
+  showLoginDialog.value = false
+}
+
+// 组件挂载时检查
+onMounted(() => {
+  checkLoginStatus()
+})
 </script>
 
 <style scoped lang="less">

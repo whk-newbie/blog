@@ -63,7 +63,7 @@ const handleCommand = (command) => {
       break
     case 'logout':
       userStore.logout()
-      router.push('/admin/login')
+      router.push('/')
       ElMessage.success('退出登录成功')
       break
   }

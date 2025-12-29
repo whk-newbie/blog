@@ -51,12 +51,27 @@
     "forgot": "Forgot password",
     "submit": "Login",
     "success": "Login success",
+    "error": "Login failed",
     "usernameRequired": "Please enter username",
-    "passwordRequired": "Please enter password"
+    "passwordRequired": "Please enter password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "oldPasswordPlaceholder": "Please enter old password",
+    "newPasswordPlaceholder": "Please enter new password (at least 6 characters)",
+    "confirmPasswordPlaceholder": "Please enter new password again",
+    "oldPasswordRequired": "Please enter old password",
+    "newPasswordRequired": "Please enter new password",
+    "confirmPasswordRequired": "Please enter new password again",
+    "passwordMismatch": "The two passwords do not match",
+    "changePasswordWarning": "Default password detected",
+    "changePasswordDescription": "For account security, please change your password immediately"
   },
   "user": {
     "profile": "Profile",
     "changePassword": "Change Password",
+    "changePasswordSuccess": "Password changed successfully",
+    "changePasswordError": "Failed to change password",
     "logout": "Logout",
     "logoutSuccess": "Logout success"
   },

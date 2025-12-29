@@ -28,13 +28,6 @@ const routes = [
       }
     ]
   },
-  // 管理后台 - 登录（无布局）
-  {
-    path: '/admin/login',
-    name: 'AdminLogin',
-    component: () => import('@/views/admin/Login.vue'),
-    meta: { title: '管理员登录' }
-  },
   // 管理后台 - 使用布局
   {
     path: '/admin',
@@ -113,20 +106,10 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   
   // 检查是否需要认证
-  if (to.meta.requiresAuth) {
-    if (!userStore.isLoggedIn()) {
-      ElMessage.warning('请先登录')
-      next({
-        path: '/admin/login',
-        query: { redirect: to.fullPath }
-      })
-      return
-    }
-  }
-  
-  // 如果已登录，访问登录页则跳转到管理后台
-  if (to.path === '/admin/login' && userStore.isLoggedIn()) {
-    next('/admin')
+  // 如果未登录但需要认证，允许访问但会在AdminLayout中显示登录弹窗
+  if (to.meta.requiresAuth && !userStore.isLoggedIn()) {
+    // 允许访问，但会在AdminLayout中触发登录弹窗
+    next()
     return
   }
   

@@ -52,6 +52,7 @@ declare module 'vue' {
     Header: typeof import('./components/layout/Header.vue')['default']
     LanguageSwitch: typeof import('./components/common/LanguageSwitch.vue')['default']
     Loading: typeof import('./components/common/Loading.vue')['default']
+    LoginDialog: typeof import('./components/common/LoginDialog.vue')['default']
     MainLayout: typeof import('./components/layout/MainLayout.vue')['default']
     PageHeader: typeof import('./components/common/PageHeader.vue')['default']
     RichTextEditor: typeof import('./components/editor/RichTextEditor.vue')['default']
