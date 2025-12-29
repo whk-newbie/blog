@@ -41,6 +41,23 @@
       </el-card>
     </div>
 
+    <!-- 数据图表占位 -->
+    <el-card class="chart-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">
+            <el-icon><DataAnalysis /></el-icon>
+            数据统计图表
+          </span>
+        </div>
+      </template>
+      <div class="chart-placeholder">
+        <el-icon :size="64" class="placeholder-icon"><DataAnalysis /></el-icon>
+        <p class="placeholder-text">图表占位区域</p>
+        <p class="placeholder-desc">未来可集成 ECharts 等图表库展示访问趋势、文章发布统计等数据</p>
+      </div>
+    </el-card>
+
     <!-- 最近文章列表 -->
     <el-card class="recent-articles-card" shadow="hover">
       <template #header>
@@ -141,7 +158,8 @@ import {
   PriceTag,
   Clock,
   Edit,
-  Promotion
+  Promotion,
+  DataAnalysis
 } from '@element-plus/icons-vue'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -340,8 +358,53 @@ onMounted(() => {
   letter-spacing: -1px;
 }
 
-.recent-articles-card {
+.chart-card {
   margin-top: 32px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-blue);
+  }
+}
+
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  min-height: 300px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.placeholder-icon {
+  color: var(--text-disabled);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 8px 0;
+}
+
+.placeholder-desc {
+  font-size: 14px;
+  color: var(--text-disabled);
+  margin: 0;
+  text-align: center;
+  max-width: 400px;
+}
+
+.recent-articles-card {
+  margin-top: 0;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border-light);
