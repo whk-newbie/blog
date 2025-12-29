@@ -9,12 +9,9 @@
       <nav class="nav-menu">
         <router-link to="/" class="nav-item">{{ t('nav.home') }}</router-link>
         <router-link to="/articles" class="nav-item">{{ t('nav.articles') }}</router-link>
-        <router-link v-if="isLoggedIn" to="/admin" class="nav-item admin-link">
-          <el-icon><Setting /></el-icon>
-          {{ t('nav.dashboard') }}
-        </router-link>
       </nav>
       <div class="header-actions">
+        <!-- 未登录：显示登录按钮 -->
         <el-button
           v-if="!isLoggedIn"
           type="primary"
@@ -22,6 +19,16 @@
           @click="showLoginDialog = true"
         >
           {{ t('login.title') }}
+        </el-button>
+        <!-- 已登录：显示跳转到后台按钮 -->
+        <el-button
+          v-else
+          type="primary"
+          size="default"
+          @click="goToAdmin"
+        >
+          <el-icon><Setting /></el-icon>
+          <span>{{ t('nav.dashboard') }}</span>
         </el-button>
         <LoginDialog v-model="showLoginDialog" @success="handleLoginSuccess" />
       </div>
@@ -56,6 +63,11 @@ const handleLoginSuccess = () => {
   if (router.currentRoute.value.path === '/') {
     router.push('/admin')
   }
+}
+
+// 跳转到后台
+const goToAdmin = () => {
+  router.push('/admin')
 }
 </script>
 
@@ -126,6 +138,13 @@ const handleLoginSuccess = () => {
     border-radius: 8px;
     font-weight: 500;
     padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .el-icon {
+      font-size: 16px;
+    }
   }
 }
 
