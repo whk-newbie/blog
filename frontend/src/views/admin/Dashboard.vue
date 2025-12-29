@@ -142,7 +142,7 @@
       </el-table>
 
       <div v-if="!loading && recentArticles.length === 0" class="empty-state">
-        <empty-state :description="t('stats.noArticles')" />
+        <EmptyState :description="t('stats.noArticles')" />
       </div>
     </el-card>
   </div>
