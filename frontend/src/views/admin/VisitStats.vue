@@ -137,12 +137,13 @@
           :data="popularArticles"
           style="width: 100%"
           :show-header="true"
+          size="small"
         >
-          <el-table-column type="index" label="#" width="60" />
-          <el-table-column prop="title" :label="t('stats.articleTitle')" min-width="200" show-overflow-tooltip />
-          <el-table-column prop="view_count" :label="t('stats.viewCount')" width="100" align="right" />
-          <el-table-column prop="visit_count" :label="t('stats.visitCount')" width="100" align="right" />
-          <el-table-column :label="t('stats.avgDuration')" width="120" align="right">
+          <el-table-column type="index" label="#" width="50" />
+          <el-table-column prop="title" :label="t('stats.articleTitle')" min-width="150" show-overflow-tooltip />
+          <el-table-column prop="view_count" :label="t('stats.viewCount')" width="80" align="right" />
+          <el-table-column prop="visit_count" :label="t('stats.visitCount')" width="80" align="right" />
+          <el-table-column :label="t('stats.avgDuration')" width="100" align="right">
             <template #default="{ row }">
               {{ formatDuration(row.avg_stay_duration) }}
             </template>
