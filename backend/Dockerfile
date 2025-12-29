@@ -53,6 +53,10 @@ WORKDIR /app
 # 从构建阶段复制二进制文件
 COPY --from=builder /build/blog-server .
 
+# 从构建阶段复制必要的文件
+COPY --from=builder /build/docs ./docs
+COPY --from=builder /build/migrations ./migrations
+
 # 创建必要的目录
 RUN mkdir -p /app/config /app/uploads /app/backups /app/logs && \
     chown -R appuser:appgroup /app

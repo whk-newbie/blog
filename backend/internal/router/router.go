@@ -40,7 +40,7 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	})
 
 	// Swagger文档
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("swagger.json")))
 
 	// 初始化依赖
 	gormDB, _ := db.GetSQLDB()
