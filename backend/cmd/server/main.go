@@ -13,6 +13,7 @@ import (
 	"github.com/whk-newbie/blog/internal/pkg/logger"
 	"github.com/whk-newbie/blog/internal/pkg/redis"
 	"github.com/whk-newbie/blog/internal/router"
+	"github.com/whk-newbie/blog/internal/scheduler"
 
 	_ "github.com/whk-newbie/blog/docs" // Swagger文档
 )
@@ -20,10 +21,10 @@ import (
 // @title Blog API
 // @version 1.0
 // @description 个人博客系统API文档
-// @termsOfService https://github.com/whk-newbie/blog
+// @termsOfService https://github.com/iambaby/blog
 
 // @contact.name API Support
-// @contact.url https://github.com/whk-newbie/blog/issues
+// @contact.url https://github.com/iambaby/blog/issues
 // @contact.email support@example.com
 
 // @license.name MIT
@@ -138,8 +139,9 @@ func main() {
 	<-quit
 
 	logger.Info("Shutting down server...")
-
+	
 	// 停止调度器
 	schedulerManager.Stop()
 	logger.Info("Scheduler stopped")
 }
+
