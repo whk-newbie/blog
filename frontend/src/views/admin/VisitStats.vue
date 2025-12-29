@@ -553,23 +553,21 @@ onUnmounted(() => {
     }
   }
   
-  .chart-card {
-    margin-bottom: 16px;
-    
-    :deep(.el-card__body) {
-      padding: 16px;
-    }
-    
-    .chart-container {
-      width: 100%;
-      height: 320px;
-    }
-  }
-  
-  .bottom-section {
+  .main-section {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
+    
+    .chart-card {
+      :deep(.el-card__body) {
+        padding: 16px;
+      }
+      
+      .chart-container {
+        width: 100%;
+        height: 320px;
+      }
+    }
     
     .referrer-card {
       :deep(.el-card__body) {
