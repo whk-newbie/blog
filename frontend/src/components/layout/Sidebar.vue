@@ -1,6 +1,6 @@
 <template>
   <div class="admin-sidebar">
-    <div class="sidebar-logo">
+    <div class="sidebar-logo" @click="goToHome">
       <el-icon class="logo-icon"><Collection /></el-icon>
       <h2>{{ t('app.adminSystem') }}</h2>
       <p class="logo-subtitle">Admin Dashboard</p>
@@ -63,7 +63,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   Monitor,
@@ -75,8 +75,14 @@ import {
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 const activeMenu = computed(() => route.path)
+
+// 跳转到首页
+const goToHome = () => {
+  router.push('/')
+}
 </script>
 
 <style scoped lang="less">
@@ -89,11 +95,27 @@ const activeMenu = computed(() => route.path)
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    
+    h2 {
+      color: #ffffff;
+    }
+    
+    .logo-icon {
+      transform: scale(1.1);
+    }
+  }
 
   .logo-icon {
     font-size: 36px;
     color: #ffffff;
     margin-bottom: 8px;
+    transition: transform 0.3s;
   }
 
   h2 {
@@ -102,6 +124,7 @@ const activeMenu = computed(() => route.path)
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.5px;
+    transition: color 0.3s;
   }
 
   .logo-subtitle {

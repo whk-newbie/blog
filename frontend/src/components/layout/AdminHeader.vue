@@ -1,6 +1,10 @@
 <template>
   <div class="admin-header">
     <div class="header-left">
+      <div class="home-link" @click="goToHome" title="返回首页">
+        <el-icon><HomeFilled /></el-icon>
+        <span>{{ t('app.blogSystem') }}</span>
+      </div>
       <el-breadcrumb separator="/">
         <el-breadcrumb-item
           v-for="item in breadcrumbs"
@@ -39,6 +43,7 @@ import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/store/user'
 import ThemeSwitch from '../common/ThemeSwitch.vue'
 import { ElMessage } from 'element-plus'
+import { HomeFilled } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -46,6 +51,11 @@ const userStore = useUserStore()
 const { t } = useI18n()
 
 const username = computed(() => userStore.username || 'Admin')
+
+// 跳转到首页
+const goToHome = () => {
+  router.push('/')
+}
 
 const breadcrumbs = computed(() => {
   const matched = route.matched.filter(item => item.meta?.title)
@@ -83,6 +93,31 @@ const handleCommand = (command) => {
 
 .header-left {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .home-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+
+    &:hover {
+      background: var(--bg-blue-light);
+      color: var(--primary-color);
+    }
+
+    .el-icon {
+      font-size: 16px;
+    }
+  }
 
   :deep(.el-breadcrumb) {
     font-size: 14px;
