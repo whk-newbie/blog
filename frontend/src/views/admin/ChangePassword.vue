@@ -70,7 +70,7 @@ import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
-import { authAPI } from '@/api/auth'
+import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
 
 const router = useRouter()
@@ -113,7 +113,7 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     loading.value = true
 
-    await authAPI.changePassword(form.oldPassword, form.newPassword)
+    await api.auth.changePassword(form.oldPassword, form.newPassword)
 
     ElMessage.success('密码修改成功，请重新登录')
 

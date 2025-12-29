@@ -126,7 +126,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
-import { authAPI } from '@/api/auth'
+import api from '@/api'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -193,7 +193,7 @@ const handleLogin = async () => {
     await loginFormRef.value.validate()
     loading.value = true
 
-    const response = await authAPI.login(loginForm.username, loginForm.password)
+    const response = await api.auth.login(loginForm.username, loginForm.password)
     
     // 保存登录信息
     userStore.login(response)
@@ -224,7 +224,7 @@ const handleChangePassword = async () => {
     await changePasswordFormRef.value.validate()
     changingPassword.value = true
 
-    await authAPI.changePassword(
+    await api.auth.changePassword(
       changePasswordForm.oldPassword,
       changePasswordForm.newPassword
     )

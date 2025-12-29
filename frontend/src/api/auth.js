@@ -3,7 +3,7 @@ import http from './http'
 /**
  * 认证相关API
  */
-export const authAPI = {
+export default {
   /**
    * 登录
    * @param {string} username - 用户名
