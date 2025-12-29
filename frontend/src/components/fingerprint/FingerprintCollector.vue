@@ -84,9 +84,34 @@ async function recordVisit(stayDuration = null) {
 // 页面卸载时记录停留时间
 function handleBeforeUnload() {
   const stayDuration = Math.floor((Date.now() - enterTime) / 1000)
-  if (stayDuration > 0) {
-    // 使用sendBeacon确保数据能发送
-    recordVisit(stayDuration)
+  if (stayDuration > 0 && fingerprintId) {
+    // 使用sendBeacon确保数据能发送（页面卸载时）
+    const referrer = document.referrer || ''
+    const pageTitle = document.title
+    const url = route.fullPath
+    
+    const data = JSON.stringify({
+      fingerprint_id: fingerprintId,
+      url: url,
+      referrer: referrer,
+      page_title: pageTitle,
+      article_id: null,
+      stay_duration: stayDuration,
+      user_agent: navigator.userAgent
+    })
+    
+    // 使用sendBeacon发送数据（不需要等待响应）
+    try {
+      navigator.sendBeacon('/api/v1/visit', new Blob([data], { type: 'application/json' }))
+    } catch (e) {
+      // 如果sendBeacon失败，尝试使用fetch（keepalive）
+      fetch('/api/v1/visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: data,
+        keepalive: true
+      }).catch(() => {}) // 忽略错误
+    }
   }
 }
 
