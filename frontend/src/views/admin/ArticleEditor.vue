@@ -109,15 +109,11 @@
 
       <!-- 正文 -->
       <el-form-item label="文章正文" prop="content">
-        <el-input
+        <rich-text-editor
           v-model="form.content"
-          type="textarea"
-          :rows="15"
-          placeholder="请输入文章内容（支持HTML）"
+          placeholder="请输入文章内容..."
+          height="500px"
         />
-        <div class="editor-tip">
-          提示：暂时使用简单文本编辑器，支持HTML格式。后续将集成富文本编辑器。
-        </div>
       </el-form-item>
 
       <!-- 状态设置 -->
@@ -164,6 +160,7 @@ import { ElMessage } from 'element-plus'
 import { Upload } from '@element-plus/icons-vue'
 import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
+import RichTextEditor from '@/components/editor/RichTextEditor.vue'
 import { useUserStore } from '@/store/user'
 
 const route = useRoute()
@@ -372,12 +369,6 @@ onMounted(() => {
     height: 150px;
     border-radius: 4px;
   }
-}
-
-.editor-tip {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-color-secondary);
 }
 
 .form-tip {

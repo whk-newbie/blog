@@ -23,6 +23,7 @@ declare module 'vue' {
     Loading: typeof import('./components/common/Loading.vue')['default']
     MainLayout: typeof import('./components/layout/MainLayout.vue')['default']
     PageHeader: typeof import('./components/common/PageHeader.vue')['default']
+    RichTextEditor: typeof import('./components/editor/RichTextEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./components/layout/Sidebar.vue')['default']
