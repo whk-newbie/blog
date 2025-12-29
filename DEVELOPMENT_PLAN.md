@@ -10,7 +10,7 @@
 |------|------|--------|------|
 | 阶段一：基础架构搭建 | ✅ 已完成 | 100% | 后端、前端、Docker环境已搭建完成 |
 | 阶段二：核心功能开发 | ✅ 已完成 | 100% | 认证系统、文章管理、仪表盘已完成 |
-| 阶段三：高级功能开发 | 🔄 进行中 | 75% | 4.1浏览器指纹和访问统计已完成，4.2爬虫任务监控已完成 |
+| 阶段三：高级功能开发 | 🔄 进行中 | 87.5% | 4.1浏览器指纹和访问统计已完成，4.2爬虫任务监控已完成，4.3后端配置管理和日志已完成 |
 | 阶段四：优化和部署 | ⏳ 待开始 | 0% | 性能优化、监控、部署配置 |
 | 阶段五：测试和文档 | ⏳ 待开始 | 0% | 单元测试、集成测试、文档完善 |
 
@@ -39,6 +39,12 @@
 - ✅ 指纹和访问统计API（公开接口和管理接口）
 - ✅ 仪表盘图表数据API（访问趋势、文章发布趋势统计）
 - ✅ Article Repository扩展（按日期统计文章发布数量）
+- ✅ 加密工具包（AES-256-GCM加密/解密）
+- ✅ SystemConfig Repository和Service（配置CRUD、加密/解密、爬虫Token生成）
+- ✅ SystemLog Repository和Service（日志记录、查询、清理）
+- ✅ 配置管理API（配置CRUD、爬虫Token生成）
+- ✅ 日志管理API（日志查询、清理）
+- ✅ 日志清理调度器（定时清理旧日志）
 
 ### 前端
 - ✅ Vue 3 + Vite项目初始化
@@ -529,24 +535,32 @@
 
 ### 4.3 配置管理和日志 (3天)
 
-#### 后端 (1.5天)
-- [ ] 实现SystemConfig模型和Repository
-- [ ] 实现ConfigService
+#### 后端 (1.5天) ✅ 已完成
+- [x] 实现SystemConfig模型和Repository
+- [x] 实现ConfigService
   - 配置CRUD
   - 配置加密/解密
   - 爬虫Token生成
-- [ ] 实现SystemLog模型和Repository
-- [ ] 实现LogService
+- [x] 实现SystemLog模型和Repository
+- [x] 实现LogService
   - 日志记录
   - 日志查询
   - 日志清理
-- [ ] 实现配置管理API
-- [ ] 实现日志管理API
-- [ ] 日志清理调度器
+- [x] 实现配置管理API
+- [x] 实现日志管理API
+- [x] 日志清理调度器
 
 **产出**:
-- 配置管理完整功能
-- 日志管理完整功能
+- ✅ 配置管理完整功能
+- ✅ 日志管理完整功能
+- ✅ `internal/pkg/crypto/crypto.go` AES-256-GCM加密工具
+- ✅ `internal/repository/config_repo.go` 配置Repository
+- ✅ `internal/repository/log_repo.go` 日志Repository
+- ✅ `internal/service/config_service.go` 配置服务
+- ✅ `internal/service/log_service.go` 日志服务
+- ✅ `internal/handler/config_handler.go` 配置Handler
+- ✅ `internal/handler/log_handler.go` 日志Handler
+- ✅ `internal/scheduler/log_scheduler.go` 日志清理调度器
 
 #### 前端 (1.5天)
 - [ ] 实现配置管理页面
