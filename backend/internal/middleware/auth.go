@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iambaby/blog/internal/pkg/jwt"
-	"github.com/iambaby/blog/internal/pkg/response"
+	"github.com/whk-newbie/blog/internal/pkg/jwt"
+	"github.com/whk-newbie/blog/internal/pkg/response"
 )
 
 // Auth 认证中间件

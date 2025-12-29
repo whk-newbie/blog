@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/iambaby/blog/internal/pkg/logger"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
 )
 
 // Migration 迁移结构

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/iambaby/blog/internal/pkg/jwt"
-	"github.com/iambaby/blog/internal/repository"
+	"github.com/whk-newbie/blog/internal/pkg/jwt"
+	"github.com/whk-newbie/blog/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 

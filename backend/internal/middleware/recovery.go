@@ -6,8 +6,8 @@ import (
 	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iambaby/blog/internal/pkg/logger"
-	"github.com/iambaby/blog/internal/pkg/response"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
+	"github.com/whk-newbie/blog/internal/pkg/response"
 )
 
 // Recovery 错误恢复中间件

@@ -3,10 +3,10 @@ package db
 import (
 	"errors"
 
-	"github.com/iambaby/blog/internal/models"
-	"github.com/iambaby/blog/internal/pkg/logger"
-	"github.com/iambaby/blog/internal/repository"
-	"github.com/iambaby/blog/internal/service"
+	"github.com/whk-newbie/blog/internal/models"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
+	"github.com/whk-newbie/blog/internal/repository"
+	"github.com/whk-newbie/blog/internal/service"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )

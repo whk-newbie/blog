@@ -3,8 +3,8 @@ package scheduler
 import (
 	"time"
 
-	"github.com/iambaby/blog/internal/pkg/logger"
-	"github.com/iambaby/blog/internal/service"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
+	"github.com/whk-newbie/blog/internal/service"
 	"github.com/robfig/cron/v3"
 )
 

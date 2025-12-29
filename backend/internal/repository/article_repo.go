@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/iambaby/blog/internal/models"
+	"github.com/whk-newbie/blog/internal/models"
 	"gorm.io/gorm"
 )
 

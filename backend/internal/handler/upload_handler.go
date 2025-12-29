@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/iambaby/blog/internal/pkg/response"
+	"github.com/whk-newbie/blog/internal/pkg/response"
 )
 
 // UploadHandler 上传处理器

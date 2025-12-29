@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iambaby/blog/internal/pkg/response"
-	"github.com/iambaby/blog/internal/service"
+	"github.com/whk-newbie/blog/internal/pkg/response"
+	"github.com/whk-newbie/blog/internal/service"
 )
 
 // TagHandler 标签处理器

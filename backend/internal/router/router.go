@@ -2,14 +2,14 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/iambaby/blog/internal/config"
-	"github.com/iambaby/blog/internal/handler"
-	"github.com/iambaby/blog/internal/middleware"
-	"github.com/iambaby/blog/internal/pkg/db"
-	"github.com/iambaby/blog/internal/pkg/jwt"
-	"github.com/iambaby/blog/internal/repository"
-	"github.com/iambaby/blog/internal/scheduler"
-	"github.com/iambaby/blog/internal/service"
+	"github.com/whk-newbie/blog/internal/config"
+	"github.com/whk-newbie/blog/internal/handler"
+	"github.com/whk-newbie/blog/internal/middleware"
+	"github.com/whk-newbie/blog/internal/pkg/db"
+	"github.com/whk-newbie/blog/internal/pkg/jwt"
+	"github.com/whk-newbie/blog/internal/repository"
+	"github.com/whk-newbie/blog/internal/scheduler"
+	"github.com/whk-newbie/blog/internal/service"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iambaby/blog/internal/pkg/logger"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
 )
 
 // Logger 日志中间件

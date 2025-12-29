@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-	"github.com/iambaby/blog/internal/service"
+	"github.com/whk-newbie/blog/internal/service"
 )
 
 // Manager 调度器管理器

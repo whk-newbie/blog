@@ -4,9 +4,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iambaby/blog/internal/models"
-	"github.com/iambaby/blog/internal/pkg/response"
-	"github.com/iambaby/blog/internal/service"
+	"github.com/whk-newbie/blog/internal/models"
+	"github.com/whk-newbie/blog/internal/pkg/response"
+	"github.com/whk-newbie/blog/internal/service"
 )
 
 // ArticleHandler 文章处理器

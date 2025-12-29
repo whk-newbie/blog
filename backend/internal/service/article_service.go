@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gosimple/slug"
-	"github.com/iambaby/blog/internal/models"
-	"github.com/iambaby/blog/internal/repository"
+	"github.com/whk-newbie/blog/internal/models"
+	"github.com/whk-newbie/blog/internal/repository"
 )
 
 var (
