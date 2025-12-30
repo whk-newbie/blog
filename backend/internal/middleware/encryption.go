@@ -67,6 +67,17 @@ func Encryption(config EncryptionConfig) gin.HandlerFunc {
 			}
 		}
 
+		// 特殊处理：获取应用密钥的接口不需要加密（前端需要用它来解密其他响应）
+		// 路径: /api/v1/admin/configs?config_type=application_key
+		if strings.Contains(requestPath, "/admin/configs") {
+			configType := c.Query("config_type")
+			if configType == "application_key" {
+				// 获取应用密钥的接口，跳过加密处理
+				c.Next()
+				return
+			}
+		}
+
 		// 处理请求解密
 		if c.Request.Method == "POST" || c.Request.Method == "PUT" || c.Request.Method == "PATCH" {
 			// 读取请求体

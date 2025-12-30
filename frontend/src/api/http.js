@@ -164,46 +164,70 @@ http.interceptors.response.use(
       
       // 确保有 encrypted_data 字段
       if (!responseData.encrypted_data || typeof responseData.encrypted_data !== 'string') {
-        console.warn('加密响应格式不正确')
-        return Promise.reject(new Error('响应格式错误'))
+        console.error('加密响应格式不正确:', responseData)
+        return Promise.reject(new Error('响应格式错误：缺少 encrypted_data 字段'))
       }
+      
       try {
-        // 获取应用密钥
-        const appKey = await getAppKey()
+        // 获取应用密钥（如果本地没有，尝试从API获取）
+        let appKey = await getAppKey()
         
-        if (appKey) {
-          // 解密数据
-          const decryptedData = await decrypt(responseData.encrypted_data, appKey)
-          
-          // 尝试解析为JSON
-          try {
-            // 清理可能的空白字符
-            const cleanedData = decryptedData.trim()
-            // 查找第一个完整的 JSON 对象
-            let jsonEnd = -1
-            if (cleanedData.startsWith('{')) {
-              let braceCount = 0
-              for (let i = 0; i < cleanedData.length; i++) {
-                if (cleanedData[i] === '{') braceCount++
-                if (cleanedData[i] === '}') braceCount--
-                if (braceCount === 0 && i > 0) {
-                  jsonEnd = i + 1
-                  break
-                }
+        // 如果本地没有密钥，尝试强制刷新从API获取
+        if (!appKey) {
+          console.log('本地没有应用密钥，尝试从API获取...')
+          appKey = await getAppKey(true) // 强制刷新
+        }
+        
+        if (!appKey) {
+          console.error('无法获取应用密钥，无法解密响应')
+          return Promise.reject(new Error('无法获取应用密钥，请重新登录'))
+        }
+        
+        // 解密数据
+        console.log('开始解密响应数据...')
+        const decryptedData = await decrypt(responseData.encrypted_data, appKey)
+        console.log('解密成功，解密后数据长度:', decryptedData.length)
+        
+        // 尝试解析为JSON
+        try {
+          // 清理可能的空白字符
+          const cleanedData = decryptedData.trim()
+          // 查找第一个完整的 JSON 对象
+          let jsonEnd = -1
+          if (cleanedData.startsWith('{')) {
+            let braceCount = 0
+            for (let i = 0; i < cleanedData.length; i++) {
+              if (cleanedData[i] === '{') braceCount++
+              if (cleanedData[i] === '}') braceCount--
+              if (braceCount === 0 && i > 0) {
+                jsonEnd = i + 1
+                break
               }
             }
-            
-            const jsonString = jsonEnd > 0 ? cleanedData.substring(0, jsonEnd) : cleanedData
-            responseData = JSON.parse(jsonString)
-          } catch (e) {
-            console.warn('解密后数据解析失败:', e, decryptedData.substring(0, 100))
-            // 如果不是JSON，直接使用解密后的字符串
-            responseData = decryptedData
+          } else if (cleanedData.startsWith('[')) {
+            let bracketCount = 0
+            for (let i = 0; i < cleanedData.length; i++) {
+              if (cleanedData[i] === '[') bracketCount++
+              if (cleanedData[i] === ']') bracketCount--
+              if (bracketCount === 0 && i > 0) {
+                jsonEnd = i + 1
+                break
+              }
+            }
           }
+          
+          const jsonString = jsonEnd > 0 ? cleanedData.substring(0, jsonEnd) : cleanedData
+          responseData = JSON.parse(jsonString)
+          console.log('解密后JSON解析成功')
+        } catch (e) {
+          console.error('解密后数据解析失败:', e)
+          console.error('解密后的数据（前200字符）:', decryptedData.substring(0, 200))
+          return Promise.reject(new Error(`解密后数据解析失败: ${e.message}`))
         }
       } catch (error) {
-        console.warn('响应解密失败，使用原始数据:', error)
-        // 解密失败，继续使用原始数据
+        console.error('响应解密失败:', error)
+        console.error('加密数据（前100字符）:', responseData.encrypted_data.substring(0, 100))
+        return Promise.reject(new Error(`响应解密失败: ${error.message}`))
       }
     }
     

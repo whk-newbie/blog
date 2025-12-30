@@ -23,20 +23,12 @@ type RateLimitConfig struct {
 // 仅针对非登录用户进行限流，只对API接口计数（排除静态资源、健康检查等）
 func RateLimit(config RateLimitConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 如果配置为跳过已认证用户，且用户已认证，则直接放行
-		if config.SkipAuthenticated {
-			// 检查用户是否已认证（通过检查上下文中是否有userID）
-			if _, exists := c.Get("userID"); exists {
-				c.Next()
-				return
-			}
-		}
+		requestPath := c.Request.URL.Path
 
 		// 只对API接口进行限流，排除以下路径：
 		// - 健康检查 /health
 		// - Swagger文档 /swagger, /docs
 		// - 静态资源 /uploads, /favicon.ico 等
-		requestPath := c.Request.URL.Path
 		excludedPaths := []string{
 			"/health",
 			"/swagger",
@@ -57,6 +49,31 @@ func RateLimit(config RateLimitConfig) gin.HandlerFunc {
 		if !strings.HasPrefix(requestPath, "/api") {
 			c.Next()
 			return
+		}
+
+		// 如果配置为跳过已认证用户，检查用户是否已认证
+		if config.SkipAuthenticated {
+			// 方式1：检查上下文中是否有userID（如果认证中间件已经执行）
+			if _, exists := c.Get("userID"); exists {
+				c.Next()
+				return
+			}
+
+			// 方式2：对于需要认证的路径，如果请求头中有 Authorization token，跳过限流
+			// 因为限流中间件在认证中间件之前执行，所以需要提前检查
+			// 需要认证的路径包括：/admin/*, /auth/verify, /auth/password
+			needsAuth := strings.Contains(requestPath, "/admin") ||
+				strings.Contains(requestPath, "/auth/verify") ||
+				strings.Contains(requestPath, "/auth/password")
+
+			if needsAuth {
+				authHeader := c.GetHeader("Authorization")
+				if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
+					// 有认证 token，跳过限流（认证中间件会验证 token 的有效性）
+					c.Next()
+					return
+				}
+			}
 		}
 
 		// 获取客户端IP
