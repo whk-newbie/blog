@@ -94,6 +94,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	}
 	logService := service.NewLogService(logRepo)
 
+	// 初始化备份服务
+	backupService := service.NewBackupService(cfg)
+
 	// 获取应用密钥（用于数据加密中间件）
 	// 应用密钥存储在数据库中，使用主密钥加密存储
 	// 如果不存在，则自动生成并保存
@@ -157,6 +160,7 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	crawlerHandler := handler.NewCrawlerHandler(crawlService)
 	configHandler := handler.NewConfigHandler(configService)
 	logHandler := handler.NewLogHandler(logService)
+	backupHandler := handler.NewBackupHandler(backupService)
 
 	// 初始化WebSocket Handler
 	wsHandler := handler.NewWebSocketHandler(wsHub, jwtManager)
@@ -278,6 +282,13 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			admin.GET("/logs", logHandler.GetLogs)
 			admin.GET("/logs/:id", logHandler.GetLogByID)
 			admin.POST("/logs/cleanup", logHandler.CleanupLogs)
+
+			// 数据备份
+			admin.GET("/backups", backupHandler.GetBackups)
+			admin.POST("/backups", backupHandler.CreateBackup)
+			admin.GET("/backups/download/:filename", backupHandler.DownloadBackup)
+			admin.DELETE("/backups/:filename", backupHandler.DeleteBackup)
+			admin.POST("/backups/cleanup", backupHandler.CleanupBackups)
 		}
 	}
 
@@ -287,8 +298,10 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	// 静态文件服务 - 上传的文件
 	r.Static("/uploads", "./uploads")
 
-	// 创建调度器管理器（日志保留90天）
-	schedulerManager := scheduler.NewManager(articleService, logService, 90)
+	// 创建调度器管理器（日志保留90天，备份每天凌晨3点，保留10个备份）
+	backupSchedule := "0 0 3 * * *" // 每天凌晨3点
+	backupRetentionCount := 10      // 保留10个备份
+	schedulerManager := scheduler.NewManager(articleService, logService, backupService, 90, backupSchedule, backupRetentionCount)
 
 	return r, schedulerManager
 }
