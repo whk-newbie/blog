@@ -40,8 +40,8 @@ func NewWebSocketHandler(hub *websocket.Hub, jwtManager *jwt.Manager) *WebSocket
 // @Produce json
 // @Param token query string true "JWT Token"
 // @Success 101 {object} nil "WebSocket连接成功"
-// @Failure 400 {object} response.Response "参数错误"
-// @Failure 401 {object} response.Response "未授权"
+// @Failure 400 {object} github_com_whk-newbie_blog_internal_pkg_response.Response "参数错误"
+// @Failure 401 {object} github_com_whk-newbie_blog_internal_pkg_response.Response "未授权"
 // @Router /ws/crawler/tasks [get]
 func (h *WebSocketHandler) HandleCrawlerTasks(c *gin.Context) {
 	// 从查询参数获取Token

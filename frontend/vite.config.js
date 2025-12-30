@@ -56,22 +56,45 @@ export default defineConfig({
         drop_console: true, // 生产环境移除console
         drop_debugger: true, // 移除debugger
         pure_funcs: ['console.log', 'console.info'], // 移除指定的函数调用
+        // 禁用可能导致循环依赖的优化
+        passes: 1, // 减少压缩轮数
+        unsafe: false, // 禁用不安全的优化
+        unsafe_comps: false,
+        unsafe_math: false,
+        unsafe_methods: false,
+        unsafe_proto: false,
+        unsafe_regexp: false,
+        unsafe_undefined: false,
       },
       format: {
         comments: false, // 移除注释
       },
       mangle: {
-        toplevel: true, // 混淆顶级作用域
+        // 禁用顶级作用域混淆，避免循环依赖问题
+        toplevel: false,
+        // 保留类名和函数名，避免初始化顺序问题
+        keep_classnames: true,
+        keep_fnames: true,
         properties: {
-          regex: /^_/, // 混淆以下划线开头的属性
+          // 禁用属性混淆
+          regex: /^$/,
         },
       },
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          'element-plus': ['element-plus'],
-          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+        manualChunks: (id) => {
+          // 更精细的代码分割策略，确保加载顺序
+          if (id.includes('node_modules')) {
+            if (id.includes('element-plus')) {
+              return 'element-plus'
+            }
+            if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+              return 'vue-vendor'
+            }
+            // 其他第三方库
+            return 'vendor'
+          }
         },
         // 混淆文件名
         chunkFileNames: 'js/[name]-[hash].js',

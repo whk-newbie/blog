@@ -39,9 +39,17 @@ func Init(cfg RedisConfig) error {
 		WriteTimeout: cfg.WriteTimeout,
 	})
 
-	// 测试连接
-	if err := client.Ping(ctx).Err(); err != nil {
-		return fmt.Errorf("failed to ping redis: %w", err)
+	// 测试连接，增加重试机制
+	maxRetries := 5
+	for i := 0; i < maxRetries; i++ {
+		if err := client.Ping(ctx).Err(); err != nil {
+			if i < maxRetries-1 {
+				time.Sleep(time.Second * 2)
+				continue
+			}
+			return fmt.Errorf("failed to ping redis: %w", err)
+		}
+		return nil
 	}
 
 	return nil
@@ -84,4 +92,3 @@ func Exists(keys ...string) (int64, error) {
 func Expire(key string, expiration time.Duration) error {
 	return client.Expire(ctx, key, expiration).Err()
 }
-

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -34,6 +35,16 @@ type EncryptedResponse struct {
 	Timestamp     int64  `json:"timestamp"`
 }
 
+// 不需要加密的路径列表（公开接口和Python SDK接口）
+var noEncryptionPaths = []string{
+	"/auth/login",
+	"/auth/refresh",
+	"/fingerprint",
+	"/visit",
+	"/crawler",    // Python SDK 爬虫接口
+	"/ws/crawler", // WebSocket 爬虫接口
+}
+
 // Encryption 数据加密中间件
 // 支持请求解密和响应加密
 // 请求格式: {"encrypted_data": "base64密文", "timestamp": 1234567890}
@@ -44,6 +55,16 @@ func Encryption(config EncryptionConfig) gin.HandlerFunc {
 		if !config.Enabled || config.Crypto == nil {
 			c.Next()
 			return
+		}
+
+		// 检查是否是排除路径（公开接口不需要加密）
+		requestPath := c.Request.URL.Path
+		for _, path := range noEncryptionPaths {
+			if strings.Contains(requestPath, path) {
+				// 公开接口，跳过加密处理
+				c.Next()
+				return
+			}
 		}
 
 		// 处理请求解密
@@ -88,10 +109,11 @@ func Encryption(config EncryptionConfig) gin.HandlerFunc {
 		// 保存原始响应写入器
 		originalWriter := c.Writer
 
-		// 创建自定义响应写入器
+		// 创建自定义响应写入器（只捕获，不写入）
 		blw := &bodyLogWriter{
 			body:           bytes.NewBufferString(""),
 			ResponseWriter: originalWriter,
+			statusCode:     200, // 默认状态码
 		}
 		c.Writer = blw
 
@@ -100,13 +122,17 @@ func Encryption(config EncryptionConfig) gin.HandlerFunc {
 
 		// 处理响应加密
 		// 只加密JSON响应
-		if c.Writer.Status() == 200 && c.Writer.Header().Get("Content-Type") == "application/json; charset=utf-8" {
+		contentType := blw.Header().Get("Content-Type")
+		if blw.statusCode == 200 && (contentType == "application/json; charset=utf-8" || contentType == "application/json") {
 			responseBody := blw.body.String()
 			if responseBody != "" {
 				// 加密响应数据
 				encryptedData, err := config.Crypto.Encrypt(responseBody)
 				if err != nil {
 					// 加密失败，返回原始响应
+					originalWriter.Header().Set("Content-Type", contentType)
+					originalWriter.Header().Set("Content-Length", strconv.Itoa(len(responseBody)))
+					originalWriter.WriteHeader(blw.statusCode)
 					originalWriter.WriteString(responseBody)
 					return
 				}
@@ -121,34 +147,72 @@ func Encryption(config EncryptionConfig) gin.HandlerFunc {
 				encryptedJSON, err := json.Marshal(encryptedResp)
 				if err != nil {
 					// 序列化失败，返回原始响应
+					originalWriter.Header().Set("Content-Type", contentType)
+					originalWriter.Header().Set("Content-Length", strconv.Itoa(len(responseBody)))
+					originalWriter.WriteHeader(blw.statusCode)
 					originalWriter.WriteString(responseBody)
 					return
 				}
 
-				// 写入加密响应
+				// 写入加密响应（清除之前可能写入的内容）
+				// 复制响应头（除了Content-Length）
+				for key, values := range blw.Header() {
+					if key != "Content-Length" {
+						for _, value := range values {
+							originalWriter.Header().Set(key, value)
+						}
+					}
+				}
 				originalWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
 				originalWriter.Header().Set("Content-Length", strconv.Itoa(len(encryptedJSON)))
+				originalWriter.WriteHeader(blw.statusCode)
 				originalWriter.Write(encryptedJSON)
+			} else {
+				// 响应体为空，直接复制响应头
+				for key, values := range blw.Header() {
+					for _, value := range values {
+						originalWriter.Header().Set(key, value)
+					}
+				}
+				originalWriter.WriteHeader(blw.statusCode)
 			}
 		} else {
-			// 非JSON响应，直接写入
+			// 非JSON响应或非200状态码，直接写入原始响应
+			// 复制响应头
+			for key, values := range blw.Header() {
+				for _, value := range values {
+					originalWriter.Header().Set(key, value)
+				}
+			}
+			originalWriter.WriteHeader(blw.statusCode)
 			originalWriter.Write(blw.body.Bytes())
 		}
 	}
 }
 
 // bodyLogWriter 自定义响应写入器，用于捕获响应体
+// 注意：只捕获，不写入到原始ResponseWriter，避免重复写入
 type bodyLogWriter struct {
 	gin.ResponseWriter
-	body *bytes.Buffer
+	body       *bytes.Buffer
+	statusCode int
+	written    bool
 }
 
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
+	// 只写入到缓冲区，不写入到原始ResponseWriter
 	w.body.Write(b)
-	return w.ResponseWriter.Write(b)
+	return len(b), nil
 }
 
 func (w *bodyLogWriter) WriteString(s string) (int, error) {
+	// 只写入到缓冲区，不写入到原始ResponseWriter
 	w.body.WriteString(s)
-	return w.ResponseWriter.WriteString(s)
+	return len(s), nil
+}
+
+func (w *bodyLogWriter) WriteHeader(statusCode int) {
+	// 保存状态码
+	w.statusCode = statusCode
+	// 不调用原始ResponseWriter的WriteHeader，避免提前写入
 }

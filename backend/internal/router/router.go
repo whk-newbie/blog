@@ -123,8 +123,13 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			panic("Failed to encrypt application key: " + err.Error())
 		}
 
-		// 保存到数据库（这里需要创建一个默认管理员ID，或者使用0）
-		// 注意：首次启动时可能还没有管理员，这里使用0作为创建者ID
+		// 保存到数据库（使用默认管理员ID）
+		// 查找默认管理员
+		defaultAdmin, err := adminRepo.FindByUsername("admin")
+		adminID := uint(1) // 默认使用ID 1
+		if err == nil && defaultAdmin != nil {
+			adminID = defaultAdmin.ID
+		}
 		_, err = configService.CreateConfig(&service.CreateConfigRequest{
 			ConfigKey:   "application_key",
 			ConfigValue: encryptedAppKey,
@@ -132,9 +137,69 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			IsEncrypted: true,
 			IsActive:    true,
 			Description: "应用密钥（用于数据加密传输）",
-		}, 0) // 使用0作为创建者ID（系统自动创建）
+		}, adminID) // 使用默认管理员ID
 		if err != nil && err != service.ErrConfigExists {
 			panic("Failed to save application key: " + err.Error())
+		}
+	}
+
+	// 验证应用密钥长度（必须是32字节）
+	if len(appKey) != 32 {
+		// 如果密钥长度不正确，重新生成
+		logger.Warn("Application key length is incorrect (%d bytes), regenerating...", len(appKey))
+
+		// 生成32字节随机密钥
+		masterCrypto, err := crypto.NewCrypto(cfg.Crypto.MasterKey)
+		if err != nil {
+			panic("Failed to initialize master crypto: " + err.Error())
+		}
+
+		appKeyBytes := make([]byte, 32)
+		if _, err := rand.Read(appKeyBytes); err != nil {
+			panic("Failed to generate application key: " + err.Error())
+		}
+		appKey = string(appKeyBytes)
+
+		// 使用主密钥加密应用密钥
+		encryptedAppKey, err := masterCrypto.Encrypt(appKey)
+		if err != nil {
+			panic("Failed to encrypt application key: " + err.Error())
+		}
+
+		// 更新数据库中的密钥
+		defaultAdmin, err := adminRepo.FindByUsername("admin")
+		adminID := uint(1)
+		if err == nil && defaultAdmin != nil {
+			adminID = defaultAdmin.ID
+		}
+
+		// 查找现有配置
+		existingConfig, err := configRepo.FindByKey("application_key")
+		if err == nil && existingConfig != nil {
+			// 更新现有配置
+			_, err = configService.UpdateConfig(existingConfig.ID, &service.UpdateConfigRequest{
+				ConfigValue: encryptedAppKey,
+			}, adminID)
+			if err != nil {
+				logger.Warn("Failed to update application key: %v", err)
+			} else {
+				logger.Info("Application key regenerated and updated successfully")
+			}
+		} else {
+			// 创建新配置
+			_, err = configService.CreateConfig(&service.CreateConfigRequest{
+				ConfigKey:   "application_key",
+				ConfigValue: encryptedAppKey,
+				ConfigType:  models.ConfigTypeAppKey,
+				IsEncrypted: true,
+				IsActive:    true,
+				Description: "应用密钥（用于数据加密传输）",
+			}, adminID)
+			if err != nil && err != service.ErrConfigExists {
+				logger.Warn("Failed to save application key: %v", err)
+			} else {
+				logger.Info("Application key regenerated and saved successfully")
+			}
 		}
 	}
 

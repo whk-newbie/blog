@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ type RateLimitConfig struct {
 
 // RateLimit 限流中间件
 // 基于IP地址进行限流，使用Redis存储计数
-// 仅针对非登录用户进行限流
+// 仅针对非登录用户进行限流，只对API接口计数（排除静态资源、健康检查等）
 func RateLimit(config RateLimitConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 如果配置为跳过已认证用户，且用户已认证，则直接放行
@@ -29,6 +30,33 @@ func RateLimit(config RateLimitConfig) gin.HandlerFunc {
 				c.Next()
 				return
 			}
+		}
+
+		// 只对API接口进行限流，排除以下路径：
+		// - 健康检查 /health
+		// - Swagger文档 /swagger, /docs
+		// - 静态资源 /uploads, /favicon.ico 等
+		requestPath := c.Request.URL.Path
+		excludedPaths := []string{
+			"/health",
+			"/swagger",
+			"/docs",
+			"/uploads",
+			"/favicon.ico",
+		}
+
+		for _, excludedPath := range excludedPaths {
+			if strings.Contains(requestPath, excludedPath) {
+				// 排除的路径，不进行限流
+				c.Next()
+				return
+			}
+		}
+
+		// 只对 /api 路径下的接口进行限流
+		if !strings.HasPrefix(requestPath, "/api") {
+			c.Next()
+			return
 		}
 
 		// 获取客户端IP

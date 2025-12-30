@@ -107,8 +107,66 @@ http.interceptors.response.use(
     // 处理响应解密
     let responseData = response.data
     
-    // 检查是否是加密响应格式
-    if (responseData.encrypted_data && typeof responseData.encrypted_data === 'string') {
+    // 如果响应数据是字符串，先尝试解析为 JSON（可能是加密格式的字符串）
+    if (typeof responseData === 'string') {
+      try {
+        // 清理可能的空白字符和多余内容
+        const cleanedData = responseData.trim()
+        // 如果字符串以 { 或 [ 开头，尝试解析为 JSON
+        if (cleanedData.startsWith('{') || cleanedData.startsWith('[')) {
+          // 查找第一个完整的 JSON 对象
+          let jsonEnd = -1
+          if (cleanedData.startsWith('{')) {
+            let braceCount = 0
+            for (let i = 0; i < cleanedData.length; i++) {
+              if (cleanedData[i] === '{') braceCount++
+              if (cleanedData[i] === '}') braceCount--
+              if (braceCount === 0 && i > 0) {
+                jsonEnd = i + 1
+                break
+              }
+            }
+          } else if (cleanedData.startsWith('[')) {
+            let bracketCount = 0
+            for (let i = 0; i < cleanedData.length; i++) {
+              if (cleanedData[i] === '[') bracketCount++
+              if (cleanedData[i] === ']') bracketCount--
+              if (bracketCount === 0 && i > 0) {
+                jsonEnd = i + 1
+                break
+              }
+            }
+          }
+          
+          const jsonString = jsonEnd > 0 ? cleanedData.substring(0, jsonEnd) : cleanedData
+          responseData = JSON.parse(jsonString)
+        }
+      } catch (e) {
+        // 解析失败，保持原始字符串，后续会检查是否是加密格式
+        console.warn('响应数据解析失败，保持原始字符串:', e)
+      }
+    }
+    
+    // 检查是否是加密响应格式（对象格式或字符串格式）
+    if (responseData && (
+      (typeof responseData === 'object' && responseData.encrypted_data && typeof responseData.encrypted_data === 'string') ||
+      (typeof responseData === 'string' && responseData.includes('encrypted_data'))
+    )) {
+      // 如果是字符串格式，先解析为对象
+      if (typeof responseData === 'string') {
+        try {
+          responseData = JSON.parse(responseData)
+        } catch (e) {
+          console.warn('无法解析加密响应字符串:', e)
+          return Promise.reject(new Error('响应格式错误'))
+        }
+      }
+      
+      // 确保有 encrypted_data 字段
+      if (!responseData.encrypted_data || typeof responseData.encrypted_data !== 'string') {
+        console.warn('加密响应格式不正确')
+        return Promise.reject(new Error('响应格式错误'))
+      }
       try {
         // 获取应用密钥
         const appKey = await getAppKey()
@@ -119,8 +177,26 @@ http.interceptors.response.use(
           
           // 尝试解析为JSON
           try {
-            responseData = JSON.parse(decryptedData)
+            // 清理可能的空白字符
+            const cleanedData = decryptedData.trim()
+            // 查找第一个完整的 JSON 对象
+            let jsonEnd = -1
+            if (cleanedData.startsWith('{')) {
+              let braceCount = 0
+              for (let i = 0; i < cleanedData.length; i++) {
+                if (cleanedData[i] === '{') braceCount++
+                if (cleanedData[i] === '}') braceCount--
+                if (braceCount === 0 && i > 0) {
+                  jsonEnd = i + 1
+                  break
+                }
+              }
+            }
+            
+            const jsonString = jsonEnd > 0 ? cleanedData.substring(0, jsonEnd) : cleanedData
+            responseData = JSON.parse(jsonString)
           } catch (e) {
+            console.warn('解密后数据解析失败:', e, decryptedData.substring(0, 100))
             // 如果不是JSON，直接使用解密后的字符串
             responseData = decryptedData
           }
@@ -129,6 +205,12 @@ http.interceptors.response.use(
         console.warn('响应解密失败，使用原始数据:', error)
         // 解密失败，继续使用原始数据
       }
+    }
+    
+    // 确保 responseData 是对象
+    if (!responseData || typeof responseData !== 'object') {
+      console.error('响应数据格式不正确:', responseData)
+      return Promise.reject(new Error('响应数据格式不正确'))
     }
     
     const { code, message, data } = responseData
