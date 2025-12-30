@@ -1,10 +1,14 @@
 package router
 
 import (
+	"crypto/rand"
+
 	"github.com/gin-gonic/gin"
 	"github.com/whk-newbie/blog/internal/config"
 	"github.com/whk-newbie/blog/internal/handler"
 	"github.com/whk-newbie/blog/internal/middleware"
+	"github.com/whk-newbie/blog/internal/models"
+	"github.com/whk-newbie/blog/internal/pkg/crypto"
 	"github.com/whk-newbie/blog/internal/pkg/db"
 	"github.com/whk-newbie/blog/internal/pkg/jwt"
 	"github.com/whk-newbie/blog/internal/pkg/logger"
@@ -89,6 +93,53 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	}
 	logService := service.NewLogService(logRepo)
 
+	// 获取应用密钥（用于数据加密中间件）
+	// 应用密钥存储在数据库中，使用主密钥加密存储
+	// 如果不存在，则自动生成并保存
+	appKey, err := configService.GetConfigValue("application_key")
+	if err != nil {
+		// 应用密钥不存在，需要生成
+		// 生成32字节随机密钥
+		masterCrypto, err := crypto.NewCrypto(cfg.Crypto.MasterKey)
+		if err != nil {
+			panic("Failed to initialize master crypto: " + err.Error())
+		}
+
+		// 生成随机应用密钥（32字节）
+		appKeyBytes := make([]byte, 32)
+		if _, err := rand.Read(appKeyBytes); err != nil {
+			panic("Failed to generate application key: " + err.Error())
+		}
+		// 应用密钥直接使用字节数组，转换为字符串用于存储
+		appKey = string(appKeyBytes)
+
+		// 使用主密钥加密应用密钥
+		encryptedAppKey, err := masterCrypto.Encrypt(appKey)
+		if err != nil {
+			panic("Failed to encrypt application key: " + err.Error())
+		}
+
+		// 保存到数据库（这里需要创建一个默认管理员ID，或者使用0）
+		// 注意：首次启动时可能还没有管理员，这里使用0作为创建者ID
+		_, err = configService.CreateConfig(&service.CreateConfigRequest{
+			ConfigKey:   "application_key",
+			ConfigValue: encryptedAppKey,
+			ConfigType:  models.ConfigTypeAppKey,
+			IsEncrypted: true,
+			IsActive:    true,
+			Description: "应用密钥（用于数据加密传输）",
+		}, 0) // 使用0作为创建者ID（系统自动创建）
+		if err != nil && err != service.ErrConfigExists {
+			panic("Failed to save application key: " + err.Error())
+		}
+	}
+
+	// 使用应用密钥初始化加密工具
+	cryptoInstance, err := crypto.NewCrypto(appKey)
+	if err != nil {
+		panic("Failed to initialize crypto with application key: " + err.Error())
+	}
+
 	// 注册数据库日志钩子，自动将WARN和ERROR级别日志写入数据库
 	dbHook := logger.NewDatabaseHook(logService)
 	logger.AddHook(dbHook)
@@ -112,6 +163,21 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	// API路由组
 	api := r.Group("/api/v1")
 	{
+		// 安全中间件：IP黑名单（在所有公开接口之前）
+		api.Use(middleware.IPBlacklist(configService))
+
+		// 安全中间件：限流（针对非登录用户，每分钟60次）
+		api.Use(middleware.RateLimit(middleware.RateLimitConfig{
+			RequestsPerMinute: 60,
+			SkipAuthenticated: true,
+		}))
+
+		// 安全中间件：数据加密（启用）
+		api.Use(middleware.Encryption(middleware.EncryptionConfig{
+			Crypto:  cryptoInstance,
+			Enabled: true,
+		}))
+
 		// 认证相关接口（公开）
 		auth := api.Group("/auth")
 		{
