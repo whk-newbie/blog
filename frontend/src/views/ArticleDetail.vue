@@ -51,7 +51,7 @@
 
             <!-- 封面图 -->
             <div v-if="article.cover_image" class="article-cover">
-              <img :src="article.cover_image" :alt="article.title" />
+              <img v-lazy="article.cover_image" :alt="article.title" loading="lazy" />
             </div>
 
             <!-- 摘要 -->

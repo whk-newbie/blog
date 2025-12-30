@@ -2,6 +2,7 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import i18n from '@/locales'
 import { encrypt, decrypt, getAppKey } from '@/utils/crypto'
+import performanceMonitor from '@/utils/performance'
 
 // 创建axios实例
 const http = axios.create({
@@ -23,6 +24,11 @@ const NO_ENCRYPTION_PATHS = [
 // 请求拦截器
 http.interceptors.request.use(
   async (config) => {
+    // 记录请求开始时间
+    config.metadata = {
+      startTime: performance.now(),
+    }
+    
     // 添加token
     const token = localStorage.getItem('token')
     if (token) {
@@ -75,6 +81,19 @@ http.interceptors.request.use(
 // 响应拦截器
 http.interceptors.response.use(
   async (response) => {
+    // 记录API请求性能
+    if (response.config.metadata) {
+      const endTime = performance.now()
+      const duration = endTime - response.config.metadata.startTime
+      performanceMonitor.recordApiRequest(
+        response.config.url || '',
+        response.config.method || 'get',
+        response.config.metadata.startTime,
+        endTime,
+        response.status
+      )
+    }
+    
     // 204 No Content - 删除成功，没有响应体
     if (response.status === 204) {
       return null

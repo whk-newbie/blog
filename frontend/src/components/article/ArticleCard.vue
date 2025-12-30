@@ -2,7 +2,7 @@
   <div class="article-card" @click="handleClick">
     <!-- 封面图 -->
     <div v-if="article.cover_image" class="article-cover">
-      <img :src="article.cover_image" :alt="article.title" />
+      <img v-lazy="article.cover_image" :alt="article.title" loading="lazy" />
       <div v-if="article.is_top" class="top-badge">
         <el-tag type="danger" size="small">{{ t('article.isTop') }}</el-tag>
       </div>
