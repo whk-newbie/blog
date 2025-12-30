@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import i18n from '@/locales'
+import { encrypt, decrypt, getAppKey } from '@/utils/crypto'
 
 // 创建axios实例
 const http = axios.create({
@@ -11,9 +12,17 @@ const http = axios.create({
   },
 })
 
+// 不需要加密的接口列表（登录等公开接口）
+const NO_ENCRYPTION_PATHS = [
+  '/auth/login',
+  '/auth/refresh',
+  '/fingerprint',
+  '/visit'
+]
+
 // 请求拦截器
 http.interceptors.request.use(
-  (config) => {
+  async (config) => {
     // 添加token
     const token = localStorage.getItem('token')
     if (token) {
@@ -22,6 +31,39 @@ http.interceptors.request.use(
     
     // 添加请求ID
     config.headers['X-Request-ID'] = generateRequestId()
+    
+    // 处理请求加密
+    // 只对POST/PUT/PATCH请求且不在排除列表中的请求进行加密
+    const shouldEncrypt = 
+      (config.method === 'post' || config.method === 'put' || config.method === 'patch') &&
+      config.data &&
+      !NO_ENCRYPTION_PATHS.some(path => config.url?.includes(path))
+    
+    if (shouldEncrypt) {
+      try {
+        // 获取应用密钥
+        const appKey = await getAppKey()
+        
+        if (appKey) {
+          // 将请求数据转换为JSON字符串
+          const jsonData = typeof config.data === 'string' 
+            ? config.data 
+            : JSON.stringify(config.data)
+          
+          // 加密数据
+          const encryptedData = await encrypt(jsonData, appKey)
+          
+          // 构建加密请求格式
+          config.data = {
+            encrypted_data: encryptedData,
+            timestamp: Date.now()
+          }
+        }
+      } catch (error) {
+        console.warn('请求加密失败，使用明文:', error)
+        // 加密失败，继续使用原始数据
+      }
+    }
     
     return config
   },
@@ -32,7 +74,7 @@ http.interceptors.request.use(
 
 // 响应拦截器
 http.interceptors.response.use(
-  (response) => {
+  async (response) => {
     // 204 No Content - 删除成功，没有响应体
     if (response.status === 204) {
       return null
@@ -43,7 +85,34 @@ http.interceptors.response.use(
       return null
     }
     
-    const { code, message, data } = response.data
+    // 处理响应解密
+    let responseData = response.data
+    
+    // 检查是否是加密响应格式
+    if (responseData.encrypted_data && typeof responseData.encrypted_data === 'string') {
+      try {
+        // 获取应用密钥
+        const appKey = await getAppKey()
+        
+        if (appKey) {
+          // 解密数据
+          const decryptedData = await decrypt(responseData.encrypted_data, appKey)
+          
+          // 尝试解析为JSON
+          try {
+            responseData = JSON.parse(decryptedData)
+          } catch (e) {
+            // 如果不是JSON，直接使用解密后的字符串
+            responseData = decryptedData
+          }
+        }
+      } catch (error) {
+        console.warn('响应解密失败，使用原始数据:', error)
+        // 解密失败，继续使用原始数据
+      }
+    }
+    
+    const { code, message, data } = responseData
     
     // 业务成功
     if (code === 0) {
