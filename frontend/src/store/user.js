@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchAppKeyFromAPI, clearAppKey } from '@/utils/crypto'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
@@ -33,21 +32,11 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('username')
     localStorage.removeItem('userId')
     localStorage.removeItem('isDefaultPassword')
-    
-    // 清除应用密钥
-    clearAppKey()
   }
 
   const login = async (loginData) => {
     setToken(loginData.token)
     setUserInfo(loginData.user)
-    
-    // 登录成功后，获取应用密钥
-    try {
-      await fetchAppKeyFromAPI()
-    } catch (error) {
-      console.warn('登录后获取应用密钥失败:', error)
-    }
   }
 
   const logout = () => {
