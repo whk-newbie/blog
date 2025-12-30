@@ -32,9 +32,6 @@ docker-compose up -d
 echo ""
 echo "✅ Blog System started successfully!"
 echo ""
-echo "📊 Service Status:"
-docker-compose ps
-echo ""
 echo "🌐 Access URLs:"
 echo "  - Frontend: http://localhost"
 echo "  - Backend API: http://localhost/api"
