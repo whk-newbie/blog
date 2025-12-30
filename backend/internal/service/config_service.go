@@ -97,10 +97,21 @@ func NewConfigService(configRepo repository.ConfigRepository, masterKey string) 
 
 // GetConfigs 获取配置列表
 func (s *configService) GetConfigs(configType string) ([]*ConfigResponse, error) {
-	// 尝试从缓存获取
-	cacheKey := fmt.Sprintf("configs:%s", configType)
-	if cached, err := s.getCachedConfigs(cacheKey); err == nil {
-		return cached, nil
+	// 特殊处理：application_key 需要返回完整值（不脱敏），跳过缓存
+	// 因为缓存中可能存储的是脱敏后的数据，而前端需要完整的密钥来解密其他响应
+	isAppKeyQuery := configType == models.ConfigTypeAppKey
+
+	var cacheKey string
+	if !isAppKeyQuery {
+		// 非 application_key 查询，尝试从缓存获取
+		cacheKey = fmt.Sprintf("configs:%s", configType)
+		if cached, err := s.getCachedConfigs(cacheKey); err == nil {
+			return cached, nil
+		}
+	} else {
+		// application_key 查询，清除可能存在的缓存
+		cacheKey = fmt.Sprintf("configs:%s", configType)
+		s.clearConfigCache(configType)
 	}
 
 	var configs []*models.SystemConfig
@@ -118,11 +129,19 @@ func (s *configService) GetConfigs(configType string) ([]*ConfigResponse, error)
 
 	responses := make([]*ConfigResponse, 0, len(configs))
 	for _, config := range configs {
-		responses = append(responses, s.toConfigResponse(config, true))
+		// 特殊处理：application_key 需要返回完整值（不脱敏），因为前端需要用它来解密其他响应
+		maskSensitive := true
+		if isAppKeyQuery && config.ConfigKey == "application_key" {
+			maskSensitive = false
+		}
+		responses = append(responses, s.toConfigResponse(config, maskSensitive))
 	}
 
 	// 缓存结果（配置信息缓存10分钟）
-	_ = s.cacheConfigs(cacheKey, responses, 10*time.Minute)
+	// 注意：application_key 查询的结果不缓存，因为每次都需要返回完整值
+	if !isAppKeyQuery {
+		_ = s.cacheConfigs(cacheKey, responses, 10*time.Minute)
+	}
 
 	return responses, nil
 }
@@ -302,23 +321,35 @@ func (s *configService) GenerateCrawlerToken(name string, userID uint) (*Crawler
 func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensitive bool) *ConfigResponse {
 	configValue := config.ConfigValue
 
-	// 敏感信息脱敏
-	if maskSensitive && configValue != "" {
-		if config.IsEncrypted {
-			// 加密的配置：尝试解密后脱敏
-			decrypted, err := s.crypto.Decrypt(configValue)
-			if err == nil {
-				// 解密成功，根据配置类型进行智能脱敏
+	// 如果配置是加密的，需要先解密
+	if config.IsEncrypted && configValue != "" {
+		decrypted, err := s.crypto.Decrypt(configValue)
+		if err == nil {
+			// 解密成功
+			if maskSensitive {
+				// 需要脱敏：根据配置类型进行智能脱敏
 				configValue = s.maskSensitiveValue(decrypted, config.ConfigType)
 			} else {
-				// 解密失败，使用默认脱敏
-				configValue = "***"
+				// 不需要脱敏：返回完整解密后的值
+				// 对于 application_key，确保返回的是32字节的原始密钥
+				configValue = decrypted
 			}
 		} else {
-			// 未加密的配置：直接根据类型脱敏
-			configValue = s.maskSensitiveValue(configValue, config.ConfigType)
+			// 解密失败
+			if maskSensitive {
+				configValue = "***"
+			} else {
+				// 对于 application_key，解密失败应该返回错误，而不是原始加密值
+				// 这里我们返回空字符串，让调用者知道解密失败
+				// 注意：这不应该发生，因为主密钥应该是正确的
+				configValue = ""
+			}
 		}
+	} else if maskSensitive && configValue != "" {
+		// 未加密的配置：如果需要脱敏，直接根据类型脱敏
+		configValue = s.maskSensitiveValue(configValue, config.ConfigType)
 	}
+	// 如果 maskSensitive=false 且未加密，直接使用原始值
 
 	return &ConfigResponse{
 		ID:          config.ID,

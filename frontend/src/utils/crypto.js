@@ -131,16 +131,43 @@ export async function fetchAppKeyFromAPI() {
     
     if (configs && configs.length > 0) {
       // 应用密钥在配置中，后端会解密后返回
-      const appKey = configs[0].config_value
+      const config = configs[0]
+      const appKey = config.config_value
+      
+      console.log('获取到的应用密钥配置:', {
+        config_key: config.config_key,
+        is_encrypted: config.is_encrypted,
+        config_value_length: appKey ? appKey.length : 0,
+        config_value_preview: appKey ? appKey.substring(0, 20) + '...' : 'null'
+      })
+      
+      // 检查密钥是否有效
+      if (!appKey) {
+        console.error('应用密钥为空')
+        return null
+      }
+      
+      // 应用密钥应该是32字节的字符串
+      // 注意：32字节的随机字节可能包含不可打印字符，所以长度检查可能不准确
+      // 我们使用 TextEncoder 来验证字节长度
+      const encoder = new TextEncoder()
+      const keyBytes = encoder.encode(appKey)
+      
+      if (keyBytes.length !== 32) {
+        console.error(`应用密钥长度不正确: 期望32字节，实际${keyBytes.length}字节`)
+        console.error('密钥值（Base64）:', btoa(appKey))
+        return null
+      }
       
       // 保存到localStorage
-      if (appKey && appKey.length === 32) {
-        localStorage.setItem('app_key', appKey)
-        return appKey
-      }
+      localStorage.setItem('app_key', appKey)
+      console.log('应用密钥已保存到localStorage')
+      return appKey
+    } else {
+      console.warn('未找到应用密钥配置')
     }
   } catch (error) {
-    console.warn('从API获取应用密钥失败:', error)
+    console.error('从API获取应用密钥失败:', error)
   }
   
   return null
