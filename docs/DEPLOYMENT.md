@@ -436,7 +436,7 @@ docker-compose exec redis redis-cli --scan --pattern "*" | xargs redis-cli DEL
    - 数据库密码
    - Redis密码
    - JWT密钥
-   - 加密主密钥
+   - 配置存储加密主密钥
 
 2. **使用HTTPS**
    - 配置SSL证书
