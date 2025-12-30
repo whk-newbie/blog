@@ -11,11 +11,11 @@ export default defineConfig({
     AutoImport({
       resolvers: [ElementPlusResolver()],
       imports: ['vue', 'vue-router', 'pinia'],
-      dts: 'src/auto-imports.d.ts',
+      dts: process.env.NODE_ENV === 'development' ? 'src/auto-imports.d.ts' : false,
     }),
     Components({
       resolvers: [ElementPlusResolver()],
-      dts: 'src/components.d.ts',
+      dts: process.env.NODE_ENV === 'development' ? 'src/components.d.ts' : false,
     }),
   ],
   resolve: {
@@ -50,12 +50,33 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    minify: 'terser', // 使用terser进行代码混淆
+    terserOptions: {
+      compress: {
+        drop_console: true, // 生产环境移除console
+        drop_debugger: true, // 移除debugger
+        pure_funcs: ['console.log', 'console.info'], // 移除指定的函数调用
+      },
+      format: {
+        comments: false, // 移除注释
+      },
+      mangle: {
+        toplevel: true, // 混淆顶级作用域
+        properties: {
+          regex: /^_/, // 混淆以下划线开头的属性
+        },
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
           'element-plus': ['element-plus'],
           'vue-vendor': ['vue', 'vue-router', 'pinia'],
         },
+        // 混淆文件名
+        chunkFileNames: 'js/[name]-[hash].js',
+        entryFileNames: 'js/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
   },
