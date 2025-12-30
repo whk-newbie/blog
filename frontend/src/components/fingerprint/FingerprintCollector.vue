@@ -13,6 +13,31 @@ import Cookies from 'js-cookie'
 const route = useRoute()
 let enterTime = Date.now()
 let fingerprintId = null
+let audioFingerprintCollected = false
+
+// 用户交互后尝试收集音频指纹（如果之前失败）
+async function tryCollectAudioFingerprint() {
+  if (audioFingerprintCollected || !fingerprintId) {
+    return
+  }
+  
+  try {
+    const { getAudioFingerprint } = await import('@/utils/fingerprint')
+    const audioFingerprint = await getAudioFingerprint()
+    if (audioFingerprint) {
+      audioFingerprintCollected = true
+      // 音频指纹已收集，但不更新已提交的指纹（因为只是辅助信息）
+    }
+  } catch (error) {
+    // 静默处理错误
+  }
+}
+
+// 用户交互处理
+function handleUserInteraction() {
+  // 用户交互后，尝试收集音频指纹（如果之前失败）
+  tryCollectAudioFingerprint()
+}
 
 // 收集并提交指纹
 async function submitFingerprint() {
@@ -23,8 +48,11 @@ async function submitFingerprint() {
       fingerprintId = parseInt(savedFingerprintId)
     }
     
-    // 收集指纹信息
+    // 收集指纹信息（包括音频，如果失败会返回 null）
     const fingerprintData = await collectFingerprint()
+    
+    // 标记音频指纹是否已收集
+    audioFingerprintCollected = fingerprintData.audio !== null
     
     // 提交指纹
     const result = await fingerprintApi.collectFingerprint({
@@ -130,7 +158,13 @@ function handleVisibilityChange() {
 onMounted(async () => {
   enterTime = Date.now()
   
-  // 收集指纹
+  // 监听用户交互事件（用于在用户交互后重试音频指纹收集）
+  const interactionEvents = ['click', 'touchstart', 'keydown', 'mousedown']
+  interactionEvents.forEach(eventType => {
+    document.addEventListener(eventType, handleUserInteraction, { once: true, passive: true })
+  })
+  
+  // 收集指纹（音频指纹如果失败会返回 null，不会显示警告）
   await submitFingerprint()
   
   // 记录页面进入
