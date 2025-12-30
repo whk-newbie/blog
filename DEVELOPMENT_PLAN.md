@@ -950,16 +950,16 @@
 - [ ] 部署脚本
 
 ### 11.2 文档
-- [ ] README.md（项目介绍）
-- [ ] ARCHITECTURE.md（架构设计）
-- [ ] PROJECT_STRUCTURE.md（目录结构）
-- [ ] DATABASE_DESIGN.md（数据库设计）
-- [ ] API_DESIGN.md（API设计）
-- [ ] FRONTEND_DESIGN.md（前端设计）
-- [ ] DEVELOPMENT_PLAN.md（开发计划）
-- [ ] 部署文档
-- [ ] 用户指南
-- [ ] API文档（Swagger）
+- [x] README.md（项目介绍）
+- [x] ARCHITECTURE.md（架构设计）
+- [x] PROJECT_STRUCTURE.md（目录结构）
+- [x] DATABASE_DESIGN.md（数据库设计）
+- [x] API_DESIGN.md（API设计）
+- [x] FRONTEND_DESIGN.md（前端设计）
+- [x] DEVELOPMENT_PLAN.md（开发计划）
+- [x] 部署文档（DEPLOYMENT.md）
+- [x] 开发文档（DEVELOPMENT.md）
+- [x] API文档（Swagger）
 
 ### 11.3 其他
 - [ ] 测试用例
