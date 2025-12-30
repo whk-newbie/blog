@@ -4,13 +4,16 @@
       <div class="footer-content">
         <p>&copy; {{ currentYear }} {{ blogTitle }}. All rights reserved.</p>
         <div class="footer-links">
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/whk-newbie/blog" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
-          <span class="divider">|</span>
-          <router-link to="/privacy">隐私政策</router-link>
-          <span class="divider">|</span>
-          <router-link to="/terms">服务条款</router-link>
+        </div>
+        <!-- 备案信息 -->
+        <div v-if="icpInfo" class="icp-info">
+          <a v-if="icpInfo.url" :href="icpInfo.url" target="_blank" rel="noopener noreferrer">
+            {{ icpInfo.text }}
+          </a>
+          <span v-else>{{ icpInfo.text }}</span>
         </div>
       </div>
     </div>
@@ -22,6 +25,16 @@ import { ref, computed } from 'vue'
 
 const blogTitle = ref('我的博客')
 const currentYear = computed(() => new Date().getFullYear())
+
+// 备案信息配置
+// 如果需要显示备案信息，设置 icpInfo 对象
+// 示例: { text: '京ICP备12345678号', url: 'https://beian.miit.gov.cn/' }
+// 如果不需要显示，设置为 null 或 undefined
+const icpInfo = ref(null)
+// const icpInfo = ref({
+//   text: '京ICP备12345678号',
+//   url: 'https://beian.miit.gov.cn/'
+// })
 </script>
 
 <style scoped lang="less">
@@ -68,6 +81,22 @@ const currentYear = computed(() => new Date().getFullYear())
 
   .divider {
     color: var(--border-color);
+  }
+}
+
+.icp-info {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+
+  a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s;
+
+    &:hover {
+      color: var(--primary-color);
+    }
   }
 }
 

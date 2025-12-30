@@ -20,10 +20,10 @@ import (
 // @title Blog API
 // @version 1.0
 // @description 个人博客系统API文档
-// @termsOfService https://github.com/iambaby/blog
+// @termsOfService https://github.com/whk-newbie/blog
 
 // @contact.name API Support
-// @contact.url https://github.com/iambaby/blog/issues
+// @contact.url https://github.com/whk-newbie/blog/issues
 // @contact.email support@example.com
 
 // @license.name MIT
