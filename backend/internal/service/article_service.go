@@ -96,9 +96,10 @@ type ArticleListResponse struct {
 
 // articleService 文章服务实现
 type articleService struct {
-	articleRepo  repository.ArticleRepository
-	categoryRepo repository.CategoryRepository
-	tagRepo      repository.TagRepository
+	articleRepo     repository.ArticleRepository
+	categoryRepo    repository.CategoryRepository
+	tagRepo         repository.TagRepository
+	articleCacheSvc ArticleCacheService
 }
 
 // NewArticleService 创建文章服务
@@ -106,11 +107,13 @@ func NewArticleService(
 	articleRepo repository.ArticleRepository,
 	categoryRepo repository.CategoryRepository,
 	tagRepo repository.TagRepository,
+	articleCacheSvc ArticleCacheService,
 ) ArticleService {
 	return &articleService{
-		articleRepo:  articleRepo,
-		categoryRepo: categoryRepo,
-		tagRepo:      tagRepo,
+		articleRepo:     articleRepo,
+		categoryRepo:    categoryRepo,
+		tagRepo:         tagRepo,
+		articleCacheSvc: articleCacheSvc,
 	}
 }
 
@@ -192,6 +195,11 @@ func (s *articleService) Create(req *CreateArticleRequest, authorID uint) (*mode
 		for _, tagID := range req.TagIDs {
 			s.tagRepo.IncrementArticleCount(tagID)
 		}
+	}
+
+	// 清除文章缓存
+	if s.articleCacheSvc != nil {
+		_ = s.articleCacheSvc.ClearArticleCacheByID(article.ID)
 	}
 
 	// 重新加载文章（包含关联）
@@ -286,6 +294,11 @@ func (s *articleService) Update(id uint, req *UpdateArticleRequest) (*models.Art
 		return nil, err
 	}
 
+	// 清除文章缓存
+	if s.articleCacheSvc != nil {
+		_ = s.articleCacheSvc.ClearArticleCacheByID(article.ID)
+	}
+
 	// 更新分类和标签的文章数
 	// 如果状态从草稿变为发布
 	if oldStatus == models.ArticleStatusDraft && article.Status == models.ArticleStatusPublished {
@@ -365,6 +378,11 @@ func (s *articleService) Delete(id uint) error {
 		}
 	}
 
+	// 清除文章缓存
+	if s.articleCacheSvc != nil {
+		_ = s.articleCacheSvc.ClearArticleCacheByID(id)
+	}
+
 	return nil
 }
 
@@ -378,6 +396,14 @@ func (s *articleService) List(req *ArticleListRequest) (*ArticleListResponse, er
 	}
 	if req.PageSize > 100 {
 		req.PageSize = 100
+	}
+
+	// 尝试从缓存获取（管理员列表缓存时间较短，2分钟）
+	if s.articleCacheSvc != nil {
+		cacheKey := s.articleCacheSvc.GenerateCacheKey(req, false)
+		if cached, err := s.articleCacheSvc.GetCachedArticleList(cacheKey); err == nil {
+			return cached, nil
+		}
 	}
 
 	filter := &repository.ArticleFilter{
@@ -400,13 +426,21 @@ func (s *articleService) List(req *ArticleListRequest) (*ArticleListResponse, er
 		totalPages++
 	}
 
-	return &ArticleListResponse{
+	response := &ArticleListResponse{
 		Items:      articles,
 		Total:      total,
 		Page:       req.Page,
 		PageSize:   req.PageSize,
 		TotalPages: totalPages,
-	}, nil
+	}
+
+	// 缓存结果（管理员列表缓存2分钟）
+	if s.articleCacheSvc != nil {
+		cacheKey := s.articleCacheSvc.GenerateCacheKey(req, false)
+		_ = s.articleCacheSvc.CacheArticleList(cacheKey, response, 2*time.Minute)
+	}
+
+	return response, nil
 }
 
 // ListPublished 获取已发布文章列表（公开）
@@ -419,6 +453,14 @@ func (s *articleService) ListPublished(req *ArticleListRequest) (*ArticleListRes
 	}
 	if req.PageSize > 100 {
 		req.PageSize = 100
+	}
+
+	// 尝试从缓存获取（公开列表缓存时间较长，5分钟）
+	if s.articleCacheSvc != nil {
+		cacheKey := s.articleCacheSvc.GenerateCacheKey(req, true)
+		if cached, err := s.articleCacheSvc.GetCachedArticleList(cacheKey); err == nil {
+			return cached, nil
+		}
 	}
 
 	filter := &repository.ArticleFilter{
@@ -439,13 +481,21 @@ func (s *articleService) ListPublished(req *ArticleListRequest) (*ArticleListRes
 		totalPages++
 	}
 
-	return &ArticleListResponse{
+	response := &ArticleListResponse{
 		Items:      articles,
 		Total:      total,
 		Page:       req.Page,
 		PageSize:   req.PageSize,
 		TotalPages: totalPages,
-	}, nil
+	}
+
+	// 缓存结果（公开列表缓存5分钟）
+	if s.articleCacheSvc != nil {
+		cacheKey := s.articleCacheSvc.GenerateCacheKey(req, true)
+		_ = s.articleCacheSvc.CacheArticleList(cacheKey, response, 5*time.Minute)
+	}
+
+	return response, nil
 }
 
 // Publish 发布文章

@@ -3,12 +3,14 @@ package service
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/whk-newbie/blog/internal/models"
 	"github.com/whk-newbie/blog/internal/pkg/crypto"
+	"github.com/whk-newbie/blog/internal/pkg/redis"
 	"github.com/whk-newbie/blog/internal/repository"
 )
 
@@ -95,6 +97,12 @@ func NewConfigService(configRepo repository.ConfigRepository, masterKey string) 
 
 // GetConfigs 获取配置列表
 func (s *configService) GetConfigs(configType string) ([]*ConfigResponse, error) {
+	// 尝试从缓存获取
+	cacheKey := fmt.Sprintf("configs:%s", configType)
+	if cached, err := s.getCachedConfigs(cacheKey); err == nil {
+		return cached, nil
+	}
+
 	var configs []*models.SystemConfig
 	var err error
 
@@ -112,6 +120,9 @@ func (s *configService) GetConfigs(configType string) ([]*ConfigResponse, error)
 	for _, config := range configs {
 		responses = append(responses, s.toConfigResponse(config, true))
 	}
+
+	// 缓存结果（配置信息缓存10分钟）
+	_ = s.cacheConfigs(cacheKey, responses, 10*time.Minute)
 
 	return responses, nil
 }
@@ -184,6 +195,9 @@ func (s *configService) CreateConfig(req *CreateConfigRequest, userID uint) (*Co
 		return nil, err
 	}
 
+	// 清除配置缓存
+	s.clearConfigCache(config.ConfigType)
+
 	return s.toConfigResponse(config, true), nil
 }
 
@@ -229,18 +243,24 @@ func (s *configService) UpdateConfig(id uint, req *UpdateConfigRequest, userID u
 		return nil, err
 	}
 
+	// 清除配置缓存
+	s.clearConfigCache(config.ConfigType)
+
 	return s.toConfigResponse(config, true), nil
 }
 
 // DeleteConfig 删除配置
 func (s *configService) DeleteConfig(id uint) error {
-	_, err := s.configRepo.FindByID(id)
+	config, err := s.configRepo.FindByID(id)
 	if err != nil {
 		if errors.Is(err, repository.ErrConfigNotFound) {
 			return ErrConfigNotFound
 		}
 		return err
 	}
+
+	// 清除配置缓存
+	s.clearConfigCache(config.ConfigType)
 
 	return s.configRepo.Delete(id)
 }
@@ -341,4 +361,36 @@ func (s *configService) maskSensitiveValue(value string, configType string) stri
 		}
 		return "***"
 	}
+}
+
+// cacheConfigs 缓存配置列表
+func (s *configService) cacheConfigs(key string, configs []*ConfigResponse, ttl time.Duration) error {
+	data, err := json.Marshal(configs)
+	if err != nil {
+		return err
+	}
+	return redis.Set(key, string(data), ttl)
+}
+
+// getCachedConfigs 获取缓存的配置列表
+func (s *configService) getCachedConfigs(key string) ([]*ConfigResponse, error) {
+	data, err := redis.GetValue(key)
+	if err != nil {
+		return nil, err
+	}
+
+	var configs []*ConfigResponse
+	if err := json.Unmarshal([]byte(data), &configs); err != nil {
+		return nil, err
+	}
+
+	return configs, nil
+}
+
+// clearConfigCache 清除配置缓存
+func (s *configService) clearConfigCache(configType string) {
+	cacheKey := fmt.Sprintf("configs:%s", configType)
+	_ = redis.Del(cacheKey)
+	// 同时清除所有配置的缓存
+	_ = redis.Del("configs:")
 }

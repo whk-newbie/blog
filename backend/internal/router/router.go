@@ -71,7 +71,8 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	authService := service.NewAuthService(adminRepo, jwtManager, cfg.JWT.ExpireTime)
 	categoryService := service.NewCategoryService(categoryRepo)
 	tagService := service.NewTagService(tagRepo)
-	articleService := service.NewArticleService(articleRepo, categoryRepo, tagRepo)
+	articleCacheSvc := service.NewArticleCacheService()
+	articleService := service.NewArticleService(articleRepo, categoryRepo, tagRepo, articleCacheSvc)
 
 	// 访问统计相关服务
 	visitCacheService := service.NewVisitCacheService()
