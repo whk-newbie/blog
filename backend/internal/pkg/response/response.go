@@ -96,6 +96,14 @@ func NoContent(c *gin.Context, message string) {
 	c.Status(http.StatusNoContent)
 }
 
+// TooManyRequests 429错误（请求过于频繁）
+func TooManyRequests(c *gin.Context, message string) {
+	c.JSON(http.StatusTooManyRequests, Response{
+		Code:    http.StatusTooManyRequests,
+		Message: message,
+	})
+}
+
 // PageSuccess 分页成功响应
 func PageSuccess(c *gin.Context, list interface{}, total int64, page, pageSize int) {
 	totalPages := int(total) / pageSize
