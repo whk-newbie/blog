@@ -222,7 +222,7 @@
   - LanguageSwitch
   - EmptyState
   - PageHeader
-- [ ] 配置路由
+- [x] 配置路由
   - 路由定义
   - 路由守卫
 - [x] 主题系统
