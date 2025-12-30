@@ -52,11 +52,6 @@
         <el-menu-item index="/admin/logs">{{ t('nav.logs') }}</el-menu-item>
         <el-menu-item index="/admin/system/backup">{{ t('nav.backup') }}</el-menu-item>
       </el-sub-menu>
-
-      <el-menu-item index="/admin/tools">
-        <el-icon><Tools /></el-icon>
-        <span>{{ t('nav.tools') }}</span>
-      </el-menu-item>
     </el-menu>
   </div>
 </template>
@@ -70,7 +65,6 @@ import {
   Document,
   DataAnalysis,
   Setting,
-  Tools,
   Collection
 } from '@element-plus/icons-vue'
 

@@ -26,6 +26,12 @@ const routes = [
         name: 'ArticleDetail',
         component: () => import('@/views/ArticleDetail.vue'),
         meta: { titleKey: 'article.title' }
+      },
+      {
+        path: 'tools',
+        name: 'Tools',
+        component: () => import('@/views/Tools.vue'),
+        meta: { titleKey: 'nav.tools' }
       }
     ]
   },

@@ -9,6 +9,7 @@
       <nav class="nav-menu">
         <router-link to="/" class="nav-item">{{ t('nav.home') }}</router-link>
         <router-link to="/articles" class="nav-item">{{ t('nav.articles') }}</router-link>
+        <router-link to="/tools" class="nav-item">{{ t('nav.tools') }}</router-link>
       </nav>
       <div class="header-actions">
         <!-- 未登录：显示登录按钮 -->
