@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	imgutil "github.com/whk-newbie/blog/internal/pkg/image"
 	"github.com/whk-newbie/blog/internal/pkg/response"
 )
 
@@ -35,9 +36,12 @@ func NewUploadHandler(uploadDir string, maxSizeMB int64) *UploadHandler {
 
 // UploadImageResponse 上传图片响应
 type UploadImageResponse struct {
-	URL      string `json:"url"`
-	Filename string `json:"filename"`
-	Size     int64  `json:"size"`
+	URL        string `json:"url"`
+	Filename   string `json:"filename"`
+	Size       int64  `json:"size"`
+	Width      int    `json:"width,omitempty"`
+	Height     int    `json:"height,omitempty"`
+	Compressed bool   `json:"compressed,omitempty"` // 是否被压缩
 }
 
 // UploadImage 上传图片
@@ -74,9 +78,9 @@ func (h *UploadHandler) UploadImage(c *gin.Context) {
 		return
 	}
 
-	// 生成唯一文件名
+	// 生成唯一文件名（先使用原始扩展名）
 	ext := filepath.Ext(file.Filename)
-	filename := fmt.Sprintf("%s%s", uuid.New().String(), ext)
+	originalFilename := fmt.Sprintf("%s%s", uuid.New().String(), ext)
 
 	// 创建日期子目录（按年月组织）
 	dateDir := time.Now().Format("2006/01")
@@ -86,20 +90,41 @@ func (h *UploadHandler) UploadImage(c *gin.Context) {
 		return
 	}
 
-	// 保存文件
-	targetPath := filepath.Join(targetDir, filename)
-	if err := c.SaveUploadedFile(file, targetPath); err != nil {
+	// 先保存原始文件
+	originalPath := filepath.Join(targetDir, originalFilename)
+	if err := c.SaveUploadedFile(file, originalPath); err != nil {
 		response.InternalServerError(c, "保存文件失败: "+err.Error())
 		return
 	}
 
-	// 返回文件URL
-	fileURL := fmt.Sprintf("/uploads/%s/%s", dateDir, filename)
+	// 压缩图片（如果超过1MB）
+	finalPath, finalSize, err := imgutil.CompressImage(originalPath)
+	if err != nil {
+		// 压缩失败，使用原文件
+		finalPath = originalPath
+		finalSize = file.Size
+	}
+
+	// 获取最终文件名
+	finalFilename := filepath.Base(finalPath)
+	fileURL := fmt.Sprintf("/uploads/%s/%s", dateDir, finalFilename)
+
+	// 获取图片尺寸
+	width, height := 0, 0
+	if w, h, err := imgutil.GetImageDimensions(finalPath); err == nil {
+		width, height = w, h
+	}
+
+	// 判断是否被压缩
+	compressed := finalPath != originalPath
 
 	response.SuccessWithMessage(c, "上传成功", UploadImageResponse{
-		URL:      fileURL,
-		Filename: file.Filename,
-		Size:     file.Size,
+		URL:        fileURL,
+		Filename:   file.Filename,
+		Size:       finalSize,
+		Width:      width,
+		Height:     height,
+		Compressed: compressed,
 	})
 }
 
