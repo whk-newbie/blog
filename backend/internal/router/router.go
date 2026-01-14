@@ -161,6 +161,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 		api.POST("/fingerprint", fingerprintHandler.CollectFingerprint)
 		api.POST("/visit", visitHandler.RecordVisit)
 
+		// 公开接口 - 站点配置
+		api.GET("/site/config", configHandler.GetPublicSiteConfig)
+
 		// 爬虫任务接口（需要Bearer Token认证）
 		crawler := api.Group("/crawler")
 		crawler.Use(middleware.CrawlerAuth())

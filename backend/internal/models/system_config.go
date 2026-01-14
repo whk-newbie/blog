@@ -34,5 +34,6 @@ const (
 	ConfigTypeAppKey       = "application_key" // 应用密钥
 	ConfigTypeSalt         = "salt"          // 加密盐
 	ConfigTypeIPBlacklist  = "ip_blacklist"  // IP黑名单
+	ConfigTypeSiteInfo     = "site_info"     // 站点信息(博客标题、备案信息等)
 )
 

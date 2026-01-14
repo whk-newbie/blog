@@ -21,7 +21,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import configApi from '@/api/config'
 
 const blogTitle = ref('我的博客')
 const currentYear = computed(() => new Date().getFullYear())
@@ -31,10 +32,31 @@ const currentYear = computed(() => new Date().getFullYear())
 // 示例: { text: '京ICP备12345678号', url: 'https://beian.miit.gov.cn/' }
 // 如果不需要显示，设置为 null 或 undefined
 const icpInfo = ref(null)
-// const icpInfo = ref({
-//   text: '京ICP备12345678号',
-//   url: 'https://beian.miit.gov.cn/'
-// })
+
+// 加载站点配置
+const loadSiteConfig = async () => {
+  try {
+    const response = await configApi.getSiteConfig()
+    if (response && response.data) {
+      // 更新博客标题
+      if (response.data.blogTitle) {
+        blogTitle.value = response.data.blogTitle
+      }
+      // 更新备案信息
+      if (response.data.icpInfo) {
+        icpInfo.value = response.data.icpInfo
+      }
+    }
+  } catch (error) {
+    // 加载失败时使用默认值,不影响页面显示
+    console.warn('加载站点配置失败,使用默认值:', error)
+  }
+}
+
+// 组件挂载时加载配置
+onMounted(() => {
+  loadSiteConfig()
+})
 </script>
 
 <style scoped lang="less">

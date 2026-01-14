@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -242,4 +243,41 @@ func (h *ConfigHandler) GenerateCrawlerToken(c *gin.Context) {
 	}
 
 	response.SuccessWithMessage(c, "Token生成成功", token)
+}
+
+// GetPublicSiteConfig 获取公开的站点配置
+// @Summary 获取站点配置
+// @Description 获取公开的站点配置信息(博客标题、备案信息等)
+// @Tags 公开接口
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response "获取成功"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/site/config [get]
+func (h *ConfigHandler) GetPublicSiteConfig(c *gin.Context) {
+	// 获取站点信息配置
+	siteInfo, err := h.configService.GetConfigValue("site_info")
+	if err != nil {
+		// 如果配置不存在或获取失败,返回默认值
+		defaultConfig := map[string]interface{}{
+			"blogTitle": "我的博客",
+			"icpInfo":   nil,
+		}
+		response.Success(c, defaultConfig)
+		return
+	}
+
+	// 解析JSON配置
+	var config map[string]interface{}
+	if err := json.Unmarshal([]byte(siteInfo), &config); err != nil {
+		// JSON解析失败,返回默认值
+		defaultConfig := map[string]interface{}{
+			"blogTitle": "我的博客",
+			"icpInfo":   nil,
+		}
+		response.Success(c, defaultConfig)
+		return
+	}
+
+	response.Success(c, config)
 }

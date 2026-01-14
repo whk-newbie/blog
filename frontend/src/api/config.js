@@ -59,6 +59,14 @@ export default {
    */
   generateCrawlerToken(data) {
     return http.post('/admin/configs/generate-crawler-token', data)
+  },
+
+  /**
+   * 获取公开的站点配置
+   * @returns {Promise} 站点配置数据(博客标题、备案信息等)
+   */
+  getSiteConfig() {
+    return http.get('/site/config')
   }
 }
 
