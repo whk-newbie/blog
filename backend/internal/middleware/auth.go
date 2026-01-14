@@ -79,4 +79,3 @@ func OptionalAuth(jwtManager *jwt.Manager) gin.HandlerFunc {
 		c.Next()
 	}
 }
-
