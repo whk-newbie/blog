@@ -64,6 +64,9 @@
           @toggle-active="handleToggleActive"
         />
       </el-tab-pane>
+      <el-tab-pane :label="t('config.siteInfo')" name="site_info">
+        <site-info-config />
+      </el-tab-pane>
       <el-tab-pane :label="t('config.other')" name="other">
         <config-list
           :configs="otherConfigs"
@@ -116,6 +119,7 @@
             <el-option :label="t('config.crawlerToken')" value="crawler_token" />
             <el-option :label="t('config.encryptionSalt')" value="salt" />
             <el-option :label="t('config.ipBlacklist')" value="ip_blacklist" />
+            <el-option :label="t('config.siteInfo')" value="site_info" />
             <el-option :label="t('config.applicationKey')" value="application_key" />
           </el-select>
         </el-form-item>
@@ -208,6 +212,7 @@ import { Plus, DocumentCopy } from '@element-plus/icons-vue'
 import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
 import ConfigList from './components/ConfigList.vue'
+import SiteInfoConfig from './components/SiteInfoConfig.vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -260,7 +265,7 @@ const crawlerTokenConfigs = computed(() => configs.value.filter(c => c.config_ty
 const saltConfigs = computed(() => configs.value.filter(c => c.config_type === 'salt'))
 const ipBlacklistConfigs = computed(() => configs.value.filter(c => c.config_type === 'ip_blacklist'))
 const otherConfigs = computed(() => configs.value.filter(c => 
-  !['email', 'api_token', 'crawler_token', 'salt', 'ip_blacklist'].includes(c.config_type)
+  !['email', 'api_token', 'crawler_token', 'salt', 'ip_blacklist', 'site_info'].includes(c.config_type)
 ))
 
 // 获取配置列表

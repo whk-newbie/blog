@@ -37,14 +37,14 @@ const icpInfo = ref(null)
 const loadSiteConfig = async () => {
   try {
     const response = await configApi.getSiteConfig()
-    if (response && response.data) {
+    if (response) {
       // 更新博客标题
-      if (response.data.blogTitle) {
-        blogTitle.value = response.data.blogTitle
+      if (response.blogTitle) {
+        blogTitle.value = response.blogTitle
       }
       // 更新备案信息
-      if (response.data.icpInfo) {
-        icpInfo.value = response.data.icpInfo
+      if (response.icpInfo) {
+        icpInfo.value = response.icpInfo
       }
     }
   } catch (error) {
