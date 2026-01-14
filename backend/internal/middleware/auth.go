@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/whk-newbie/blog/internal/pkg/jwt"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
 	"github.com/whk-newbie/blog/internal/pkg/response"
 )
 
@@ -13,7 +14,14 @@ func Auth(jwtManager *jwt.Manager) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 从请求头获取Token
 		authHeader := c.GetHeader("Authorization")
+
+		// 临时调试日志：记录认证过程
+		logger.Info("Auth middleware - Path: %s, Method: %s, AuthHeader present: %v, AuthHeader length: %d",
+			c.Request.URL.Path, c.Request.Method, authHeader != "", len(authHeader))
+
 		if authHeader == "" {
+			logger.Warn("Auth failed: Missing Authorization header - Path: %s, All headers: %v",
+				c.Request.URL.Path, c.Request.Header)
 			response.Unauthorized(c, "缺少认证Token")
 			c.Abort()
 			return
@@ -50,6 +58,9 @@ func Auth(jwtManager *jwt.Manager) gin.HandlerFunc {
 		c.Set("userID", claims.UserID)
 		c.Set("username", claims.Username)
 		c.Set("claims", claims) // 也设置claims，供某些handler使用
+
+		logger.Info("Auth success - UserID: %d, Username: %s, Path: %s",
+			claims.UserID, claims.Username, c.Request.URL.Path)
 
 		c.Next()
 	}
