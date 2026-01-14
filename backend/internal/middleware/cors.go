@@ -2,8 +2,11 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/whk-newbie/blog/internal/pkg/logger"
+	"github.com/whk-newbie/blog/internal/pkg/response"
 )
 
 // CORS 跨域中间件
@@ -49,15 +52,17 @@ func CORS(allowOrigins, allowMethods, allowHeaders, exposeHeaders []string, allo
 			if maxAge > 0 {
 				c.Header("Access-Control-Max-Age", fmt.Sprintf("%d", maxAge))
 			}
-		} else {
-			// 如果不允许该源，拒绝请求
-			c.AbortWithStatus(403)
-			return
-		}
 
-		// 处理预检请求
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
+			// 处理预检请求
+			if c.Request.Method == "OPTIONS" {
+				c.AbortWithStatus(http.StatusNoContent)
+				return
+			}
+		} else {
+			// 如果不允许该源，记录日志并返回友好的错误信息
+			logger.Warn("CORS policy violation: Origin '%s' is not allowed. Allowed origins: %v", origin, allowOrigins)
+			response.Forbidden(c, fmt.Sprintf("CORS policy: Origin '%s' is not allowed", origin))
+			c.Abort()
 			return
 		}
 

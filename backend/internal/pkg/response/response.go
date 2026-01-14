@@ -69,7 +69,10 @@ func Unauthorized(c *gin.Context, message string) {
 
 // Forbidden 403错误
 func Forbidden(c *gin.Context, message string) {
-	Error(c, http.StatusForbidden, message)
+	c.JSON(http.StatusForbidden, Response{
+		Code:    http.StatusForbidden,
+		Message: message,
+	})
 }
 
 // NotFound 404错误
