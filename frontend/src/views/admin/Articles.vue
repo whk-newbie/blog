@@ -144,6 +144,16 @@
             {{ t('article.unpublish') }}
           </el-button>
 
+          <el-button
+            v-if="row.status === 'published' && !row.is_translated"
+            size="small"
+            type="info"
+            :loading="translatingId === row.id"
+            @click="handleTranslate(row)"
+          >
+            翻译
+          </el-button>
+
           <el-popconfirm
             :title="t('article.deleteConfirm')"
             @confirm="handleDelete(row.id)"
@@ -176,6 +186,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Plus, Search } from '@element-plus/icons-vue'
+import aiApi from '@/api/ai'
 import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
 
@@ -183,6 +194,7 @@ const router = useRouter()
 const { t } = useI18n()
 
 const loading = ref(false)
+const translatingId = ref(null)
 const articles = ref([])
 const categories = ref([])
 
@@ -305,6 +317,33 @@ const handleUnpublish = async (id) => {
   } catch (error) {
     console.error('取消发布失败:', error)
     ElMessage.error(t('article.unpublishError'))
+  }
+}
+
+// AI 翻译
+const handleTranslate = async (article) => {
+  translatingId.value = article.id
+  try {
+    const tr = await aiApi.translateArticle(article.id, {
+      title: article.title,
+      content: article.content,
+      summary: article.summary || '',
+    })
+    if (tr) {
+      await api.article.update(article.id, {
+        title_en: tr.title_en,
+        content_en: tr.content_en,
+        summary_en: tr.summary_en,
+        is_translated: true,
+        translated_at: new Date().toISOString(),
+      })
+      ElMessage.success('翻译成功')
+      article.is_translated = true
+    }
+  } catch (e) {
+    ElMessage.error('翻译失败')
+  } finally {
+    translatingId.value = null
   }
 }
 

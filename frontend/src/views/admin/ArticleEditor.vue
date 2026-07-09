@@ -139,6 +139,7 @@
       <el-form-item :label="t('article.otherOptions')">
         <el-checkbox v-model="form.is_top">{{ t('article.isTop') }}</el-checkbox>
         <el-checkbox v-model="form.is_featured">{{ t('article.isFeatured') }}</el-checkbox>
+        <el-checkbox v-model="translateToEn">发布时翻译为英文</el-checkbox>
       </el-form-item>
 
       <!-- 操作按钮 -->
@@ -160,6 +161,7 @@ import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Upload } from '@element-plus/icons-vue'
 import api from '@/api'
+import aiApi from '@/api/ai'
 import PageHeader from '@/components/common/PageHeader.vue'
 import RichTextEditor from '@/components/editor/RichTextEditor.vue'
 import { useUserStore } from '@/store/user'
@@ -171,6 +173,7 @@ const { t } = useI18n()
 
 const formRef = ref(null)
 const loading = ref(false)
+const translateToEn = ref(false)
 const categories = ref([])
 const tags = ref([])
 
@@ -315,12 +318,39 @@ const handleSubmit = async (status) => {
       publish_at: form.publish_at ? form.publish_at.toISOString() : null
     }
 
+    let articleId
     if (isEdit.value) {
       await api.article.update(route.params.id, data)
+      articleId = route.params.id
       ElMessage.success(t('article.updateSuccess'))
     } else {
-      await api.article.create(data)
+      const result = await api.article.create(data)
+      articleId = result?.id
       ElMessage.success(t('article.createSuccess'))
+    }
+
+    // 如果勾选了翻译，调用AI翻译并保存结果
+    if (translateToEn.value && status === 'published' && articleId) {
+      try {
+        const tr = await aiApi.translateArticle(articleId, {
+          title: form.title,
+          content: form.content,
+          summary: form.summary || '',
+        })
+        if (tr) {
+          await api.article.update(articleId, {
+            title_en: tr.title_en,
+            content_en: tr.content_en,
+            summary_en: tr.summary_en,
+            is_translated: true,
+            translated_at: new Date().toISOString(),
+          })
+          ElMessage.success('文章已翻译为英文')
+        }
+      } catch (e) {
+        console.warn('翻译失败:', e)
+        ElMessage.warning('翻译失败，文章已保存')
+      }
     }
 
     router.push('/admin/articles')
