@@ -112,6 +112,18 @@ const routes = [
         name: 'LogManage',
         component: () => import('@/views/admin/LogManage.vue'),
         meta: { titleKey: 'nav.logs', requiresAuth: true }
+      },
+      {
+        path: 'ai-providers',
+        name: 'AiProviders',
+        component: () => import('@/views/admin/AiProviders.vue'),
+        meta: { titleKey: 'nav.aiProviders', requiresAuth: true }
+      },
+      {
+        path: 'ai-chat',
+        name: 'AiChat',
+        component: () => import('@/views/admin/AiChat.vue'),
+        meta: { titleKey: 'nav.aiChat', requiresAuth: true }
       }
     ]
   },
