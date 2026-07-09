@@ -108,6 +108,9 @@ FRONTEND_DESIGN.md
 PROJECT_STRUCTURE.md
 DEVELOPMENT_PLAN.md
 
+# 工作树
+.worktrees/
+
 # 其他
 *.bak
 *.orig
