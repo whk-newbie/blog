@@ -4,7 +4,7 @@ import { resolve } from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-// import obfuscator from 'rollup-plugin-obfuscator'
+import obfuscator from 'rollup-plugin-obfuscator'
 
 export default defineConfig(({ mode }) => {
   const isProd = mode === 'production'
@@ -21,7 +21,19 @@ export default defineConfig(({ mode }) => {
         resolvers: [ElementPlusResolver()],
         dts: mode === 'development' ? 'src/components.d.ts' : false,
       }),
-      // Obfuscation disabled — breaks dynamic imports in production
+      // Obfuscation — 不混淆字符串，避免破坏动态import路径
+      ...(isProd ? [obfuscator({
+        compact: true,
+        controlFlowFlattening: true,
+        controlFlowFlatteningThreshold: 0.5,
+        deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.3,
+        stringArray: false,
+        selfDefending: true,
+        debugProtection: true,
+        domainLock: [],
+        exclude: ['node_modules/**'],
+      })] : []),
     ],
     resolve: {
       alias: {
