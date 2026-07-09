@@ -9,9 +9,9 @@
       </nav>
       <div class="header-actions">
         <!-- Search -->
-        <button class="icon-btn" @click="toggleSearch" :title="t('common.search')">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </button>
+        <el-button text size="small" class="icon-btn" @click="toggleSearch" :title="t('common.search')">
+          <el-icon><Search /></el-icon>
+        </el-button>
         <!-- Language switch -->
         <LanguageSwitch />
         <!-- Theme switch -->
@@ -44,7 +44,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Setting } from '@element-plus/icons-vue'
+import { Setting, Search } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/store/user'
 import LoginDialog from '../common/LoginDialog.vue'
@@ -149,20 +149,8 @@ const goToAdmin = () => {
   gap: 8px;
 
   .icon-btn {
-    background: none;
-    border: none;
     color: var(--text-secondary);
-    cursor: pointer;
-    padding: 6px;
-    border-radius: var(--border-radius-sm);
-    display: flex;
-    align-items: center;
-    transition: all var(--transition-fast);
-
-    &:hover {
-      color: var(--text-heading);
-      background: var(--hover-bg);
-    }
+    &:hover { color: var(--text-heading); }
   }
 
   .admin-btn {
