@@ -73,7 +73,7 @@ http.interceptors.request.use(
     }
 
     // Skip encryption for whitelisted paths
-    const whitelist = ['/api/v1/public-key', '/api/v1/session/key']
+    const whitelist = ['/api/v1/public-key', '/api/v1/session/key', '/api/v1/fingerprint', '/api/v1/visit']]
     const isWhitelisted = whitelist.some(p => config.url?.includes(p))
 
     if (!isWhitelisted) {
@@ -129,7 +129,7 @@ http.interceptors.response.use(
     }
 
     // Decrypt response if encrypted
-    const whitelist = ['/api/v1/public-key', '/api/v1/session/key']
+    const whitelist = ['/api/v1/public-key', '/api/v1/session/key', '/api/v1/fingerprint', '/api/v1/visit']]
     const isWhitelisted = whitelist.some(p => response.config.url?.includes(p))
 
     if (!isWhitelisted && aesKey && typeof response.data === 'string') {
