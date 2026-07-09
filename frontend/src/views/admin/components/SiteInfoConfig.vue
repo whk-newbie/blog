@@ -24,6 +24,16 @@
         />
       </el-form-item>
 
+      <el-form-item :label="t('config.avatarUrl')">
+        <el-input
+          v-model="form.avatarUrl"
+          placeholder="头像图片URL，如 https://example.com/avatar.jpg"
+          type="url"
+          clearable
+        />
+        <div class="form-tip">留空则显示网站名称首字母</div>
+      </el-form-item>
+
       <el-divider />
 
       <el-form-item :label="t('config.icpInfo')">
@@ -71,6 +81,7 @@ const siteInfoConfig = ref(null)
 
 const form = reactive({
   blogTitle: '我的博客',
+  avatarUrl: '',
   enableIcp: false,
   icpText: '',
   icpUrl: ''
@@ -139,7 +150,8 @@ const loadSiteInfo = async () => {
         
         const configData = JSON.parse(configValue)
         form.blogTitle = configData.blogTitle || '我的博客'
-        
+        form.avatarUrl = configData.avatarUrl || ''
+
         if (configData.icpInfo) {
           form.enableIcp = true
           form.icpText = configData.icpInfo.text || ''
@@ -175,7 +187,8 @@ const handleSave = async () => {
     
     // 构建配置数据
     const configData = {
-      blogTitle: form.blogTitle
+      blogTitle: form.blogTitle,
+      avatarUrl: form.avatarUrl || '',
     }
     
     if (form.enableIcp && form.icpText) {

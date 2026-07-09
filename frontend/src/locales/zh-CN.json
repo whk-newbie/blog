@@ -344,6 +344,7 @@
     "applicationKey": "应用密钥",
     "other": "其他配置",
     "blogTitle": "博客标题",
+    "avatarUrl": "头像图片URL",
     "blogTitlePlaceholder": "请输入博客标题",
     "icpInfo": "备案信息",
     "enableIcp": "启用备案信息",

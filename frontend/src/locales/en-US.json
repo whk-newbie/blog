@@ -344,6 +344,7 @@
     "applicationKey": "Application Key",
     "other": "Other Config",
     "blogTitle": "Blog Title",
+    "avatarUrl": "Avatar Image URL",
     "blogTitlePlaceholder": "Please enter blog title",
     "icpInfo": "ICP Info",
     "enableIcp": "Enable ICP Info",
