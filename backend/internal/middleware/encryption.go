@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"io"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -89,6 +90,10 @@ func Encryption(rsaKeyPair *crypto.RSAKeyPair) gin.HandlerFunc {
 		// Encrypt and write the actual response
 		encrypted, err := aesGCMEncrypt(aesKey, blw.body.Bytes())
 		if err != nil {
+			logger.Error("Failed to encrypt response for path %s: %v", c.Request.URL.Path, err)
+			blw.ResponseWriter.Header().Set("Content-Type", "application/json")
+			blw.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+			_, _ = blw.ResponseWriter.Write([]byte(`{"code":50001,"message":"response encryption failed"}`))
 			return
 		}
 		// Set Content-Type before writing status code and body
