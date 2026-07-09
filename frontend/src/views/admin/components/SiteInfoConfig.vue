@@ -35,7 +35,7 @@
             :before-upload="beforeUpload"
             accept="image/*"
           >
-            <el-button type="primary" plain size="small">上传</el-button>
+            <el-button size="small">上传</el-button>
           </el-upload>
         </div>
         <div class="form-tip">输入URL或点击上传图片，留空则显示网站首字母</div>
