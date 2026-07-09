@@ -1,6 +1,9 @@
 package router
 
 import (
+	"encoding/json"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/whk-newbie/blog/internal/config"
 	"github.com/whk-newbie/blog/internal/handler"
@@ -131,6 +134,23 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	// Encryption key negotiation (public, no encryption middleware)
 	r.GET("/api/v1/public-key", encryptionHandler.GetPublicKey)
 	r.POST("/api/v1/session/key", encryptionHandler.NegotiateKey)
+	r.GET("/api/v1/bing-image", func(c *gin.Context) {
+		resp, err := http.Get("https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1")
+		if err != nil {
+			c.JSON(500, gin.H{"code": 500, "message": "failed to fetch"})
+			return
+		}
+		defer resp.Body.Close()
+		var data struct {
+			Images []struct{ URL string `json:"url"` } `json:"images"`
+		}
+		json.NewDecoder(resp.Body).Decode(&data)
+		url := ""
+		if len(data.Images) > 0 {
+			url = "https://cn.bing.com" + data.Images[0].URL
+		}
+		c.JSON(200, gin.H{"code": 0, "data": gin.H{"url": url}})
+	})
 
 	// API路由组
 	api := r.Group("/api/v1")

@@ -13,14 +13,14 @@
         <el-card shadow="never">
           <template #header><span class="tool-title">{{ activeToolData?.label }}</span></template>
           <div v-if="activeToolData" class="tool-panel">
-            <el-input v-model="activeToolData.input" type="textarea" :rows="8" :placeholder="activeToolData.placeholder" />
+            <el-input v-model="activeToolData.input" type="textarea" :rows="12" :placeholder="activeToolData.placeholder" size="large" />
             <div class="tool-actions">
-              <el-button v-for="btn in activeToolData.buttons" :key="btn.text" :type="btn.type||'default'" size="small" @click="btn.action">
+              <el-button v-for="btn in activeToolData.buttons" :key="btn.text" :type="btn.type||'default'" @click="btn.action">
                 <el-icon v-if="btn.icon"><component :is="btn.icon" /></el-icon>
                 {{ btn.text }}
               </el-button>
             </div>
-            <el-input v-if="activeToolData.showOutput" v-model="activeToolData.output" type="textarea" :rows="8" readonly placeholder="结果..." />
+            <el-input v-if="activeToolData.showOutput" v-model="activeToolData.output" type="textarea" :rows="12" readonly placeholder="结果..." size="large" />
           </div>
         </el-card>
       </div>
@@ -144,7 +144,7 @@ const activeToolData = computed(() => tools.find(t => t.name === activeTool.valu
 <style scoped lang="less">
 .tools-page { padding: var(--spacing-md) 0; }
 .tools-layout { display: flex; gap: var(--spacing-lg); align-items: flex-start; }
-.tools-nav { width: 180px; flex-shrink: 0; background: var(--card-bg); border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); overflow: hidden; }
+.tools-nav { width: 200px; flex-shrink: 0; background: var(--card-bg); border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); overflow: hidden; }
 .tool-nav-item { display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: 14px; color: var(--text-secondary); cursor: pointer; border-left: 2px solid transparent; transition: all var(--transition-fast);
   &:hover { background: var(--hover-bg); color: var(--text-heading); }
   &.active { color: var(--primary-color); background: var(--active-bg); border-left-color: var(--primary-color); font-weight: 500; }

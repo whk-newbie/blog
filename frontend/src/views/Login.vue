@@ -65,18 +65,17 @@ const loading = ref(false)
 const blogTitle = ref('Blog')
 const bgUrl = ref('')
 
-// 获取 Bing 每日图片
+// 获取 Bing 每日图片（通过后端代理）
 async function fetchBingImage() {
   try {
-    const resp = await fetch('https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1')
+    const resp = await fetch('/api/v1/bing-image')
     const data = await resp.json()
-    if (data?.images?.length > 0) {
-      bgUrl.value = `https://cn.bing.com${data.images[0].url}`
+    if (data.code === 0 && data.data?.url) {
+      bgUrl.value = data.data.url
       localStorage.setItem('bing_bg', bgUrl.value)
       localStorage.setItem('bing_bg_date', new Date().toDateString())
     }
   } catch {
-    // 使用缓存
     const cached = localStorage.getItem('bing_bg')
     if (cached) bgUrl.value = cached
   }
