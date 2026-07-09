@@ -39,7 +39,7 @@
       </el-form>
 
       <div class="login-links">
-        <router-link to="/">← 返回首页</router-link>
+        <el-button text size="small" @click="$router.push('/')">← 返回首页</el-button>
       </div>
     </div>
   </div>
