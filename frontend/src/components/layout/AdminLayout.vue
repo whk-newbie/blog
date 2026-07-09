@@ -1,7 +1,7 @@
 <template>
   <div class="admin-layout">
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="180px">
         <Sidebar />
       </el-aside>
       <el-container>
@@ -69,7 +69,7 @@ onMounted(() => {
 }
 
 .el-main {
-  padding: 24px;
+  padding: 20px;
   background: var(--admin-content-bg);
   min-height: calc(100vh - 60px);
 }
