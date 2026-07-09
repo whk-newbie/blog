@@ -1,8 +1,6 @@
 package service
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -35,8 +33,6 @@ type ConfigService interface {
 	UpdateConfig(id uint, req *UpdateConfigRequest, userID uint) (*ConfigResponse, error)
 	// 删除配置
 	DeleteConfig(id uint) error
-	// 生成爬虫Token
-	GenerateCrawlerToken(name string, userID uint) (*CrawlerTokenResponse, error)
 }
 
 // ConfigResponse 配置响应
@@ -70,11 +66,6 @@ type UpdateConfigRequest struct {
 	Description string `json:"description"`
 }
 
-// CrawlerTokenResponse 爬虫Token响应
-type CrawlerTokenResponse struct {
-	Token string `json:"token"`
-	Name  string `json:"name"`
-}
 
 // configService 配置服务实现
 type configService struct {
@@ -284,38 +275,6 @@ func (s *configService) DeleteConfig(id uint) error {
 	return s.configRepo.Delete(id)
 }
 
-// GenerateCrawlerToken 生成爬虫Token
-func (s *configService) GenerateCrawlerToken(name string, userID uint) (*CrawlerTokenResponse, error) {
-	// 生成随机Token（32字节）
-	tokenBytes := make([]byte, 24)
-	if _, err := rand.Read(tokenBytes); err != nil {
-		return nil, fmt.Errorf("failed to generate token: %w", err)
-	}
-
-	// Base64编码，添加前缀
-	token := "cr_" + base64.URLEncoding.EncodeToString(tokenBytes)
-
-	// 保存到数据库
-	configKey := fmt.Sprintf("crawler_token_%d", time.Now().Unix())
-	config := &models.SystemConfig{
-		ConfigKey:   configKey,
-		ConfigValue: token,
-		ConfigType:  models.ConfigTypeCrawlerToken,
-		IsEncrypted: false, // Token本身不需要加密
-		IsActive:    true,
-		Description: name,
-		CreatedBy:   &userID,
-	}
-
-	if err := s.configRepo.Create(config); err != nil {
-		return nil, fmt.Errorf("failed to save token: %w", err)
-	}
-
-	return &CrawlerTokenResponse{
-		Token: token,
-		Name:  name,
-	}, nil
-}
 
 // toConfigResponse 转换为响应格式
 func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensitive bool) *ConfigResponse {

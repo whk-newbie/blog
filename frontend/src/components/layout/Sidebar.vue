@@ -38,11 +38,6 @@
         <el-menu-item index="/admin/fingerprints">{{ t('nav.fingerprints') }}</el-menu-item>
       </el-sub-menu>
 
-      <el-menu-item index="/admin/crawler">
-        <el-icon><Monitor /></el-icon>
-        <span>{{ t('nav.crawler') }}</span>
-      </el-menu-item>
-
       <el-sub-menu index="system">
         <template #title>
           <el-icon><Setting /></el-icon>

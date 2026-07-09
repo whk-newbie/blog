@@ -29,23 +29,6 @@
           @toggle-active="handleToggleActive"
         />
       </el-tab-pane>
-      <el-tab-pane :label="t('config.crawlerToken')" name="crawler_token">
-        <div class="crawler-token-section">
-          <div class="section-header">
-            <el-button type="primary" @click="handleGenerateCrawlerToken">
-              <el-icon><Plus /></el-icon>
-              {{ t('config.generateCrawlerToken') }}
-            </el-button>
-          </div>
-          <config-list
-            :configs="crawlerTokenConfigs"
-            :loading="loading"
-            @edit="handleEdit"
-            @delete="handleDelete"
-            @toggle-active="handleToggleActive"
-          />
-        </div>
-      </el-tab-pane>
       <el-tab-pane :label="t('config.encryptionSalt')" name="salt">
         <config-list
           :configs="saltConfigs"
@@ -116,7 +99,6 @@
           >
             <el-option :label="t('config.emailConfig')" value="email" />
             <el-option :label="t('config.apiToken')" value="api_token" />
-            <el-option :label="t('config.crawlerToken')" value="crawler_token" />
             <el-option :label="t('config.encryptionSalt')" value="salt" />
             <el-option :label="t('config.ipBlacklist')" value="ip_blacklist" />
             <el-option :label="t('config.siteInfo')" value="site_info" />
@@ -148,59 +130,6 @@
       </template>
     </el-dialog>
 
-    <!-- 生成爬虫Token对话框 -->
-    <el-dialog
-      v-model="generateTokenDialogVisible"
-      :title="t('config.generateCrawlerToken')"
-      width="500px"
-    >
-      <el-form
-        ref="tokenFormRef"
-        :model="tokenForm"
-        :rules="tokenRules"
-        label-width="100px"
-      >
-        <el-form-item :label="t('config.tokenName')" prop="name">
-          <el-input
-            v-model="tokenForm.name"
-            :placeholder="t('config.tokenNamePlaceholder')"
-          />
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <el-button @click="generateTokenDialogVisible = false">{{ t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="handleGenerateTokenSubmit">{{ t('common.confirm') }}</el-button>
-      </template>
-    </el-dialog>
-
-    <!-- Token显示对话框 -->
-    <el-dialog
-      v-model="tokenDisplayDialogVisible"
-      :title="t('config.tokenGenerated')"
-      width="500px"
-    >
-      <el-alert
-        :title="t('config.tokenWarning')"
-        type="warning"
-        :closable="false"
-        show-icon
-        style="margin-bottom: 20px"
-      />
-      <el-input
-        v-model="generatedToken"
-        readonly
-        type="textarea"
-        :rows="3"
-      />
-      <template #footer>
-        <el-button @click="handleCopyToken">
-          <el-icon><DocumentCopy /></el-icon>
-          {{ t('config.copyToken') }}
-        </el-button>
-        <el-button type="primary" @click="tokenDisplayDialogVisible = false">{{ t('common.confirm') }}</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -208,7 +137,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import { Plus, DocumentCopy } from '@element-plus/icons-vue'
+import { Plus } from '@element-plus/icons-vue'
 import api from '@/api'
 import PageHeader from '@/components/common/PageHeader.vue'
 import ConfigList from './components/ConfigList.vue'
@@ -219,12 +148,8 @@ const loading = ref(false)
 const configs = ref([])
 const activeTab = ref('email')
 const dialogVisible = ref(false)
-const generateTokenDialogVisible = ref(false)
-const tokenDisplayDialogVisible = ref(false)
 const isEdit = ref(false)
 const formRef = ref(null)
-const tokenFormRef = ref(null)
-const generatedToken = ref('')
 
 const form = reactive({
   id: undefined,
@@ -234,10 +159,6 @@ const form = reactive({
   description: '',
   is_encrypted: true,
   is_active: true
-})
-
-const tokenForm = reactive({
-  name: ''
 })
 
 const rules = computed(() => ({
@@ -252,20 +173,13 @@ const rules = computed(() => ({
   ]
 }))
 
-const tokenRules = computed(() => ({
-  name: [
-    { required: true, message: t('config.tokenNamePlaceholder'), trigger: 'blur' }
-  ]
-}))
-
 // 按类型分组配置
 const emailConfigs = computed(() => configs.value.filter(c => c.config_type === 'email'))
 const apiTokenConfigs = computed(() => configs.value.filter(c => c.config_type === 'api_token'))
-const crawlerTokenConfigs = computed(() => configs.value.filter(c => c.config_type === 'crawler_token'))
 const saltConfigs = computed(() => configs.value.filter(c => c.config_type === 'salt'))
 const ipBlacklistConfigs = computed(() => configs.value.filter(c => c.config_type === 'ip_blacklist'))
-const otherConfigs = computed(() => configs.value.filter(c => 
-  !['email', 'api_token', 'crawler_token', 'salt', 'ip_blacklist', 'site_info'].includes(c.config_type)
+const otherConfigs = computed(() => configs.value.filter(c =>
+  !['email', 'api_token', 'salt', 'ip_blacklist', 'site_info'].includes(c.config_type)
 ))
 
 // 获取配置列表
@@ -318,7 +232,7 @@ const handleEdit = (config) => {
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
-    
+
     const data = {
       config_key: form.config_key,
       config_value: form.config_value,
@@ -373,38 +287,6 @@ const handleToggleActive = async (config) => {
   }
 }
 
-// 生成爬虫Token
-const handleGenerateCrawlerToken = () => {
-  tokenForm.name = ''
-  generateTokenDialogVisible.value = true
-}
-
-// 提交生成Token
-const handleGenerateTokenSubmit = async () => {
-  try {
-    await tokenFormRef.value.validate()
-    const response = await api.config.generateCrawlerToken({ name: tokenForm.name })
-    generatedToken.value = response.token
-    generateTokenDialogVisible.value = false
-    tokenDisplayDialogVisible.value = true
-    fetchConfigs()
-  } catch (error) {
-    console.error('生成Token失败:', error)
-    ElMessage.error(t('config.generateTokenError'))
-  }
-}
-
-// 复制Token
-const handleCopyToken = async () => {
-  try {
-    await navigator.clipboard.writeText(generatedToken.value)
-    ElMessage.success(t('config.copyTokenSuccess'))
-  } catch (error) {
-    console.error('复制失败:', error)
-    ElMessage.error(t('config.copyTokenError'))
-  }
-}
-
 // 初始化
 onMounted(() => {
   fetchConfigs()
@@ -414,12 +296,6 @@ onMounted(() => {
 <style scoped lang="less">
 .config-manage-page {
   padding: 0;
-}
-
-.crawler-token-section {
-  .section-header {
-    margin-bottom: 20px;
-  }
 }
 
 :deep(.el-tabs) {
@@ -433,4 +309,3 @@ onMounted(() => {
   }
 }
 </style>
-

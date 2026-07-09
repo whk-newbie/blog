@@ -12,7 +12,6 @@ import (
 	"github.com/whk-newbie/blog/internal/repository"
 	"github.com/whk-newbie/blog/internal/scheduler"
 	"github.com/whk-newbie/blog/internal/service"
-	"github.com/whk-newbie/blog/internal/websocket"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -76,7 +75,6 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	articleRepo := repository.NewArticleRepository(gormDB)
 	fingerprintRepo := repository.NewFingerprintRepository(gormDB)
 	visitRepo := repository.NewVisitRepository(gormDB)
-	crawlTaskRepo := repository.NewCrawlTaskRepository(gormDB)
 	configRepo := repository.NewConfigRepository(gormDB)
 	logRepo := repository.NewLogRepository(gormDB)
 
@@ -92,13 +90,6 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	visitService := service.NewVisitService(visitRepo, visitCacheService)
 	fingerprintService := service.NewFingerprintService(fingerprintRepo)
 	statsService := service.NewStatsService(articleRepo, categoryRepo, tagRepo, visitService)
-
-	// 初始化WebSocket Hub
-	wsHub := websocket.NewHub()
-	go wsHub.Run()
-
-	// 初始化爬虫任务服务（需要Hub）
-	crawlService := service.NewCrawlService(crawlTaskRepo, wsHub)
 
 	// 初始化配置和日志服务
 	configService, err := service.NewConfigService(configRepo, cfg.Crypto.MasterKey)
@@ -123,14 +114,10 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	statsHandler := handler.NewStatsHandler(statsService)
 	fingerprintHandler := handler.NewFingerprintHandler(fingerprintService)
 	visitHandler := handler.NewVisitHandler(visitService)
-	crawlerHandler := handler.NewCrawlerHandler(crawlService)
 	configHandler := handler.NewConfigHandler(configService)
 	logHandler := handler.NewLogHandler(logService)
 	backupHandler := handler.NewBackupHandler(backupService)
 	encryptionHandler := handler.NewEncryptionHandler(rsaKeyPair)
-
-	// 初始化WebSocket Handler
-	wsHandler := handler.NewWebSocketHandler(wsHub, jwtManager)
 
 	// Encryption key negotiation (public, no encryption middleware)
 	r.GET("/api/v1/public-key", encryptionHandler.GetPublicKey)
@@ -148,8 +135,8 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			SkipAuthenticated: true,
 		}))
 
-			// Encryption middleware (after rate limiting, before auth)
-			api.Use(middleware.Encryption(rsaKeyPair))
+		// Encryption middleware (after rate limiting, before auth)
+		api.Use(middleware.Encryption(rsaKeyPair))
 
 		// 认证相关接口（公开）
 		auth := api.Group("/auth")
@@ -189,16 +176,6 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 		// 公开接口 - 站点配置
 		api.GET("/site/config", configHandler.GetPublicSiteConfig)
 
-		// 爬虫任务接口（需要Bearer Token认证）
-		crawler := api.Group("/crawler")
-		crawler.Use(middleware.CrawlerAuth())
-		{
-			crawler.POST("/tasks", crawlerHandler.RegisterTask)
-			crawler.PUT("/tasks/:id", crawlerHandler.UpdateTaskStatus)
-			crawler.PUT("/tasks/:id/complete", crawlerHandler.CompleteTask)
-			crawler.PUT("/tasks/:id/fail", crawlerHandler.FailTask)
-		}
-
 		// 管理接口（需要认证）
 		admin := api.Group("/admin")
 		admin.Use(middleware.Auth(jwtManager))
@@ -237,17 +214,12 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			admin.PUT("/fingerprints/:id", fingerprintHandler.UpdateFingerprint)
 			admin.DELETE("/fingerprints/:id", fingerprintHandler.DeleteFingerprint)
 
-			// 爬虫任务管理
-			admin.GET("/crawler/tasks", crawlerHandler.ListTasks)
-			admin.GET("/crawler/tasks/:task_id", crawlerHandler.GetTaskByID)
-
 			// 配置管理
 			admin.GET("/configs", configHandler.GetConfigs)
 			admin.GET("/configs/:id", configHandler.GetConfigByID)
 			admin.POST("/configs", configHandler.CreateConfig)
 			admin.PUT("/configs/:id", configHandler.UpdateConfig)
 			admin.DELETE("/configs/:id", configHandler.DeleteConfig)
-			admin.POST("/configs/generate-crawler-token", configHandler.GenerateCrawlerToken)
 
 			// 日志管理
 			admin.GET("/logs", logHandler.GetLogs)
@@ -262,9 +234,6 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			admin.POST("/backups/cleanup", backupHandler.CleanupBackups)
 		}
 	}
-
-	// WebSocket路由
-	r.GET("/ws/crawler/tasks", wsHandler.HandleCrawlerTasks)
 
 	// 静态文件服务 - 上传的文件
 	r.Static("/uploads", "./uploads")

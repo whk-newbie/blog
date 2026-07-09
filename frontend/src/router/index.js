@@ -102,12 +102,6 @@ const routes = [
         meta: { titleKey: 'nav.fingerprints', requiresAuth: true }
       },
       {
-        path: 'crawler',
-        name: 'CrawlerMonitor',
-        component: () => import('@/views/admin/CrawlerMonitor.vue'),
-        meta: { titleKey: 'nav.crawler', requiresAuth: true }
-      },
-      {
         path: 'config',
         name: 'ConfigManage',
         component: () => import('@/views/admin/ConfigManage.vue'),

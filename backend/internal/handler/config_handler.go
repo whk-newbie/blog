@@ -206,45 +206,6 @@ func (h *ConfigHandler) DeleteConfig(c *gin.Context) {
 	response.NoContent(c, "配置删除成功")
 }
 
-// GenerateCrawlerToken 生成爬虫Token
-// @Summary 生成爬虫Token
-// @Description 生成新的爬虫认证Token
-// @Tags 配置管理
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param request body object true "生成Token请求" example({"name": "爬虫Token #1"})
-// @Success 200 {object} response.Response "生成成功"
-// @Failure 400 {object} response.Response "参数错误"
-// @Failure 401 {object} response.Response "未授权"
-// @Failure 500 {object} response.Response "服务器内部错误"
-// @Router /admin/configs/generate-crawler-token [post]
-func (h *ConfigHandler) GenerateCrawlerToken(c *gin.Context) {
-	var req struct {
-		Name string `json:"name" binding:"required"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "参数错误: "+err.Error())
-		return
-	}
-
-	// 获取用户ID
-	claims, exists := c.Get("claims")
-	if !exists {
-		response.Unauthorized(c, "未授权")
-		return
-	}
-	userID := claims.(*jwt.Claims).UserID
-
-	token, err := h.configService.GenerateCrawlerToken(req.Name, userID)
-	if err != nil {
-		response.InternalServerError(c, "生成Token失败: "+err.Error())
-		return
-	}
-
-	response.SuccessWithMessage(c, "Token生成成功", token)
-}
-
 // GetPublicSiteConfig 获取公开的站点配置
 // @Summary 获取站点配置
 // @Description 获取公开的站点配置信息(博客标题、备案信息等)
