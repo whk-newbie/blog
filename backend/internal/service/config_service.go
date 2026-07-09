@@ -285,7 +285,7 @@ func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensit
 		decrypted, err := s.crypto.Decrypt(configValue)
 		if err == nil {
 			// 解密成功
-			if maskSensitive {
+			if maskSensitive && !isPublicConfig(config.ConfigType) {
 				// 需要脱敏：根据配置类型进行智能脱敏
 				configValue = s.maskSensitiveValue(decrypted, config.ConfigType)
 			} else {
@@ -295,7 +295,7 @@ func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensit
 			}
 		} else {
 			// 解密失败
-			if maskSensitive {
+			if maskSensitive && !isPublicConfig(config.ConfigType) {
 				configValue = "***"
 			} else {
 				// 对于 application_key，解密失败应该返回错误，而不是原始加密值
@@ -304,7 +304,7 @@ func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensit
 				configValue = ""
 			}
 		}
-	} else if maskSensitive && configValue != "" {
+	} else if maskSensitive && !isPublicConfig(config.ConfigType) && configValue != "" {
 		// 未加密的配置：如果需要脱敏，直接根据类型脱敏
 		configValue = s.maskSensitiveValue(configValue, config.ConfigType)
 	}
@@ -321,6 +321,11 @@ func (s *configService) toConfigResponse(config *models.SystemConfig, maskSensit
 		CreatedAt:   config.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   config.UpdatedAt.Format(time.RFC3339),
 	}
+}
+
+// isPublicConfig checks if a config type should NOT be masked
+func isPublicConfig(configType string) bool {
+	return configType == "site_config" || configType == models.ConfigTypeSiteInfo
 }
 
 // maskSensitiveValue 根据配置类型智能脱敏
