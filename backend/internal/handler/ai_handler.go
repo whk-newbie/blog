@@ -7,18 +7,21 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/whk-newbie/blog/internal/models"
 	"github.com/whk-newbie/blog/internal/pkg/response"
+	"github.com/whk-newbie/blog/internal/repository"
 	"github.com/whk-newbie/blog/internal/service"
 )
 
 // AIHandler AI handler
 type AIHandler struct {
 	aiService service.AIService
+	chatRepo  repository.AIChatRepository
 }
 
 // NewAIHandler creates a new AI handler
-func NewAIHandler(aiService service.AIService) *AIHandler {
-	return &AIHandler{aiService: aiService}
+func NewAIHandler(aiService service.AIService, chatRepo repository.AIChatRepository) *AIHandler {
+	return &AIHandler{aiService: aiService, chatRepo: chatRepo}
 }
 
 // TranslateArticle translates an article
@@ -41,6 +44,29 @@ func (h *AIHandler) TranslateArticle(c *gin.Context) {
 	}
 
 	response.Success(c, result)
+}
+
+// SaveMessage saves a chat message to history
+func (h *AIHandler) SaveMessage(c *gin.Context) {
+	var req struct {
+		ProviderID uint   `json:"provider_id" binding:"required"`
+		Role       string `json:"role" binding:"required"`
+		Content    string `json:"content" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "invalid request")
+		return
+	}
+	msg := &models.AIChatHistory{
+		ProviderID: req.ProviderID,
+		Role:       req.Role,
+		Content:    req.Content,
+	}
+	if err := h.chatRepo.Save(msg); err != nil {
+		response.InternalServerError(c, err.Error())
+		return
+	}
+	response.Success(c, gin.H{"id": msg.ID})
 }
 
 // Chat handles SSE streaming chat
@@ -131,6 +157,32 @@ func (h *AIHandler) DeleteProvider(c *gin.Context) {
 		return
 	}
 	response.NoContent(c, "deleted")
+}
+
+// GetChatHistory returns chat history for a provider
+func (h *AIHandler) GetChatHistory(c *gin.Context) {
+	idStr := c.Param("id")
+	id, _ := strconv.ParseUint(idStr, 10, 64)
+	history, err := h.chatRepo.FindByProviderID(uint(id), 50)
+	if err != nil {
+		response.InternalServerError(c, err.Error())
+		return
+	}
+	if history == nil {
+		history = []*models.AIChatHistory{}
+	}
+	response.Success(c, history)
+}
+
+// ClearChatHistory clears chat history for a provider
+func (h *AIHandler) ClearChatHistory(c *gin.Context) {
+	idStr := c.Param("id")
+	id, _ := strconv.ParseUint(idStr, 10, 64)
+	if err := h.chatRepo.DeleteByProviderID(uint(id)); err != nil {
+		response.InternalServerError(c, err.Error())
+		return
+	}
+	response.Success(c, gin.H{"status": "ok"})
 }
 
 // CheckProvider checks provider connectivity

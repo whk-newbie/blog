@@ -125,7 +125,8 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	logHandler := handler.NewLogHandler(logService)
 	backupHandler := handler.NewBackupHandler(backupService)
 	encryptionHandler := handler.NewEncryptionHandler(rsaKeyPair)
-	aiHandler := handler.NewAIHandler(aiService)
+	aiChatRepo := repository.NewAIChatRepository(gormDB)
+		aiHandler := handler.NewAIHandler(aiService, aiChatRepo)
 
 	// Encryption key negotiation (public, no encryption middleware)
 	r.GET("/api/v1/public-key", encryptionHandler.GetPublicKey)
@@ -254,6 +255,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 
 			// AI 聊天
 			admin.POST("/ai/chat", aiHandler.Chat)
+		admin.GET("/ai/providers/:id/history", aiHandler.GetChatHistory)
+		admin.POST("/ai/providers/:id/history/clear", aiHandler.ClearChatHistory)
+		admin.POST("/ai/message", aiHandler.SaveMessage)
 		}
 	}
 
