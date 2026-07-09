@@ -6,6 +6,7 @@ import (
 	"github.com/whk-newbie/blog/internal/handler"
 	"github.com/whk-newbie/blog/internal/middleware"
 	"github.com/whk-newbie/blog/internal/pkg/db"
+	"github.com/whk-newbie/blog/internal/pkg/crypto"
 	"github.com/whk-newbie/blog/internal/pkg/jwt"
 	"github.com/whk-newbie/blog/internal/pkg/logger"
 	"github.com/whk-newbie/blog/internal/repository"
@@ -51,6 +52,22 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	// 初始化依赖
 	gormDB, _ := db.GetSQLDB()
 	jwtManager := jwt.NewManager(cfg.JWT.Secret, cfg.JWT.ExpireTime, cfg.JWT.Issuer)
+
+	// Initialize RSA key pair
+	var rsaKeyPair *crypto.RSAKeyPair
+	var err error
+	if cfg.Crypto.RSAPrivKey != "" && cfg.Crypto.RSAPubKey != "" {
+		rsaKeyPair, err = crypto.LoadRSAKeyPair(cfg.Crypto.RSAPrivKey, cfg.Crypto.RSAPubKey)
+		if err != nil {
+			panic("Failed to load RSA key pair: " + err.Error())
+		}
+	} else {
+		rsaKeyPair, err = crypto.NewRSAKeyPair()
+		if err != nil {
+			panic("Failed to generate RSA key pair: " + err.Error())
+		}
+		logger.Info("Generated new RSA key pair (not persisted to config)")
+	}
 
 	// 初始化Repository
 	adminRepo := repository.NewAdminRepository(gormDB)
@@ -110,9 +127,14 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	configHandler := handler.NewConfigHandler(configService)
 	logHandler := handler.NewLogHandler(logService)
 	backupHandler := handler.NewBackupHandler(backupService)
+	encryptionHandler := handler.NewEncryptionHandler(rsaKeyPair)
 
 	// 初始化WebSocket Handler
 	wsHandler := handler.NewWebSocketHandler(wsHub, jwtManager)
+
+	// Encryption key negotiation (public, no encryption middleware)
+	r.GET("/api/v1/public-key", encryptionHandler.GetPublicKey)
+	r.POST("/api/v1/session/key", encryptionHandler.NegotiateKey)
 
 	// API路由组
 	api := r.Group("/api/v1")
@@ -125,6 +147,9 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			RequestsPerMinute: 60,
 			SkipAuthenticated: true,
 		}))
+
+			// Encryption middleware (after rate limiting, before auth)
+			api.Use(middleware.Encryption(rsaKeyPair))
 
 		// 认证相关接口（公开）
 		auth := api.Group("/auth")
