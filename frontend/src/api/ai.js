@@ -26,6 +26,17 @@ export default {
     return http.post(`/admin/ai/translate/${articleId}`, data)
   },
 
+  // History
+  getHistory(providerId) {
+    return http.get(`/admin/ai/providers/${providerId}/history`)
+  },
+  clearHistory(providerId) {
+    return http.post(`/admin/ai/providers/${providerId}/history/clear`)
+  },
+  saveMessage(data) {
+    return http.post('/admin/ai/message', data)
+  },
+
   // Chat (SSE streaming - uses fetch directly for stream support)
   chat(providerId, messages, signal) {
     const token = localStorage.getItem('token')
