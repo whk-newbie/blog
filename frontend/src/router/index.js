@@ -3,6 +3,12 @@ import { useUserStore } from '@/store/user'
 import { ElMessage } from 'element-plus'
 import i18n from '@/locales'
 
+// 动态管理后台路径
+function getAdminPath() {
+  const stored = localStorage.getItem('admin_path')
+  return stored || 'admin'
+}
+
 const routes = [
   // 公开页面 - 使用主布局
   {
@@ -37,7 +43,7 @@ const routes = [
   },
   // 管理后台 - 使用布局
   {
-    path: '/admin',
+    path: `/${getAdminPath()}`,
     component: () => import('@/components/layout/AdminLayout.vue'),
     meta: { requiresAuth: true },
     children: [

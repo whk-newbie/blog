@@ -12,7 +12,21 @@
         <router-link to="/tools" class="nav-item">{{ t('nav.tools') }}</router-link>
       </nav>
       <div class="header-actions">
-        <!-- 未登录：显示登录按钮 -->
+        <!-- Language switch -->
+        <LanguageSwitch />
+        <!-- Theme switch -->
+        <ThemeSwitch />
+        <!-- Admin link: only show when enabled AND logged in -->
+        <el-tooltip
+          v-if="showAdminLink && isLoggedIn"
+          :content="t('nav.adminTooltip')"
+          placement="bottom"
+        >
+          <el-button text size="default" @click="goToAdmin" class="admin-btn">
+            <el-icon><Setting /></el-icon>
+          </el-button>
+        </el-tooltip>
+        <!-- Login button when not logged in -->
         <el-button
           v-if="!isLoggedIn"
           type="primary"
@@ -21,22 +35,6 @@
         >
           {{ t('login.title') }}
         </el-button>
-        <!-- 已登录：显示跳转到后台按钮 -->
-        <el-tooltip
-          v-else
-          :content="t('nav.adminTooltip')"
-          placement="bottom"
-        >
-          <el-button
-            text
-            size="default"
-            @click="goToAdmin"
-            class="admin-btn"
-          >
-            <el-icon><Setting /></el-icon>
-            <span>{{ t('nav.dashboard') }}</span>
-          </el-button>
-        </el-tooltip>
         <LoginDialog v-model="showLoginDialog" @success="handleLoginSuccess" />
       </div>
     </div>
@@ -44,12 +42,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Setting } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/store/user'
 import LoginDialog from '../common/LoginDialog.vue'
+import LanguageSwitch from '../common/LanguageSwitch.vue'
+import ThemeSwitch from '../common/ThemeSwitch.vue'
+import api from '@/api'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -63,18 +64,43 @@ const blogTitle = computed(() => t('app.title'))
 // 判断是否已登录
 const isLoggedIn = computed(() => userStore.isLoggedIn())
 
+const showAdminLink = ref(true)
+
+// 获取后台可见性配置
+const fetchAdminConfig = async () => {
+  try {
+    const configs = await api.config.getConfigs({ config_type: 'site_config' })
+    const showLinkConfig = configs.find(c => c.config_key === 'show_admin_link')
+    if (showLinkConfig) {
+      showAdminLink.value = showLinkConfig.config_value === 'true'
+    }
+    const adminPathConfig = configs.find(c => c.config_key === 'admin_path')
+    if (adminPathConfig) {
+      localStorage.setItem('admin_path', adminPathConfig.config_value)
+    }
+  } catch (e) {
+    // 使用默认值
+  }
+}
+
+onMounted(() => {
+  fetchAdminConfig()
+})
+
 // 登录成功回调
 const handleLoginSuccess = () => {
   showLoginDialog.value = false
   // 如果当前在首页，可以选择跳转到管理后台
   if (router.currentRoute.value.path === '/') {
-    router.push('/admin')
+    const adminPath = localStorage.getItem('admin_path') || 'admin'
+    router.push(`/${adminPath}`)
   }
 }
 
 // 跳转到后台
 const goToAdmin = () => {
-  router.push('/admin')
+  const adminPath = localStorage.getItem('admin_path') || 'admin'
+  router.push(`/${adminPath}`)
 }
 </script>
 
