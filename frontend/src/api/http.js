@@ -2,6 +2,8 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import i18n from '@/locales'
 import performanceMonitor from '@/utils/performance'
+import CryptoJS from 'crypto-js'
+import { generateAESKey, aesEncrypt, aesDecrypt, rsaEncrypt } from '@/utils/crypto'
 
 // 创建axios实例
 const http = axios.create({
@@ -12,23 +14,91 @@ const http = axios.create({
   },
 })
 
+// Encryption session state
+let sessionId = null
+let aesKey = null        // CryptoJS WordArray
+let aesKeyB64 = null     // Base64 string (for passing to encrypt/decrypt)
+let negotiating = false
+let negotiatePromise = null
+
+// Negotiate encryption key with server
+async function negotiateKey() {
+  if (aesKey && sessionId) return
+
+  if (negotiating && negotiatePromise) {
+    return negotiatePromise
+  }
+
+  negotiating = true
+  negotiatePromise = (async () => {
+    try {
+      // 1. Get RSA public key
+      const pubKeyRes = await axios.get('/api/v1/public-key')
+      const { public_key, session_id } = pubKeyRes.data.data
+      sessionId = session_id
+
+      // 2. Generate AES key
+      const rawKey = generateAESKey()
+      aesKeyB64 = CryptoJS.enc.Base64.stringify(rawKey)
+      aesKey = rawKey
+
+      // 3. Encrypt AES key with RSA public key
+      const encryptedKey = await rsaEncrypt(public_key, aesKeyB64)
+
+      // 4. Send encrypted key to server
+      await axios.post('/api/v1/session/key', {
+        encrypted_key: encryptedKey,
+        session_id: sessionId,
+      })
+    } catch (error) {
+      sessionId = null
+      aesKey = null
+      aesKeyB64 = null
+      throw error
+    } finally {
+      negotiating = false
+    }
+  })()
+
+  return negotiatePromise
+}
+
 // 请求拦截器
 http.interceptors.request.use(
-  (config) => {
+  async (config) => {
     // 记录请求开始时间
     config.metadata = {
       startTime: performance.now(),
     }
-    
+
+    // Skip encryption for whitelisted paths
+    const whitelist = ['/api/v1/public-key', '/api/v1/session/key']
+    const isWhitelisted = whitelist.some(p => config.url?.includes(p))
+
+    if (!isWhitelisted) {
+      // Ensure key is negotiated
+      if (!aesKey) {
+        await negotiateKey()
+      }
+      config.headers['X-Session-Id'] = sessionId
+
+      // Encrypt request body
+      if (config.data && typeof config.data === 'object') {
+        const jsonStr = JSON.stringify(config.data)
+        const encrypted = aesEncrypt(jsonStr, aesKey)
+        config.data = encrypted
+      }
+    }
+
     // 添加token
     const token = localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
-    
+
     // 添加请求ID
     config.headers['X-Request-ID'] = generateRequestId()
-    
+
     return config
   },
   (error) => {
@@ -38,7 +108,7 @@ http.interceptors.request.use(
 
 // 响应拦截器
 http.interceptors.response.use(
-  (response) => {
+  async (response) => {
     // 记录API请求性能
     if (response.config.metadata) {
       const endTime = performance.now()
@@ -51,42 +121,72 @@ http.interceptors.response.use(
         response.status
       )
     }
-    
+
     // 204 No Content - 删除成功，没有响应体
     if (response.status === 204) {
       return null
     }
-    
+
+    // Decrypt response if encrypted
+    const whitelist = ['/api/v1/public-key', '/api/v1/session/key']
+    const isWhitelisted = whitelist.some(p => response.config.url?.includes(p))
+
+    if (!isWhitelisted && aesKey && typeof response.data === 'string') {
+      try {
+        const decrypted = aesDecrypt(response.data, aesKey)
+        response.data = JSON.parse(decrypted)
+      } catch (e) {
+        // Decryption failed - might be unencrypted error response
+        console.warn('Response decryption failed:', e)
+        try {
+          // Try parsing as JSON directly (fallback for error responses)
+          response.data = JSON.parse(response.data)
+        } catch (_) {
+          return Promise.reject(new Error('Failed to decrypt response'))
+        }
+      }
+    }
+
     // 201 Created 或其他成功状态码，检查响应体
     if (!response.data) {
       return null
     }
-    
+
     // 处理响应数据
     const responseData = response.data
-    
+
     // 确保 responseData 是对象
     if (!responseData || typeof responseData !== 'object') {
       console.error('响应数据格式不正确:', responseData)
       return Promise.reject(new Error('响应数据格式不正确'))
     }
-    
+
     const { code, message, data } = responseData
-    
+
     // 业务成功
     if (code === 0) {
       return data
     }
-    
+
     // 业务失败
     ElMessage.error(message || i18n.global.t('common.error'))
     return Promise.reject(new Error(message || i18n.global.t('common.error')))
   },
-  (error) => {
+  async (error) => {
+    // Handle session expiry (40002) - re-negotiate and retry once
+    if (error.response?.data?.code === 40002) {
+      aesKey = null
+      sessionId = null
+      negotiatePromise = null
+      await negotiateKey()
+      // Retry the original request with new session
+      return http(error.config)
+    }
+
     // HTTP错误
     if (error.response) {
       const { status, data } = error.response
-      
+
       switch (status) {
         case 401:
           ElMessage.error(i18n.global.t('common.unauthorized'))
@@ -110,7 +210,7 @@ http.interceptors.response.use(
     } else {
       ElMessage.error(error.message || i18n.global.t('common.error'))
     }
-    
+
     return Promise.reject(error)
   }
 )
