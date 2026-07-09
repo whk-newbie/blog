@@ -64,14 +64,20 @@
 
       <!-- 摘要 -->
       <el-form-item :label="t('article.summary')">
-        <el-input
-          v-model="form.summary"
-          type="textarea"
-          :rows="3"
-          :placeholder="t('article.summaryPlaceholder')"
-          maxlength="500"
-          show-word-limit
-        />
+        <div style="display:flex;gap:8px;width:100%">
+          <el-input
+            v-model="form.summary"
+            type="textarea"
+            :rows="3"
+            :placeholder="t('article.summaryPlaceholder')"
+            maxlength="500"
+            show-word-limit
+            style="flex:1"
+          />
+          <el-button size="small" @click="generateSummary" :loading="summaryLoading" style="align-self:flex-start">
+            AI 生成摘要
+          </el-button>
+        </div>
       </el-form-item>
 
       <!-- 分类 -->
@@ -112,7 +118,7 @@
         <rich-text-editor
           v-model="form.content"
           :placeholder="t('article.contentPlaceholder')"
-          height="500px"
+          height="700px"
         />
       </el-form-item>
 
@@ -174,6 +180,7 @@ const { t } = useI18n()
 const formRef = ref(null)
 const loading = ref(false)
 const translateToEn = ref(false)
+const summaryLoading = ref(false)
 const categories = ref([])
 const tags = ref([])
 
@@ -303,6 +310,29 @@ const handleUploadSuccess = (response) => {
 // 上传失败
 const handleUploadError = () => {
   ElMessage.error(t('common.uploadError'))
+}
+
+// AI 生成摘要
+const generateSummary = async () => {
+  if (!form.content || form.content.trim().length < 10) {
+    ElMessage.warning('请先编写文章内容')
+    return
+  }
+  summaryLoading.value = true
+  try {
+    const tr = await aiApi.translateArticle(0, {
+      title: form.title || '',
+      content: form.content,
+      summary: '请根据以上内容生成一段简洁的中文摘要，100字以内。',
+    })
+    if (tr?.summary_en) {
+      form.summary = tr.summary_en
+    }
+  } catch (e) {
+    ElMessage.error('生成摘要失败')
+  } finally {
+    summaryLoading.value = false
+  }
 }
 
 // 提交表单
