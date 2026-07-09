@@ -27,6 +27,14 @@ type Article struct {
 	PublishAt  *time.Time     `gorm:"index" json:"publish_at"`                             // 发布时间（可预设未来时间）
 	ViewCount  int            `gorm:"default:0;index" json:"view_count"`                   // 浏览次数
 	LikeCount  int            `gorm:"default:0" json:"like_count"`                         // 点赞数（预留）
+
+	// English translation fields
+	TitleEn       string     `gorm:"type:varchar(500)" json:"title_en"`
+	ContentEn     string     `gorm:"type:text" json:"content_en"`
+	SummaryEn     string     `gorm:"type:varchar(500)" json:"summary_en"`
+	IsTranslated  bool       `gorm:"default:false" json:"is_translated"`
+	TranslatedAt  *time.Time `json:"translated_at"`
+
 	IsTop      bool           `gorm:"default:false;index" json:"is_top"`                   // 是否置顶
 	IsFeatured bool           `gorm:"default:false" json:"is_featured"`                    // 是否推荐
 	AuthorID   *uint          `gorm:"index" json:"author_id"`                              // 作者ID
