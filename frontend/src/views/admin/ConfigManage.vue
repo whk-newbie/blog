@@ -221,7 +221,7 @@ onMounted(() => { fetchConfigs() })
 
 <style scoped lang="less">
 .config-manage-page {
-  max-width: 960px;
+  width: 100%;
 }
 
 .page-header-bar {
