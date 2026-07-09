@@ -20,6 +20,8 @@ import (
 var EncryptionWhitelist = []string{
 	"/api/v1/public-key",
 	"/api/v1/session/key",
+	"/api/v1/fingerprint",
+	"/api/v1/visit",
 	"/api/v1/health",
 	"/swagger",
 	"/docs",

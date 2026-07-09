@@ -181,8 +181,10 @@ http.interceptors.response.use(
     }
 
     // 业务失败
-    ElMessage.error(message || i18n.global.t('common.error'))
-    return Promise.reject(new Error(message || i18n.global.t('common.error')))
+    const errMsg = message || i18n.global.t('common.error')
+    console.error('API Error:', code, errMsg)
+    ElMessage.error(errMsg)
+    return Promise.reject(new Error(errMsg))
   },
   async (error) => {
     // HTTP错误
@@ -230,6 +232,10 @@ http.interceptors.response.use(
 // 生成请求ID
 function generateRequestId() {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+}
+
+export function initEncryption() {
+  return negotiateKey()
 }
 
 export default http
