@@ -2,7 +2,8 @@
   <aside class="sidebar">
     <div class="sidebar-inner">
       <div class="profile">
-        <el-avatar :size="80" :src="avatarUrl || undefined" class="avatar-el">{{ avatarUrl ? '' : initials }}</el-avatar>
+        <el-avatar v-if="avatarUrl" :size="80" :src="avatarUrl" class="avatar-el" />
+        <el-avatar v-else :size="80" class="avatar-el" :style="{ background: 'var(--primary-color)', color: '#fff', fontSize: '32px', fontWeight: 600 }">{{ initials }}</el-avatar>
         <h2 class="name">{{ blogTitle }}</h2>
         <p class="bio">{{ blogDescription }}</p>
       </div>
