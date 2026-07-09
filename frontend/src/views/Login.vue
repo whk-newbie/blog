@@ -1,5 +1,6 @@
 <template>
-  <div class="login-page">
+  <div class="login-page" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
+    <div class="login-overlay"></div>
     <div class="login-card">
       <h1 class="login-title">{{ blogTitle }}</h1>
       <p class="login-subtitle">后台管理</p>
@@ -62,6 +63,32 @@ const { t } = useI18n()
 const formRef = ref(null)
 const loading = ref(false)
 const blogTitle = ref('Blog')
+const bgUrl = ref('')
+
+// 获取 Bing 每日图片
+async function fetchBingImage() {
+  try {
+    const resp = await fetch('https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1')
+    const data = await resp.json()
+    if (data?.images?.length > 0) {
+      bgUrl.value = `https://cn.bing.com${data.images[0].url}`
+      localStorage.setItem('bing_bg', bgUrl.value)
+      localStorage.setItem('bing_bg_date', new Date().toDateString())
+    }
+  } catch {
+    // 使用缓存
+    const cached = localStorage.getItem('bing_bg')
+    if (cached) bgUrl.value = cached
+  }
+}
+
+// 检查缓存
+const cachedDate = localStorage.getItem('bing_bg_date')
+if (cachedDate === new Date().toDateString()) {
+  bgUrl.value = localStorage.getItem('bing_bg') || ''
+} else {
+  fetchBingImage()
+}
 
 const form = reactive({
   username: '',
@@ -116,7 +143,15 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-color);
+  background: var(--bg-color) center/cover no-repeat;
+  position: relative;
+}
+
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
 }
 
 .login-card {
@@ -124,7 +159,9 @@ const handleLogin = async () => {
   padding: 40px;
   background: var(--card-bg);
   border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1;
 }
 
 .login-title {
