@@ -13,54 +13,35 @@
         </el-main>
       </el-container>
     </el-container>
-    <!-- 登录对话框 - 未登录时自动显示 -->
-    <LoginDialog v-model="showLoginDialog" @success="handleLoginSuccess" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import Sidebar from './Sidebar.vue'
 import AdminHeader from './AdminHeader.vue'
-import LoginDialog from '../common/LoginDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const showLoginDialog = ref(false)
+const adminPath = () => localStorage.getItem('admin_path') || 'admin'
 
-// 检查是否需要显示登录对话框
-const checkLoginStatus = () => {
-  if (route.meta.requiresAuth && !userStore.isLoggedIn()) {
-    showLoginDialog.value = true
+const checkAuth = () => {
+  if (!userStore.isLoggedIn()) {
+    const currentPath = route.fullPath
+    router.push(`/login?redirect=${encodeURIComponent(currentPath)}`)
   }
 }
 
-// 监听路由变化
 watch(() => route.path, () => {
-  checkLoginStatus()
+  if (route.name !== 'Login') checkAuth()
 })
 
-// 监听登录状态变化
-watch(() => userStore.isLoggedIn(), (isLoggedIn) => {
-  if (isLoggedIn) {
-    showLoginDialog.value = false
-  } else if (route.meta.requiresAuth) {
-    showLoginDialog.value = true
-  }
-})
-
-// 登录成功回调
-const handleLoginSuccess = () => {
-  showLoginDialog.value = false
-}
-
-// 组件挂载时检查
 onMounted(() => {
-  checkLoginStatus()
+  checkAuth()
 })
 </script>
 
@@ -76,20 +57,20 @@ onMounted(() => {
   height: 100vh;
   overflow-y: auto;
   box-shadow: var(--shadow-sm);
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
-    
+
     &:hover {
       background: rgba(255, 255, 255, 0.3);
     }
   }
-  
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
@@ -111,4 +92,3 @@ onMounted(() => {
   min-height: calc(100vh - 60px);
 }
 </style>
-
