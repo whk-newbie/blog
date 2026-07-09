@@ -98,6 +98,13 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	}
 	logService := service.NewLogService(logRepo)
 
+	// 初始化 AI 服务
+	aiProviderRepo := repository.NewAIProviderRepository(gormDB)
+	aiService, err := service.NewAIService(aiProviderRepo, cfg.Crypto.MasterKey)
+	if err != nil {
+		panic("Failed to initialize AI service: " + err.Error())
+	}
+
 	// 初始化备份服务
 	backupService := service.NewBackupService(cfg)
 
@@ -118,6 +125,7 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	logHandler := handler.NewLogHandler(logService)
 	backupHandler := handler.NewBackupHandler(backupService)
 	encryptionHandler := handler.NewEncryptionHandler(rsaKeyPair)
+	aiHandler := handler.NewAIHandler(aiService)
 
 	// Encryption key negotiation (public, no encryption middleware)
 	r.GET("/api/v1/public-key", encryptionHandler.GetPublicKey)
@@ -232,6 +240,20 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 			admin.GET("/backups/download/:filename", backupHandler.DownloadBackup)
 			admin.DELETE("/backups/:filename", backupHandler.DeleteBackup)
 			admin.POST("/backups/cleanup", backupHandler.CleanupBackups)
+
+			// AI 提供方管理
+			admin.GET("/ai/providers", aiHandler.ListProviders)
+			admin.GET("/ai/providers/:id", aiHandler.GetProvider)
+			admin.POST("/ai/providers", aiHandler.CreateProvider)
+			admin.PUT("/ai/providers/:id", aiHandler.UpdateProvider)
+			admin.DELETE("/ai/providers/:id", aiHandler.DeleteProvider)
+			admin.POST("/ai/providers/:id/check", aiHandler.CheckProvider)
+
+			// AI 翻译
+			admin.POST("/ai/translate/:id", aiHandler.TranslateArticle)
+
+			// AI 聊天
+			admin.POST("/ai/chat", aiHandler.Chat)
 		}
 	}
 
