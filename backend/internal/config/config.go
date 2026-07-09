@@ -65,7 +65,9 @@ type JWTConfig struct {
 
 // CryptoConfig 加密配置
 type CryptoConfig struct {
-	MasterKey string `yaml:"master_key"` // AES-256密钥(32字节)
+	MasterKey  string `yaml:"master_key"`   // AES-256密钥(32字节)
+	RSAPrivKey string `yaml:"rsa_priv_key"` // RSA 私钥 (PEM, 可选，不配置则自动生成)
+	RSAPubKey  string `yaml:"rsa_pub_key"`  // RSA 公钥 (PEM, 可选)
 }
 
 // UploadConfig 上传配置
@@ -167,6 +169,12 @@ func overrideFromEnv(cfg *Config) {
 	// 加密配置
 	if masterKey := os.Getenv("CRYPTO_MASTER_KEY"); masterKey != "" {
 		cfg.Crypto.MasterKey = masterKey
+	}
+	if privKey := os.Getenv("RSA_PRIV_KEY"); privKey != "" {
+		cfg.Crypto.RSAPrivKey = privKey
+	}
+	if pubKey := os.Getenv("RSA_PUB_KEY"); pubKey != "" {
+		cfg.Crypto.RSAPubKey = pubKey
 	}
 }
 
