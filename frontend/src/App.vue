@@ -1,6 +1,6 @@
 <template>
   <el-config-provider :locale="elementLocale">
-    <div id="app">
+    <div id="app" :style="bingBg ? { backgroundImage: `url(${bingBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' } : {}">
       <!-- 加密通道加载中 -->
       <div v-if="!encryptionReady" class="app-loading">
         <div class="loading-content">
@@ -39,11 +39,32 @@ const encryptionReady = ref(false)
 const loadingText = ref('正在建立安全连接...')
 const loadError = ref(false)
 
+// Bing 每日图片作为全局背景
+const bingBg = ref('')
+
+async function fetchBingBg() {
+  try {
+    const cached = localStorage.getItem('bing_bg')
+    const cachedDate = localStorage.getItem('bing_bg_date')
+    if (cached && cachedDate === new Date().toDateString()) {
+      bingBg.value = cached
+      return
+    }
+    const resp = await fetch('/api/v1/bing-image')
+    const data = await resp.json()
+    if (data.code === 0 && data.data?.url) {
+      bingBg.value = data.data.url
+      localStorage.setItem('bing_bg', data.data.url)
+      localStorage.setItem('bing_bg_date', new Date().toDateString())
+    }
+  } catch (e) { /* silent */ }
+}
+
 async function initApp() {
   loadError.value = false
   loadingText.value = '正在建立安全连接...'
   try {
-    await initEncryption()
+    await Promise.all([initEncryption(), fetchBingBg()])
     encryptionReady.value = true
   } catch (e) {
     console.error('Encryption init failed:', e)
