@@ -53,21 +53,21 @@ onMounted(() => {
 
 .el-aside {
   background: var(--admin-sidebar-bg);
-  color: var(--text-white);
+  color: var(--admin-sidebar-text);
   height: 100vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-sm);
+  border-right: 1px solid var(--admin-border);
 
   &::-webkit-scrollbar {
     width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--border-color);
     border-radius: 3px;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: var(--text-secondary);
     }
   }
 

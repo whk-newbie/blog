@@ -9,8 +9,8 @@
       :default-active="activeMenu"
       router
       background-color="transparent"
-      text-color="rgba(255, 255, 255, 0.85)"
-      active-text-color="#ffffff"
+      text-color="var(--admin-sidebar-text)"
+      active-text-color="var(--primary-color)"
       class="sidebar-menu"
     >
       <el-menu-item index="/admin">
@@ -108,14 +108,14 @@ const goToHome = () => {
 
   .logo-icon {
     font-size: 36px;
-    color: #ffffff;
+    color: var(--primary-color);
     margin-bottom: 8px;
     transition: transform 0.3s;
   }
 
   h2 {
     margin: 0;
-    color: #ffffff;
+    color: var(--admin-sidebar-text);
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -124,7 +124,7 @@ const goToHome = () => {
 
   .logo-subtitle {
     margin: 4px 0 0;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     font-size: 12px;
     letter-spacing: 1px;
   }

@@ -121,19 +121,23 @@ html.dark {
 @danger-color: var(--danger-color);
 @info-color: var(--info-color);
 
-// 管理后台颜色保持不变
+// 管理后台颜色 — 匹配前台极简风格
 :root {
-  --admin-sidebar-bg: linear-gradient(180deg, #1e3a5f 0%, #162d4a 100%);
-  --admin-sidebar-active: rgba(255, 255, 255, 0.15);
-  --admin-sidebar-hover: rgba(255, 255, 255, 0.1);
+  --admin-sidebar-bg: #f5f5f5;
+  --admin-sidebar-text: #333333;
+  --admin-sidebar-active: rgba(64, 120, 192, 0.1);
+  --admin-sidebar-hover: rgba(0, 0, 0, 0.05);
   --admin-header-bg: #ffffff;
   --admin-content-bg: #fafafa;
+  --admin-border: #e8e8e8;
 }
 
 html.dark {
-  --admin-sidebar-bg: linear-gradient(180deg, #1a1a2e 0%, #16162a 100%);
-  --admin-sidebar-active: rgba(109, 179, 242, 0.2);
-  --admin-sidebar-hover: rgba(109, 179, 242, 0.1);
+  --admin-sidebar-bg: #222240;
+  --admin-sidebar-text: #e0e0e0;
+  --admin-sidebar-active: rgba(109, 179, 242, 0.15);
+  --admin-sidebar-hover: rgba(255, 255, 255, 0.06);
   --admin-header-bg: #1a1a2e;
   --admin-content-bg: #1a1a2e;
+  --admin-border: #333350;
 }
