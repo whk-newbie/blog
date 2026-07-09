@@ -71,7 +71,7 @@ services:
       - backend_backups:/app/backups
       - backend_logs:/app/logs
     ports:
-      - "8080:8080"
+      - "12138:8080"
     networks:
       - blog-network
     depends_on:
