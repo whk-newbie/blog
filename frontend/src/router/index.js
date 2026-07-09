@@ -34,6 +34,12 @@ const routes = [
         meta: { titleKey: 'article.title' }
       },
       {
+        path: 'timeline',
+        name: 'Timeline',
+        component: () => import('@/views/Timeline.vue'),
+        meta: { titleKey: 'nav.timeline' }
+      },
+      {
         path: 'tools',
         name: 'Tools',
         component: () => import('@/views/Tools.vue'),

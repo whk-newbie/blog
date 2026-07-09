@@ -160,9 +160,9 @@ onMounted(() => {
 
 <style scoped lang="less">
 .article-detail-page {
-  max-width: 1400px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--spacing-lg);
 }
 
 .article-container {
@@ -171,48 +171,49 @@ onMounted(() => {
 
 .article-layout {
   display: flex;
-  gap: 2rem;
+  gap: var(--spacing-lg);
   align-items: flex-start;
 }
 
 .article-content {
   flex: 1;
-  min-width: 0; // 防止flex子元素溢出
-  background: var(--bg-color);
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  min-width: 0;
+  background: var(--card-bg);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
 }
 
 .article-aside {
-  width: 280px;
+  width: 260px;
   flex-shrink: 0;
 }
 
 .article-header {
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
 }
 
 .article-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 1rem 0;
+  color: var(--text-heading);
+  margin: 0 0 var(--spacing-md) 0;
   line-height: 1.4;
+  font-family: var(--font-family);
 }
 
 .article-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: var(--text-color-secondary);
-  margin-bottom: 1.5rem;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
 
   .meta-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--spacing-xs);
 
     .el-icon {
       font-size: 1rem;
@@ -220,15 +221,15 @@ onMounted(() => {
 
     &.tags {
       display: flex;
-      gap: 0.5rem;
+      gap: var(--spacing-xs);
     }
   }
 }
 
 .article-cover {
   width: 100%;
-  margin: 1.5rem 0;
-  border-radius: 8px;
+  margin: var(--spacing-lg) 0;
+  border-radius: var(--border-radius-sm);
   overflow: hidden;
 
   img {
@@ -239,70 +240,76 @@ onMounted(() => {
 }
 
 .article-summary {
-  padding: 1rem;
-  background: var(--bg-color-secondary);
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
   border-left: 4px solid var(--primary-color);
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-md);
   line-height: 1.6;
-  color: var(--text-color-secondary);
-  margin-top: 1.5rem;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-lg);
+  font-family: var(--font-family);
 }
 
 .article-body {
-  font-size: 1rem;
+  font-size: var(--font-size-md);
   line-height: 1.8;
   color: var(--text-color);
-  
+  font-family: var(--font-family);
+
   :deep(h1), :deep(h2), :deep(h3), :deep(h4), :deep(h5), :deep(h6) {
-    margin: 1.5rem 0 1rem;
+    margin: var(--spacing-lg) 0 var(--spacing-md);
     font-weight: 600;
     line-height: 1.4;
+    color: var(--text-heading);
   }
 
   :deep(h1) { font-size: 1.75rem; }
   :deep(h2) { font-size: 1.5rem; }
   :deep(h3) { font-size: 1.25rem; }
   :deep(h4) { font-size: 1.125rem; }
-  
+
   :deep(p) {
-    margin: 0.75rem 0;
+    margin: var(--spacing-sm) 0;
   }
 
   :deep(img) {
     max-width: 100%;
     height: auto;
-    border-radius: 4px;
-    margin: 1rem 0;
+    border-radius: var(--border-radius-sm);
+    margin: var(--spacing-md) 0;
   }
 
   :deep(pre) {
-    background: #f6f8fa;
-    padding: 1rem;
-    border-radius: 4px;
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-sm);
     overflow-x: auto;
-    margin: 1rem 0;
+    margin: var(--spacing-md) 0;
+    font-family: var(--font-mono);
   }
 
   :deep(code) {
-    background: #f6f8fa;
+    background: var(--bg-secondary);
     padding: 0.2rem 0.4rem;
-    border-radius: 3px;
-    font-family: 'Monaco', 'Consolas', monospace;
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-mono);
     font-size: 0.9em;
+    color: var(--text-color);
   }
 
   :deep(blockquote) {
-    margin: 1rem 0;
-    padding: 0.5rem 1rem;
-    border-left: 4px solid #ddd;
-    background: #f9f9f9;
-    color: #666;
+    margin: var(--spacing-md) 0;
+    padding: 0.5rem var(--spacing-md);
+    border-left: 4px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
   }
 
   :deep(ul), :deep(ol) {
     padding-left: 2rem;
-    margin: 1rem 0;
+    margin: var(--spacing-md) 0;
   }
 
   :deep(li) {
@@ -312,7 +319,7 @@ onMounted(() => {
   :deep(a) {
     color: var(--primary-color);
     text-decoration: none;
-    
+
     &:hover {
       text-decoration: underline;
     }
@@ -321,23 +328,23 @@ onMounted(() => {
   :deep(table) {
     width: 100%;
     border-collapse: collapse;
-    margin: 1rem 0;
+    margin: var(--spacing-md) 0;
   }
 
   :deep(th), :deep(td) {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     padding: 0.5rem;
     text-align: left;
   }
 
   :deep(th) {
-    background: #f6f8fa;
+    background: var(--bg-secondary);
     font-weight: 600;
   }
 }
 
 .article-footer {
-  margin-top: 3rem;
+  margin-top: var(--spacing-xl);
 
   .footer-actions {
     display: flex;
@@ -352,17 +359,17 @@ onMounted(() => {
 
   .article-aside {
     width: 100%;
-    order: -1; // 将目录移到顶部
+    order: -1;
   }
 }
 
 @media (max-width: 768px) {
   .article-detail-page {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .article-content {
-    padding: 1.5rem;
+    padding: var(--spacing-lg);
   }
 
   .article-title {
@@ -371,7 +378,7 @@ onMounted(() => {
 
   .article-meta {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--spacing-xs);
   }
 }
 </style>

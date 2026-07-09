@@ -1,6 +1,6 @@
 <template>
   <div class="main-layout">
-    <Header />
+    <Header @toggleSearch="searchOverlay?.open()" />
     <div class="layout-body">
       <Sidebar />
       <main class="main-content">
@@ -12,13 +12,18 @@
       </main>
     </div>
     <Footer />
+    <SearchOverlay ref="searchOverlay" />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import Header from './Header.vue'
 import Sidebar from './PublicSidebar.vue'
 import Footer from './Footer.vue'
+import SearchOverlay from '@/components/common/SearchOverlay.vue'
+
+const searchOverlay = ref(null)
 </script>
 
 <style scoped lang="less">

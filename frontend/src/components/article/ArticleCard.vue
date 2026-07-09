@@ -1,188 +1,122 @@
 <template>
-  <div class="article-card" @click="handleClick">
-    <!-- 封面图 -->
-    <div v-if="article.cover_image" class="article-cover">
-      <img v-lazy="article.cover_image" :alt="article.title" loading="lazy" />
-      <div v-if="article.is_top" class="top-badge">
-        <el-tag type="danger" size="small">{{ t('article.isTop') }}</el-tag>
+  <article class="article-card" @click="$emit('click')">
+    <div class="card-cover">
+      <img
+        v-if="article.cover_image"
+        :src="article.cover_image"
+        :alt="displayTitle"
+        loading="lazy"
+      />
+      <div v-else class="cover-placeholder"></div>
+    </div>
+    <div class="card-body">
+      <h3 class="card-title">{{ displayTitle }}</h3>
+      <div class="card-meta">
+        <time>{{ formatDate(article.publish_at || article.created_at) }}</time>
+        <span v-if="article.category" class="category-badge">{{ article.category.name }}</span>
       </div>
     </div>
-
-    <!-- 文章信息 -->
-    <div class="article-info">
-      <!-- 标题 -->
-      <h3 class="article-title">{{ article.title }}</h3>
-
-      <!-- 摘要 -->
-      <p v-if="article.summary" class="article-summary">
-        {{ article.summary }}
-      </p>
-
-      <!-- 元信息 -->
-      <div class="article-meta">
-        <!-- 分类 -->
-        <span v-if="article.category" class="meta-item">
-          <el-icon><Folder /></el-icon>
-          {{ article.category.name }}
-        </span>
-
-        <!-- 标签 -->
-        <span v-if="article.tags && article.tags.length > 0" class="meta-item tags">
-          <el-icon><PriceTag /></el-icon>
-          <el-tag
-            v-for="tag in article.tags.slice(0, 3)"
-            :key="tag.id"
-            size="small"
-            class="tag"
-          >
-            {{ tag.name }}
-          </el-tag>
-        </span>
-
-        <!-- 浏览量 -->
-        <span class="meta-item">
-          <el-icon><View /></el-icon>
-          {{ article.view_count || 0 }}
-        </span>
-
-        <!-- 发布时间 -->
-        <span class="meta-item">
-          <el-icon><Clock /></el-icon>
-          {{ formatDate(article.publish_at || article.created_at) }}
-        </span>
-      </div>
-    </div>
-  </div>
+  </article>
 </template>
 
 <script setup>
-import { Folder, PriceTag, View, Clock } from '@element-plus/icons-vue'
-import { useI18n } from 'vue-i18n'
-
-const { t, locale } = useI18n()
+import { computed } from 'vue'
+import { useLanguageStore } from '@/store/language'
 
 const props = defineProps({
-  article: {
-    type: Object,
-    required: true
-  }
+  article: { type: Object, required: true },
 })
 
-const emit = defineEmits(['click'])
+defineEmits(['click'])
 
-const handleClick = () => {
-  emit('click')
-}
+const languageStore = useLanguageStore()
+const isEnglish = computed(() => languageStore.language === 'en-US')
+
+const displayTitle = computed(() => {
+  if (isEnglish.value && props.article.title_en) {
+    return props.article.title_en
+  }
+  return props.article.title
+})
 
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diff = now - date
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-  if (days === 0) return t('common.today')
-  if (days === 1) return t('common.yesterday')
-  if (days < 7) return `${days}${t('common.daysAgo')}`
-  if (days < 30) return `${Math.floor(days / 7)}${t('common.weeksAgo')}`
-  if (days < 365) return `${Math.floor(days / 30)}${t('common.monthsAgo')}`
-  
-  return date.toLocaleDateString(locale.value === 'zh-CN' ? 'zh-CN' : 'en-US')
+  const d = new Date(dateStr)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 </script>
 
 <style scoped lang="less">
 .article-card {
-  background: var(--bg-color);
-  border-radius: 8px;
+  background: var(--card-bg);
+  border-radius: var(--border-radius-sm);
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  box-shadow: var(--shadow-sm);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
 }
 
-.article-cover {
+.card-cover {
   position: relative;
-  width: 100%;
-  height: 200px;
+  padding-top: 56.25%;
   overflow: hidden;
+  background: var(--bg-secondary);
 
   img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
   }
 
-  &:hover img {
-    transform: scale(1.05);
-  }
-
-  .top-badge {
+  .cover-placeholder {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
   }
 }
 
-.article-info {
-  padding: 1.5rem;
+.card-body {
+  padding: var(--spacing-md);
 }
 
-.article-title {
-  font-size: 1.25rem;
+.card-title {
+  margin: 0 0 10px;
+  font-size: var(--font-size-md);
   font-weight: 600;
-  color: var(--text-color);
-  margin: 0 0 0.75rem 0;
+  color: var(--text-heading);
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.article-summary {
-  font-size: 0.875rem;
-  color: var(--text-color-secondary);
-  line-height: 1.6;
-  margin: 0 0 1rem 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.article-meta {
+.card-meta {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 0.75rem;
-  color: var(--text-color-secondary);
+  align-items: center;
+  gap: 10px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
 
-  .meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+  .category-badge {
+    padding: 1px 8px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+  }
 
-    .el-icon {
-      font-size: 0.875rem;
-    }
-
-    &.tags {
-      flex: 1;
-      gap: 0.5rem;
-
-      .tag {
-        margin: 0;
-      }
-    }
+  .no-translate {
+    color: var(--warning-color);
   }
 }
 </style>
-

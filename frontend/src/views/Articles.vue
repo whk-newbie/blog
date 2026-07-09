@@ -215,18 +215,18 @@ onMounted(() => {
 .articles-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--spacing-lg);
 }
 
 .filter-bar {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
   flex-wrap: wrap;
 
   .search-input {
     flex: 1;
-    min-width: 300px;
+    min-width: 280px;
   }
 
   .el-select {
@@ -240,20 +240,20 @@ onMounted(() => {
 
 .article-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
 }
 
 .el-pagination {
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  margin-top: var(--spacing-xl);
 }
 
 @media (max-width: 768px) {
   .articles-page {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .filter-bar {
