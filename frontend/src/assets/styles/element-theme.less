@@ -1,13 +1,13 @@
 // Element Plus 白蓝色主题覆盖 - 使用 CSS 变量而不是 Less 变量
 :root {
   // 主色调
-  --el-color-primary: #2563eb;
-  --el-color-primary-light-3: #60a5fa;
-  --el-color-primary-light-5: #93c5fd;
-  --el-color-primary-light-7: #bfdbfe;
-  --el-color-primary-light-8: #dbeafe;
-  --el-color-primary-light-9: #eff6ff;
-  --el-color-primary-dark-2: #1e40af;
+  --el-color-primary: #4078c0;
+  --el-color-primary-light-3: #6db3f2;
+  --el-color-primary-light-5: #93c5f7;
+  --el-color-primary-light-7: #bdd7f7;
+  --el-color-primary-light-8: #d6e6f9;
+  --el-color-primary-light-9: #eef4fb;
+  --el-color-primary-dark-2: #2d5a96;
 
   // 成功色
   --el-color-success: #10b981;
@@ -104,7 +104,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.el-button--primary {
-    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    background: #4078c0;
     border: none;
 
     &:hover {
@@ -145,7 +145,7 @@
 
   &:hover {
     box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
-    border-color: #bfdbfe;
+    border-color: #bdd7f7;
   }
 }
 
@@ -156,11 +156,11 @@
   transition: all 0.3s;
 
   &:hover {
-    box-shadow: 0 0 0 1px #60a5fa inset;
+    box-shadow: 0 0 0 1px #6db3f2 inset;
   }
 
   &.is-focus {
-    box-shadow: 0 0 0 2px #2563eb inset;
+    box-shadow: 0 0 0 2px #4078c0 inset;
   }
 }
 
@@ -170,7 +170,7 @@
     background: #eff6ff;
     color: #1e293b;
     font-weight: 600;
-    border-bottom: 2px solid #bfdbfe;
+    border-bottom: 2px solid #bdd7f7;
   }
 
   .el-table__row:hover > td {
@@ -185,11 +185,11 @@
     font-weight: 500;
 
     &.is-active {
-      background: #2563eb;
+      background: #4078c0;
     }
 
     &:hover {
-      color: #2563eb;
+      color: #4078c0;
     }
   }
 
@@ -205,7 +205,7 @@
 
   &.el-tag--primary {
     background: rgba(37, 99, 235, 0.1);
-    color: #2563eb;
+    color: #4078c0;
     border-color: rgba(37, 99, 235, 0.2);
   }
 
@@ -279,7 +279,7 @@
 
     &:hover {
       background: #eff6ff;
-      color: #2563eb;
+      color: #4078c0;
     }
   }
 }
@@ -292,12 +292,12 @@
 
 .el-loading-spinner {
   .circular {
-    stroke: #2563eb;
+    stroke: #4078c0;
   }
 }
 
 // 暗色主题 - Element Plus 变量覆盖
-:root[data-theme='dark'] {
+html.dark {
   // 主色调 - 柔和的蓝色
   --el-color-primary: #6b9bd2;
   --el-color-primary-light-3: #7fa8d6;
@@ -378,7 +378,7 @@
 }
 
 // 暗色主题下的按钮样式
-:root[data-theme='dark'] .el-button {
+html.dark .el-button {
   &.el-button--primary {
     background: linear-gradient(135deg, #6b9bd2 0%, #5a8bc0 100%);
     border: none;
@@ -391,7 +391,7 @@
 }
 
 // 暗色主题下的卡片样式
-:root[data-theme='dark'] .el-card {
+html.dark .el-card {
   border: 1px solid #3a3a3a;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   background: #252525;
@@ -403,7 +403,7 @@
 }
 
 // 暗色主题下的输入框样式
-:root[data-theme='dark'] .el-input__wrapper {
+html.dark .el-input__wrapper {
   box-shadow: 0 0 0 1px #3a3a3a inset;
   background: #252525;
 
@@ -417,7 +417,7 @@
 }
 
 // 暗色主题下的表格样式
-:root[data-theme='dark'] .el-table {
+html.dark .el-table {
   background: #1a1a1a;
   color: #d4d4d4;
 
@@ -443,7 +443,7 @@
 }
 
 // 暗色主题下的分页样式
-:root[data-theme='dark'] .el-pagination {
+html.dark .el-pagination {
   .el-pager li {
     background: #252525;
     color: #d4d4d4;
@@ -469,7 +469,7 @@
 }
 
 // 暗色主题下的标签样式
-:root[data-theme='dark'] .el-tag {
+html.dark .el-tag {
   &.el-tag--primary {
     background: rgba(107, 155, 210, 0.2);
     color: #6b9bd2;
@@ -496,7 +496,7 @@
 }
 
 // 暗色主题下的对话框样式
-:root[data-theme='dark'] .el-dialog {
+html.dark .el-dialog {
   background: #252525;
   border: 1px solid #3a3a3a;
 
@@ -518,7 +518,7 @@
 }
 
 // 暗色主题下的下拉菜单样式
-:root[data-theme='dark'] .el-dropdown-menu {
+html.dark .el-dropdown-menu {
   background: #252525;
   border: 1px solid #3a3a3a;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
@@ -534,12 +534,12 @@
 }
 
 // 暗色主题下的加载样式
-:root[data-theme='dark'] .el-loading-mask {
+html.dark .el-loading-mask {
   background-color: rgba(26, 26, 26, 0.9);
   backdrop-filter: blur(4px);
 }
 
-:root[data-theme='dark'] .el-loading-spinner {
+html.dark .el-loading-spinner {
   .circular {
     stroke: #6b9bd2;
   }
