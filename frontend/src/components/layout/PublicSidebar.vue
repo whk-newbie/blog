@@ -63,7 +63,7 @@ onMounted(async () => {
 .sidebar { width: var(--sidebar-width); flex-shrink: 0; padding-top: var(--header-height); }
 .sidebar-inner { position: sticky; top: calc(var(--header-height) + var(--spacing-lg)); }
 .profile { text-align: center; margin-bottom: var(--spacing-lg); }
-.avatar-el { margin: 0 auto var(--spacing-md); display: block; }
+.avatar-el { margin: 0 auto var(--spacing-md); display: block; border: 3px solid var(--border-color); }
 .name { font-size: var(--font-size-xl); font-weight: 600; color: var(--text-heading); margin: 0 0 var(--spacing-xs); }
 .bio { font-size: var(--font-size-sm); color: var(--text-secondary); margin: 0; }
 .stats { display: flex; justify-content: center; gap: var(--spacing-lg); padding: var(--spacing-md) 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-bottom: var(--spacing-lg); }
