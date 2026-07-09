@@ -86,16 +86,11 @@ const getTagSize = (count) => {
 
 const fetchSiteConfig = async () => {
   try {
-    const configs = await configApi.list({ type: 'site_config' })
-    if (configs) {
-      const avatarConfig = configs.find(c => c.config_key === 'avatar_url')
-      if (avatarConfig) avatarUrl.value = avatarConfig.config_value
-    }
-    // Also try the public site config
     const response = await configApi.getSiteConfig()
     if (response) {
       if (response.blogTitle) blogTitle.value = response.blogTitle
       if (response.blogDescription) blogDescription.value = response.blogDescription
+      if (response.avatarUrl) avatarUrl.value = response.avatarUrl
     }
   } catch (e) {
     // use defaults

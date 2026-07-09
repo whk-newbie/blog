@@ -67,6 +67,8 @@ const toggleSearch = () => {
 }
 
 const fetchAdminConfig = async () => {
+  // 只在已登录时获取后台配置（需要认证），未登录用默认值
+  if (!userStore.isLoggedIn()) return
   try {
     const configs = await api.config.getConfigs({ config_type: 'site_config' })
     const showLinkConfig = configs.find(c => c.config_key === 'show_admin_link')
