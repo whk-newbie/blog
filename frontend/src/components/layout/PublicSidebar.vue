@@ -13,8 +13,8 @@
       </div>
 
       <div class="tag-cloud" v-if="tags.length > 0">
-        <el-tag v-for="tag in tags" :key="tag.id" size="small" class="tag-item" :style="{ fontSize: getTagSize(tag.article_count) + 'px' }" @click="$router.push(`/articles?tag_id=${tag.id}`)">
-          #{{ tag.name }}
+        <el-tag v-for="(tag,i) in tags" :key="tag.id" size="small" class="tag-item" :type="tagTypes[i % tagTypes.length]" :style="{ fontSize: getTagSize(tag.article_count) + 'px' }" @click="$router.push(`/articles?tag_id=${tag.id}`)">
+          {{ tag.name }}
         </el-tag>
       </div>
     </div>
@@ -32,6 +32,7 @@ const avatarUrl = ref('')
 const articleCount = ref(0)
 const tags = ref([])
 
+const tagTypes = ['', 'success', 'warning', 'danger', 'info']
 const initials = computed(() => blogTitle.value.charAt(0).toUpperCase())
 const runningDays = computed(() => Math.floor((new Date() - new Date('2024-01-01')) / 86400000))
 
@@ -68,6 +69,6 @@ onMounted(async () => {
 .stats { display: flex; justify-content: center; gap: var(--spacing-lg); padding: var(--spacing-md) 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-bottom: var(--spacing-lg); }
 .stat-item { text-align: center; .stat-number { display: block; font-size: var(--font-size-xl); font-weight: 700; color: var(--text-heading); } .stat-label { font-size: var(--font-size-xs); color: var(--text-secondary); } }
 .tag-cloud { margin-bottom: var(--spacing-lg); }
-.tag-item { cursor: pointer; margin: 2px 4px 2px 0; border: none; background: transparent; color: var(--text-secondary); &:hover { color: var(--primary-color); } }
+.tag-item { cursor: pointer; margin: 2px 4px 2px 0; }
 @media (max-width: 768px) { .sidebar { display: none; } }
 </style>
