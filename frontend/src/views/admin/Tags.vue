@@ -60,7 +60,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="isEdit ? t('tag.editTag') : t('tag.createTag')"
-      width="500px"
+      width="600px"
     >
       <el-form
         ref="formRef"
