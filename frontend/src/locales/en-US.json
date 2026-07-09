@@ -70,6 +70,7 @@
   "nav": {
     "home": "Home",
     "articles": "Articles",
+    "timeline": "Timeline",
     "about": "About",
     "dashboard": "Dashboard",
     "adminTooltip": "Admin Panel, only site owner can access",

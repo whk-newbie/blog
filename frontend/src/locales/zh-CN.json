@@ -70,6 +70,7 @@
   "nav": {
     "home": "首页",
     "articles": "文章",
+    "timeline": "时间轴",
     "about": "关于",
     "dashboard": "仪表盘",
     "adminTooltip": "后台管理，仅站主可以访问",
