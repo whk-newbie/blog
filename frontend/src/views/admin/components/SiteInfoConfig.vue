@@ -25,13 +25,21 @@
       </el-form-item>
 
       <el-form-item :label="t('config.avatarUrl')">
-        <el-input
-          v-model="form.avatarUrl"
-          placeholder="头像图片URL，如 https://example.com/avatar.jpg"
-          type="url"
-          clearable
-        />
-        <div class="form-tip">留空则显示网站名称首字母</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <el-input v-model="form.avatarUrl" placeholder="头像URL" clearable style="flex:1" />
+          <el-upload
+            :action="uploadUrl"
+            :headers="uploadHeaders"
+            :show-file-list="false"
+            :on-success="onAvatarUpload"
+            :before-upload="beforeUpload"
+            accept="image/*"
+          >
+            <el-button type="primary" plain size="small">上传</el-button>
+          </el-upload>
+        </div>
+        <div class="form-tip">输入URL或点击上传图片，留空则显示网站首字母</div>
+        <img v-if="form.avatarUrl" :src="form.avatarUrl" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-top:8px;border:2px solid var(--border-color)" />
       </el-form-item>
 
       <el-divider />
@@ -73,6 +81,26 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import api from '@/api'
+
+const uploadUrl = '/api/v1/admin/upload/image'
+const uploadHeaders = computed(() => {
+  const token = localStorage.getItem('token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+})
+
+const beforeUpload = (file) => {
+  const isImage = file.type.startsWith('image/')
+  const isLt10M = file.size / 1024 / 1024 < 10
+  if (!isImage) { ElMessage.error('只能上传图片'); return false }
+  if (!isLt10M) { ElMessage.error('图片不能超过10MB'); return false }
+  return true
+}
+
+const onAvatarUpload = (response) => {
+  if (response.code === 0 && response.data?.url) {
+    form.avatarUrl = response.data.url
+  }
+}
 
 const { t } = useI18n()
 const formRef = ref(null)

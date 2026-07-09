@@ -13,12 +13,15 @@
         <div class="section-body">
           <el-form label-width="140px">
             <el-form-item label="后台访问路径">
-              <el-input v-model="adminPath" placeholder="admin" style="width:300px" @change="saveAdminConfig" />
+              <el-input v-model="adminPath" placeholder="admin" style="width:300px" />
               <div class="form-tip">修改后通过新路径访问后台</div>
             </el-form-item>
             <el-form-item label="前台显示入口">
-              <el-switch v-model="showAdminLink" @change="saveAdminConfig" />
+              <el-switch v-model="showAdminLink" />
               <span style="margin-left:10px;color:var(--text-secondary);font-size:13px">关闭后已登录用户仍可访问</span>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" size="small" @click="saveAdminConfig">保存</el-button>
             </el-form-item>
           </el-form>
         </div>
