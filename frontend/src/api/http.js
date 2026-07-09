@@ -127,6 +127,7 @@ http.interceptors.request.use(
         const jsonStr = JSON.stringify(config.data)
         const encrypted = aesEncrypt(jsonStr, aesKey)
         config.data = encrypted
+        config.headers['Content-Type'] = 'text/plain'
       }
     }
 
