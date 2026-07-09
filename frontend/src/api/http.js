@@ -209,8 +209,6 @@ http.interceptors.response.use(
       await negotiateKey()
       const retryConfig = { ...response.config }
       return http(retryConfig)
-      const retryConfig = { ...response.config }
-      return http(retryConfig)
     }
 
     // 业务成功
