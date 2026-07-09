@@ -31,17 +31,22 @@ const searchOverlay = ref(null)
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-color);
 }
 
 .layout-body {
   flex: 1;
   display: flex;
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
   width: 100%;
   padding: var(--spacing-lg) var(--spacing-md);
   gap: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+html.dark .layout-body {
+  background: rgba(26, 26, 46, 0.85);
 }
 
 .main-content {
