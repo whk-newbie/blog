@@ -139,7 +139,7 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 
 		// 安全中间件：限流（针对非登录用户，每分钟60次）
 		api.Use(middleware.RateLimit(middleware.RateLimitConfig{
-			RequestsPerMinute: 60,
+			RequestsPerMinute: 300,
 			SkipAuthenticated: true,
 		}))
 

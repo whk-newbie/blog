@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"encoding/base64"
+
 	"github.com/gin-gonic/gin"
 	"github.com/whk-newbie/blog/internal/pkg/crypto"
 	"github.com/whk-newbie/blog/internal/pkg/response"
@@ -41,9 +43,17 @@ func (h *EncryptionHandler) NegotiateKey(c *gin.Context) {
 		return
 	}
 
-	aesKey, err := crypto.DecryptWithPrivateKey(h.rsaKeyPair.PrivateKey, req.EncryptedKey)
+	// RSA decrypt the encrypted key
+	aesKeyEncoded, err := crypto.DecryptWithPrivateKey(h.rsaKeyPair.PrivateKey, req.EncryptedKey)
 	if err != nil {
 		response.Error(c, 40004, "failed to decrypt AES key")
+		return
+	}
+
+	// Frontend sends the AES key as base64-encoded string, decode it
+	aesKey, err := base64.StdEncoding.DecodeString(string(aesKeyEncoded))
+	if err != nil {
+		response.BadRequest(c, "invalid AES key encoding")
 		return
 	}
 
