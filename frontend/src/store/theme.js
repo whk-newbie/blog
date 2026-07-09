@@ -5,9 +5,13 @@ export const useThemeStore = defineStore('theme', () => {
   // 从localStorage读取主题，默认为light
   const theme = ref(localStorage.getItem('theme') || 'light')
 
-  // 应用主题
+  // 应用主题 — 使用 class 匹配 CSS 的 html.dark 选择器
   const applyTheme = (themeName) => {
-    document.documentElement.setAttribute('data-theme', themeName)
+    if (themeName === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
   }
 
   // 设置主题
