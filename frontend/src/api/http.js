@@ -191,9 +191,19 @@ http.interceptors.response.use(
 
       switch (status) {
         case 401:
-          ElMessage.error(i18n.global.t('common.unauthorized'))
+          ElMessage.error('登录已失效，请重新登录')
+          // 清除所有本地登录状态
           localStorage.removeItem('token')
-          window.location.href = '/'
+          localStorage.removeItem('username')
+          localStorage.removeItem('userId')
+          localStorage.removeItem('isDefaultPassword')
+          // 重置加密会话
+          aesKey = null
+          sessionId = null
+          aesKeyB64 = null
+          negotiatePromise = null
+          // 强制刷新页面，AdminLayout 会自动检测并弹出登录框
+          window.location.reload()
           break
         case 403:
           ElMessage.error(i18n.global.t('common.forbidden'))
