@@ -14,12 +14,48 @@ const http = axios.create({
   },
 })
 
-// Encryption session state
+// Encryption session state — persisted in sessionStorage to survive page reloads
 let sessionId = null
-let aesKey = null        // CryptoJS WordArray
-let aesKeyB64 = null     // Base64 string (for passing to encrypt/decrypt)
+let aesKey = null
+let aesKeyB64 = null
 let negotiating = false
 let negotiatePromise = null
+
+const SESSION_STORE_KEY = 'enc_session'
+
+// Restore session from sessionStorage on module load
+function restoreSession() {
+  try {
+    const stored = sessionStorage.getItem(SESSION_STORE_KEY)
+    if (stored) {
+      const { sid, keyB64 } = JSON.parse(stored)
+      if (sid && keyB64) {
+        sessionId = sid
+        aesKeyB64 = keyB64
+        aesKey = CryptoJS.enc.Base64.parse(keyB64)
+        return true
+      }
+    }
+  } catch (e) { /* ignore */ }
+  return false
+}
+
+function saveSession() {
+  try {
+    sessionStorage.setItem(SESSION_STORE_KEY, JSON.stringify({
+      sid: sessionId,
+      keyB64: aesKeyB64,
+    }))
+  } catch (e) { /* ignore */ }
+}
+
+function clearSession() {
+  sessionId = null
+  aesKey = null
+  aesKeyB64 = null
+  negotiatePromise = null
+  try { sessionStorage.removeItem(SESSION_STORE_KEY) } catch (e) { /* ignore */ }
+}
 
 // Negotiate encryption key with server
 async function negotiateKey() {
@@ -50,11 +86,11 @@ async function negotiateKey() {
         encrypted_key: encryptedKey,
         session_id: sessionId,
       })
+
+      // 5. Save to sessionStorage for persistence across reloads
+      saveSession()
     } catch (error) {
-      sessionId = null
-      aesKey = null
-      aesKeyB64 = null
-      negotiatePromise = null
+      clearSession()
       throw error
     } finally {
       negotiating = false
@@ -63,6 +99,9 @@ async function negotiateKey() {
 
   return negotiatePromise
 }
+
+// Try to restore session on module load — avoids re-negotiation on page reload
+restoreSession()
 
 // 请求拦截器
 http.interceptors.request.use(
@@ -166,11 +205,10 @@ http.interceptors.response.use(
 
     // Handle session expiry (40002) - re-negotiate and retry once
     if (code === 40002) {
-      aesKey = null
-      sessionId = null
-      negotiatePromise = null
+      clearSession()
       await negotiateKey()
-      // Retry the original request with new session
+      const retryConfig = { ...response.config }
+      return http(retryConfig)
       const retryConfig = { ...response.config }
       return http(retryConfig)
     }
@@ -200,10 +238,7 @@ http.interceptors.response.use(
           localStorage.removeItem('userId')
           localStorage.removeItem('isDefaultPassword')
           // 重置加密会话
-          aesKey = null
-          sessionId = null
-          aesKeyB64 = null
-          negotiatePromise = null
+          clearSession()
           // 强制刷新页面，AdminLayout 会自动检测并弹出登录框
           window.location.reload()
           break
