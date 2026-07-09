@@ -7,66 +7,52 @@
       </el-button>
     </div>
 
-    <!-- Site Info -->
-    <el-card class="section-card" shadow="never">
-      <template #header><span class="section-title">站点信息</span></template>
-      <site-info-config />
-    </el-card>
+    <el-collapse v-model="activeNames">
+      <!-- Site Info -->
+      <el-collapse-item title="站点信息" name="site">
+        <site-info-config />
+      </el-collapse-item>
 
-    <!-- Email -->
-    <el-card class="section-card" shadow="never">
-      <template #header>
-        <div class="section-header">
-          <span class="section-title">邮箱配置</span>
-          <el-tag size="small" type="info">{{ emailConfigs.length }}</el-tag>
-        </div>
-      </template>
-      <config-list :configs="emailConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
-    </el-card>
+      <!-- Email -->
+      <el-collapse-item name="email">
+        <template #title>
+          <div class="collapse-title">邮箱配置 <el-tag size="small">{{ emailConfigs.length }}</el-tag></div>
+        </template>
+        <config-list :configs="emailConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
+      </el-collapse-item>
 
-    <!-- API Tokens -->
-    <el-card class="section-card" shadow="never">
-      <template #header>
-        <div class="section-header">
-          <span class="section-title">API Token</span>
-          <el-tag size="small" type="info">{{ apiTokenConfigs.length }}</el-tag>
-        </div>
-      </template>
-      <config-list :configs="apiTokenConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
-    </el-card>
+      <!-- API Tokens -->
+      <el-collapse-item name="api_token">
+        <template #title>
+          <div class="collapse-title">API Token <el-tag size="small">{{ apiTokenConfigs.length }}</el-tag></div>
+        </template>
+        <config-list :configs="apiTokenConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
+      </el-collapse-item>
 
-    <!-- Encryption Salt -->
-    <el-card class="section-card" shadow="never">
-      <template #header>
-        <div class="section-header">
-          <span class="section-title">加密盐值</span>
-          <el-tag size="small" type="info">{{ saltConfigs.length }}</el-tag>
-        </div>
-      </template>
-      <config-list :configs="saltConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
-    </el-card>
+      <!-- Salt -->
+      <el-collapse-item name="salt">
+        <template #title>
+          <div class="collapse-title">加密盐值 <el-tag size="small">{{ saltConfigs.length }}</el-tag></div>
+        </template>
+        <config-list :configs="saltConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
+      </el-collapse-item>
 
-    <!-- IP Blacklist -->
-    <el-card class="section-card" shadow="never">
-      <template #header>
-        <div class="section-header">
-          <span class="section-title">IP 黑名单</span>
-          <el-tag size="small" type="info">{{ ipBlacklistConfigs.length }}</el-tag>
-        </div>
-      </template>
-      <config-list :configs="ipBlacklistConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
-    </el-card>
+      <!-- IP Blacklist -->
+      <el-collapse-item name="ip">
+        <template #title>
+          <div class="collapse-title">IP 黑名单 <el-tag size="small">{{ ipBlacklistConfigs.length }}</el-tag></div>
+        </template>
+        <config-list :configs="ipBlacklistConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
+      </el-collapse-item>
 
-    <!-- Other -->
-    <el-card v-if="otherConfigs.length > 0" class="section-card" shadow="never">
-      <template #header>
-        <div class="section-header">
-          <span class="section-title">{{ t('config.other') }}</span>
-          <el-tag size="small" type="info">{{ otherConfigs.length }}</el-tag>
-        </div>
-      </template>
-      <config-list :configs="otherConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
-    </el-card>
+      <!-- Other -->
+      <el-collapse-item v-if="otherConfigs.length > 0" name="other">
+        <template #title>
+          <div class="collapse-title">{{ t('config.other') }} <el-tag size="small">{{ otherConfigs.length }}</el-tag></div>
+        </template>
+        <config-list :configs="otherConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
+      </el-collapse-item>
+    </el-collapse>
 
     <!-- Create/Edit Dialog -->
     <el-dialog
@@ -127,6 +113,7 @@ import SiteInfoConfig from './components/SiteInfoConfig.vue'
 const { t } = useI18n()
 const loading = ref(false)
 const configs = ref([])
+const activeNames = ref(['site'])
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 const formRef = ref(null)
@@ -251,31 +238,43 @@ onMounted(() => { fetchConfigs() })
   }
 }
 
-.section-card {
-  margin-bottom: 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
+:deep(.el-collapse) {
+  border: none;
 
-  :deep(.el-card__header) {
-    padding: 14px 20px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-  }
+  .el-collapse-item {
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
 
-  :deep(.el-card__body) {
-    padding: 0;
+    .el-collapse-item__header {
+      padding: 0 20px;
+      height: 48px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-heading);
+      background: var(--card-bg);
+      border-bottom: none;
+
+      &:hover {
+        background: var(--hover-bg);
+      }
+    }
+
+    .el-collapse-item__wrap {
+      border-top: 1px solid var(--border-color);
+      background: var(--card-bg);
+    }
+
+    .el-collapse-item__content {
+      padding: 0;
+    }
   }
 }
 
-.section-header {
+.collapse-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-heading);
+  gap: 10px;
 }
 </style>
