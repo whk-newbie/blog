@@ -35,7 +35,7 @@
           <div class="collapse-title">AI 提供方</div>
         </template>
         <div class="section-body">
-          <div style="margin-bottom:12px">
+          <div style="margin-bottom:12px;display:flex;justify-content:flex-end">
             <el-button type="primary" size="small" @click="showAiDialog = true">添加 AI 提供方</el-button>
           </div>
           <el-table :data="aiProviders" v-loading="loadingAI" size="small">
@@ -67,7 +67,7 @@
           <div class="collapse-title">IP 黑名单</div>
         </template>
         <config-list :configs="ipBlacklistConfigs" :loading="loading" @edit="handleEdit" @delete="handleDelete" @toggle-active="handleToggleActive" />
-        <div class="section-body" style="border-top:1px solid var(--border-color);padding-top:12px">
+        <div class="section-body" style="border-top:1px solid var(--border-color);padding-top:12px;display:flex;justify-content:flex-end">
           <el-button size="small" type="primary" @click="handleCreate('ip_blacklist')">添加黑名单</el-button>
         </div>
       </el-collapse-item>
