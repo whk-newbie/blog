@@ -91,7 +91,14 @@ func Encryption(rsaKeyPair *crypto.RSAKeyPair) gin.HandlerFunc {
 		if err != nil {
 			return
 		}
+		// Set Content-Type before writing status code and body
 		blw.ResponseWriter.Header().Set("Content-Type", "application/octet-stream")
+		// Write the deferred status code; default to 200 if never set
+		if blw.statusCode != 0 {
+			blw.ResponseWriter.WriteHeader(blw.statusCode)
+		} else {
+			blw.ResponseWriter.WriteHeader(200)
+		}
 		blw.ResponseWriter.Write(encrypted)
 
 		// Refresh session TTL
@@ -101,8 +108,9 @@ func Encryption(rsaKeyPair *crypto.RSAKeyPair) gin.HandlerFunc {
 
 type bodyLogWriter struct {
 	gin.ResponseWriter
-	body   *bytes.Buffer
-	aesKey []byte
+	body       *bytes.Buffer
+	aesKey     []byte
+	statusCode int
 }
 
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
@@ -111,6 +119,10 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 
 func (w *bodyLogWriter) WriteString(s string) (int, error) {
 	return w.body.WriteString(s)
+}
+
+func (w *bodyLogWriter) WriteHeader(code int) {
+	w.statusCode = code
 }
 
 // aesGCMEncrypt encrypts plaintext with AES-256-GCM
