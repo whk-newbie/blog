@@ -3,7 +3,8 @@
     <div class="sidebar-inner">
       <!-- Profile -->
       <div class="profile">
-        <div class="avatar">{{ initials }}</div>
+        <img v-if="avatarUrl" :src="avatarUrl" class="avatar avatar-img" alt="avatar" />
+        <div v-else class="avatar">{{ initials }}</div>
         <h2 class="name">{{ blogTitle }}</h2>
         <p class="bio">{{ blogDescription }}</p>
       </div>
@@ -59,6 +60,7 @@ const { t } = useI18n()
 
 const blogTitle = ref('My Blog')
 const blogDescription = ref('')
+const avatarUrl = ref('')
 const articleCount = ref(0)
 const tags = ref([])
 const githubUrl = ref('')
@@ -84,6 +86,12 @@ const getTagSize = (count) => {
 
 const fetchSiteConfig = async () => {
   try {
+    const configs = await configApi.list({ type: 'site_config' })
+    if (configs) {
+      const avatarConfig = configs.find(c => c.config_key === 'avatar_url')
+      if (avatarConfig) avatarUrl.value = avatarConfig.config_value
+    }
+    // Also try the public site config
     const response = await configApi.getSiteConfig()
     if (response) {
       if (response.blogTitle) blogTitle.value = response.blogTitle
@@ -141,6 +149,11 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     margin: 0 auto var(--spacing-md);
+  }
+
+  .avatar-img {
+    object-fit: cover;
+    background: none;
   }
 
   .name {
