@@ -54,6 +54,7 @@ async function negotiateKey() {
       sessionId = null
       aesKey = null
       aesKeyB64 = null
+      negotiatePromise = null
       throw error
     } finally {
       negotiating = false
@@ -163,6 +164,17 @@ http.interceptors.response.use(
 
     const { code, message, data } = responseData
 
+    // Handle session expiry (40002) - re-negotiate and retry once
+    if (code === 40002) {
+      aesKey = null
+      sessionId = null
+      negotiatePromise = null
+      await negotiateKey()
+      // Retry the original request with new session
+      const retryConfig = { ...response.config }
+      return http(retryConfig)
+    }
+
     // 业务成功
     if (code === 0) {
       return data
@@ -173,16 +185,6 @@ http.interceptors.response.use(
     return Promise.reject(new Error(message || i18n.global.t('common.error')))
   },
   async (error) => {
-    // Handle session expiry (40002) - re-negotiate and retry once
-    if (error.response?.data?.code === 40002) {
-      aesKey = null
-      sessionId = null
-      negotiatePromise = null
-      await negotiateKey()
-      // Retry the original request with new session
-      return http(error.config)
-    }
-
     // HTTP错误
     if (error.response) {
       const { status, data } = error.response
