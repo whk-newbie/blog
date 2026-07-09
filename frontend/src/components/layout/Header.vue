@@ -16,9 +16,9 @@
         <LanguageSwitch />
         <!-- Theme switch -->
         <ThemeSwitch />
-        <!-- Admin link: only show when enabled AND logged in -->
+        <!-- Admin link: always show when logged in -->
         <el-tooltip
-          v-if="showAdminLink && isLoggedIn"
+          v-if="isLoggedIn"
           :content="t('nav.adminTooltip')"
           placement="bottom"
         >
