@@ -60,17 +60,22 @@ type CreateArticleRequest struct {
 
 // UpdateArticleRequest 更新文章请求
 type UpdateArticleRequest struct {
-	Title      string               `json:"title" binding:"required"`
-	Slug       string               `json:"slug"`
-	Summary    string               `json:"summary"`
-	Content    string               `json:"content" binding:"required"`
-	CoverImage string               `json:"cover_image"`
-	CategoryID *uint                `json:"category_id"`
-	TagIDs     []uint               `json:"tag_ids"`
-	Status     models.ArticleStatus `json:"status"`
-	PublishAt  *time.Time           `json:"publish_at"`
-	IsTop      bool                 `json:"is_top"`
-	IsFeatured bool                 `json:"is_featured"`
+	Title        string               `json:"title" binding:"required"`
+	Slug         string               `json:"slug"`
+	Summary      string               `json:"summary"`
+	Content      string               `json:"content" binding:"required"`
+	CoverImage   string               `json:"cover_image"`
+	CategoryID   *uint                `json:"category_id"`
+	TagIDs       []uint               `json:"tag_ids"`
+	Status       models.ArticleStatus `json:"status"`
+	PublishAt    *time.Time           `json:"publish_at"`
+	IsTop        bool                 `json:"is_top"`
+	IsFeatured   bool                 `json:"is_featured"`
+	TitleEn      string               `json:"title_en"`
+	ContentEn    string               `json:"content_en"`
+	SummaryEn    string               `json:"summary_en"`
+	IsTranslated *bool                `json:"is_translated"`
+	TranslatedAt *time.Time           `json:"translated_at"`
 }
 
 // ArticleListRequest 文章列表请求
@@ -267,6 +272,15 @@ func (s *articleService) Update(id uint, req *UpdateArticleRequest) (*models.Art
 	article.CategoryID = req.CategoryID
 	article.Status = req.Status
 	article.PublishAt = req.PublishAt
+	article.TitleEn = req.TitleEn
+	article.ContentEn = req.ContentEn
+	article.SummaryEn = req.SummaryEn
+	if req.IsTranslated != nil {
+		article.IsTranslated = *req.IsTranslated
+	}
+	if req.TranslatedAt != nil {
+		article.TranslatedAt = req.TranslatedAt
+	}
 	article.IsTop = req.IsTop
 	article.IsFeatured = req.IsFeatured
 
