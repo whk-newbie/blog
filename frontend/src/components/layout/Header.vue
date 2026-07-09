@@ -26,9 +26,9 @@
             <el-icon><Setting /></el-icon>
           </el-button>
         </el-tooltip>
-        <!-- Login button when not logged in -->
+        <!-- Login button: only shown when admin link is enabled AND not logged in -->
         <el-button
-          v-if="!isLoggedIn"
+          v-if="showAdminLink && !isLoggedIn"
           type="primary"
           size="small"
           @click="showLoginDialog = true"

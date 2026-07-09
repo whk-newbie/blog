@@ -42,7 +42,9 @@
     "backToTop": "Back to Top",
     "switchToLight": "Switch to Light Mode",
     "switchToDark": "Switch to Dark Mode",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "searchPlaceholder": "Search articles...",
+    "noResults": "No results found"
   },
   "app": {
     "title": "Xiao Wang's Ramblings",

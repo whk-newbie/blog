@@ -42,7 +42,9 @@
     "backToTop": "回到顶部",
     "switchToLight": "切换到浅色模式",
     "switchToDark": "切换到深色模式",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "searchPlaceholder": "搜索文章...",
+    "noResults": "没有找到相关文章"
   },
   "app": {
     "title": "小王的碎碎念",
