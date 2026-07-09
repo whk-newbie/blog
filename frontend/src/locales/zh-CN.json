@@ -89,7 +89,10 @@
     "config": "系统配置",
     "logs": "系统日志",
     "backup": "数据备份",
-    "tools": "开发工具"
+    "tools": "开发工具",
+    "aiManage": "AI 管理",
+    "aiProviders": "AI 提供方",
+    "aiChat": "AI 聊天"
   },
   "login": {
     "title": "登录",

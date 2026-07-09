@@ -47,6 +47,15 @@
         <el-menu-item index="/admin/logs">{{ t('nav.logs') }}</el-menu-item>
         <el-menu-item index="/admin/system/backup">{{ t('nav.backup') }}</el-menu-item>
       </el-sub-menu>
+
+      <el-sub-menu index="ai">
+        <template #title>
+          <el-icon><Cpu /></el-icon>
+          <span>{{ t('nav.aiManage') }}</span>
+        </template>
+        <el-menu-item index="/admin/ai-providers">{{ t('nav.aiProviders') }}</el-menu-item>
+        <el-menu-item index="/admin/ai-chat">{{ t('nav.aiChat') }}</el-menu-item>
+      </el-sub-menu>
     </el-menu>
   </div>
 </template>
@@ -60,7 +69,8 @@ import {
   Document,
   DataAnalysis,
   Setting,
-  Collection
+  Collection,
+  Cpu
 } from '@element-plus/icons-vue'
 
 const route = useRoute()

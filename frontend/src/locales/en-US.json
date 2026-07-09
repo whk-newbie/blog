@@ -89,7 +89,10 @@
     "config": "Config",
     "logs": "Logs",
     "backup": "Backup",
-    "tools": "Tools"
+    "tools": "Tools",
+    "aiManage": "AI Manage",
+    "aiProviders": "AI Providers",
+    "aiChat": "AI Chat"
   },
   "login": {
     "title": "Login",
