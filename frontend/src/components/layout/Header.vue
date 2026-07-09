@@ -1,17 +1,17 @@
 <template>
   <header class="site-header">
     <div class="header-container">
-      <div class="logo">
-        <router-link to="/">
-          <h1>{{ blogTitle }}</h1>
-        </router-link>
-      </div>
       <nav class="nav-menu">
         <router-link to="/" class="nav-item">{{ t('nav.home') }}</router-link>
         <router-link to="/articles" class="nav-item">{{ t('nav.articles') }}</router-link>
+        <router-link to="/timeline" class="nav-item">{{ t('nav.timeline') }}</router-link>
         <router-link to="/tools" class="nav-item">{{ t('nav.tools') }}</router-link>
       </nav>
       <div class="header-actions">
+        <!-- Search -->
+        <button class="icon-btn" @click="toggleSearch" :title="t('common.search')">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
         <!-- Language switch -->
         <LanguageSwitch />
         <!-- Theme switch -->
@@ -22,7 +22,7 @@
           :content="t('nav.adminTooltip')"
           placement="bottom"
         >
-          <el-button text size="default" @click="goToAdmin" class="admin-btn">
+          <el-button text size="small" @click="goToAdmin" class="admin-btn">
             <el-icon><Setting /></el-icon>
           </el-button>
         </el-tooltip>
@@ -30,7 +30,7 @@
         <el-button
           v-if="!isLoggedIn"
           type="primary"
-          size="default"
+          size="small"
           @click="showLoginDialog = true"
         >
           {{ t('login.title') }}
@@ -57,16 +57,15 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const showLoginDialog = ref(false)
-
-// 博客标题 - 可以根据语言切换
-const blogTitle = computed(() => t('app.title'))
-
-// 判断是否已登录
 const isLoggedIn = computed(() => userStore.isLoggedIn())
-
 const showAdminLink = ref(true)
 
-// 获取后台可见性配置
+const emit = defineEmits(['toggleSearch'])
+
+const toggleSearch = () => {
+  emit('toggleSearch')
+}
+
 const fetchAdminConfig = async () => {
   try {
     const configs = await api.config.getConfigs({ config_type: 'site_config' })
@@ -79,7 +78,7 @@ const fetchAdminConfig = async () => {
       localStorage.setItem('admin_path', adminPathConfig.config_value)
     }
   } catch (e) {
-    // 使用默认值
+    // use defaults
   }
 }
 
@@ -87,17 +86,14 @@ onMounted(() => {
   fetchAdminConfig()
 })
 
-// 登录成功回调
 const handleLoginSuccess = () => {
   showLoginDialog.value = false
-  // 如果当前在首页，可以选择跳转到管理后台
   if (router.currentRoute.value.path === '/') {
     const adminPath = localStorage.getItem('admin_path') || 'admin'
     router.push(`/${adminPath}`)
   }
 }
 
-// 跳转到后台
 const goToAdmin = () => {
   const adminPath = localStorage.getItem('admin_path') || 'admin'
   router.push(`/${adminPath}`)
@@ -106,106 +102,87 @@ const goToAdmin = () => {
 
 <style scoped lang="less">
 .site-header {
-  background: var(--header-bg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
   z-index: 100;
 }
 
 .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
-  height: 64px;
+  padding: 0 var(--spacing-md);
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.logo {
-  h1 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--primary-color);
-  }
-
-  a {
-    text-decoration: none;
-  }
-}
-
 .nav-menu {
   display: flex;
-  gap: 30px;
+  gap: 24px;
 }
 
 .nav-item {
   text-decoration: none;
-  color: var(--text-color);
-  font-size: 16px;
-  transition: color 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: color var(--transition-fast);
 
   &:hover,
   &.router-link-active {
-    color: var(--primary-color);
-  }
-
-  &.admin-link {
-    .el-icon {
-      font-size: 14px;
-    }
+    color: var(--text-heading);
   }
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 8px;
 
-  .el-button {
-    border-radius: 8px;
-    font-weight: 500;
-    padding: 10px 20px;
+  .icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--border-radius-sm);
     display: flex;
     align-items: center;
-    gap: 6px;
+    transition: all var(--transition-fast);
 
-    .el-icon {
-      font-size: 16px;
+    &:hover {
+      color: var(--text-heading);
+      background: var(--hover-bg);
     }
   }
 
   .admin-btn {
     background: transparent !important;
     border: none !important;
-    color: var(--text-color);
-    padding: 8px 12px;
-    transition: all 0.3s;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    transition: all var(--transition-fast);
 
     &:hover {
       color: var(--primary-color);
       background: var(--hover-bg) !important;
-    }
-
-    .el-icon {
-      font-size: 18px;
     }
   }
 }
 
 @media (max-width: 768px) {
   .nav-menu {
-    display: none;
+    gap: 16px;
   }
-
-  .logo h1 {
-    font-size: 20px;
+  .nav-item {
+    font-size: var(--font-size-xs);
   }
 }
 </style>
-
