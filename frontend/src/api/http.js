@@ -61,6 +61,14 @@ function isFormData(data) {
   return typeof FormData !== 'undefined' && data instanceof FormData
 }
 
+function createDecryptionError() {
+  const message = '数据请求失败，请联系管理员'
+  const error = new Error(message)
+  error.userMessageShown = true
+  ElMessage.error(message)
+  return error
+}
+
 // Negotiate encryption key with server
 async function negotiateKey() {
   if (aesKey && sessionId) return
@@ -187,20 +195,21 @@ http.interceptors.response.use(
       try {
         const decrypted = aesDecrypt(response.data, aesKey)
         response.data = JSON.parse(decrypted)
-      } catch (e) {
-        // Decryption failed - might be unencrypted error response
-        console.warn('Response decryption failed:', e)
+      } catch (error) {
+        console.warn('Response decryption failed:', error)
         try {
-          // Try parsing as JSON directly (fallback for error responses)
           response.data = JSON.parse(response.data)
         } catch (_) {
-          const message = '数据请求失败，请联系管理员'
-          const error = new Error(message)
-          error.userMessageShown = true
-          ElMessage.error(message)
-          return Promise.reject(error)
+          return Promise.reject(createDecryptionError())
+        }
+
+        if (response.data?.code !== 40002) {
+          return Promise.reject(createDecryptionError())
         }
       }
+    } else if (!isWhitelisted && aesKey && response.data && typeof response.data === 'object' && response.data.code !== 40002) {
+      console.warn('Encrypted response was returned as plain JSON')
+      return Promise.reject(createDecryptionError())
     }
 
     // 201 Created 或其他成功状态码，检查响应体
