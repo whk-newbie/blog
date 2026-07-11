@@ -26,12 +26,10 @@ test('selects only dynamic chunks whose facade is application source', () => {
   }), false)
 })
 
-test('preserves relative dynamic import specifiers in an obfuscated feature chunk', () => {
+test('leaves feature chunks with dynamic imports unmodified', () => {
   const plugin = createFeatureChunkObfuscator()
   const source = 'export const load = () => import("./Timeline-abc123.js")'
   const result = plugin.renderChunk(source, featureChunk)
 
-  assert.notEqual(result, null)
-  assert.notEqual(result.code, source)
-  assert.match(result.code, /import\s*\(\s*["']\.\/Timeline-abc123\.js["']\s*\)/)
+  assert.equal(result, null)
 })

@@ -1,5 +1,7 @@
 import JavaScriptObfuscator from 'javascript-obfuscator'
 
+const dynamicImport = /\bimport\s*\(/
+
 export const obfuscationOptions = Object.freeze({
   compact: true,
   controlFlowFlattening: true,
@@ -26,7 +28,7 @@ export function createFeatureChunkObfuscator() {
     name: 'feature-chunk-obfuscator',
     apply: 'build',
     renderChunk(code, chunk) {
-      if (!shouldObfuscateChunk(chunk)) {
+      if (!shouldObfuscateChunk(chunk) || dynamicImport.test(code)) {
         return null
       }
 
