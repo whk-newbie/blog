@@ -9,6 +9,8 @@ import (
 	"github.com/whk-newbie/blog/internal/repository"
 )
 
+const DefaultLogRetentionDays = 15
+
 var (
 	ErrLogNotFound = errors.New("log not found")
 )

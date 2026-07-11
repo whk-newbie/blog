@@ -284,10 +284,10 @@ func Setup(cfg *config.Config) (*gin.Engine, *scheduler.Manager) {
 	// 静态文件服务 - 上传的文件
 	r.Static("/uploads", "./uploads")
 
-	// 创建调度器管理器（日志保留90天，备份每天凌晨3点，保留10个备份）
+	// 创建调度器管理器（日志保留15天，备份每天凌晨3点，保留10个备份）
 	backupSchedule := "0 0 3 * * *" // 每天凌晨3点
 	backupRetentionCount := 10      // 保留10个备份
-	schedulerManager := scheduler.NewManager(articleService, logService, backupService, 90, backupSchedule, backupRetentionCount)
+	schedulerManager := scheduler.NewManager(articleService, logService, backupService, service.DefaultLogRetentionDays, backupSchedule, backupRetentionCount)
 
 	return r, schedulerManager
 }

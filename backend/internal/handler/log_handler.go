@@ -128,7 +128,7 @@ func (h *LogHandler) GetLogByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param request body object true "清理请求" example({"retention_days": 90})
+// @Param request body object true "清理请求" example({"retention_days": 15})
 // @Success 200 {object} response.Response "清理完成"
 // @Failure 400 {object} response.Response "参数错误"
 // @Failure 401 {object} response.Response "未授权"
@@ -140,7 +140,7 @@ func (h *LogHandler) CleanupLogs(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		// 如果没有提供参数，使用默认值
-		req.RetentionDays = 90
+		req.RetentionDays = service.DefaultLogRetentionDays
 	}
 
 	result, err := h.logService.CleanupOldLogs(req.RetentionDays)

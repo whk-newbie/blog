@@ -21,7 +21,7 @@ func NewLogScheduler(logService service.LogService, retentionDays int) *LogSched
 	c := cron.New(cron.WithSeconds())
 
 	if retentionDays <= 0 {
-		retentionDays = 90 // 默认90天
+		retentionDays = service.DefaultLogRetentionDays
 	}
 
 	return &LogScheduler{

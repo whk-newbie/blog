@@ -186,7 +186,7 @@ const queryForm = reactive({
 })
 
 const cleanupForm = reactive({
-  retention_days: 90
+  retention_days: 15
 })
 
 const pagination = reactive({
@@ -225,7 +225,7 @@ const loadLogs = async () => {
       end_date: queryForm.end_date || undefined
     }
     const response = await api.log.getLogs(params)
-    logs.value = response.list || []
+    logs.value = response.items || []
     pagination.total = response.total || 0
   } catch (error) {
     console.error('获取日志列表失败:', error)
@@ -298,7 +298,7 @@ const formatContext = (context) => {
 
 // 清理日志
 const handleCleanup = () => {
-  cleanupForm.retention_days = 90
+  cleanupForm.retention_days = 15
   cleanupDialogVisible.value = true
 }
 
@@ -414,4 +414,3 @@ onMounted(() => {
   border-radius: 8px;
 }
 </style>
-
