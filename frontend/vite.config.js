@@ -74,8 +74,10 @@ export default defineConfig(({ mode }) => {
         },
         mangle: {
           // 禁用顶级作用域混淆，避免循环依赖问题
-          toplevel: true,
+          toplevel: false,
           // 保留类名和函数名，避免初始化顺序问题
+          keep_classnames: true,
+          keep_fnames: true,
           properties: {
             // 禁用属性混淆
             regex: /^$/,

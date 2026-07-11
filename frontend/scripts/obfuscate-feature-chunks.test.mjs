@@ -26,6 +26,43 @@ test('selects only dynamic chunks whose facade is application source', () => {
   }), false)
 })
 
+test('obfuscates feature chunks without dynamic imports', () => {
+  const plugin = createFeatureChunkObfuscator()
+  const source = 'export const page = "protected"'
+  const result = plugin.renderChunk(source, featureChunk)
+
+  assert.notEqual(result, null)
+  assert.notEqual(result.code, source)
+})
+
+test('emits a manifest for obfuscated feature chunks', () => {
+  const plugin = createFeatureChunkObfuscator()
+  const emitted = []
+
+  plugin.renderChunk('export const page = "protected"', featureChunk)
+  plugin.generateBundle.call(
+    {
+      emitFile(asset) {
+        emitted.push(asset)
+      },
+    },
+    {},
+    {
+      'js/Timeline-final.js': {
+        type: 'chunk',
+        facadeModuleId: featureChunk.facadeModuleId,
+        fileName: 'js/Timeline-final.js',
+      },
+    },
+  )
+
+  assert.deepEqual(emitted, [{
+    type: 'asset',
+    fileName: 'obfuscation-manifest.json',
+    source: JSON.stringify({ files: ['js/Timeline-final.js'] }),
+  }])
+})
+
 test('leaves feature chunks with dynamic imports unmodified', () => {
   const plugin = createFeatureChunkObfuscator()
   const source = 'export const load = () => import("./Timeline-abc123.js")'
