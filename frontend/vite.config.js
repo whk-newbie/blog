@@ -4,10 +4,8 @@ import { resolve } from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import obfuscator from 'rollup-plugin-obfuscator'
-
+import { createFeatureChunkObfuscator } from './scripts/obfuscate-feature-chunks.mjs'
 export default defineConfig(({ mode }) => {
-  const isProd = mode === 'production'
 
   return {
     plugins: [
@@ -21,19 +19,7 @@ export default defineConfig(({ mode }) => {
         resolvers: [ElementPlusResolver()],
         dts: mode === 'development' ? 'src/components.d.ts' : false,
       }),
-      // Obfuscation — 不混淆字符串，避免破坏动态import路径
-      ...(isProd ? [obfuscator({
-        compact: true,
-        controlFlowFlattening: true,
-        controlFlowFlatteningThreshold: 0.5,
-        deadCodeInjection: true,
-        deadCodeInjectionThreshold: 0.3,
-        stringArray: false,
-        selfDefending: true,
-        debugProtection: true,
-        domainLock: [],
-        exclude: ['node_modules/**'],
-      })] : []),
+      createFeatureChunkObfuscator(),
     ],
     resolve: {
       alias: {
@@ -88,10 +74,8 @@ export default defineConfig(({ mode }) => {
         },
         mangle: {
           // 禁用顶级作用域混淆，避免循环依赖问题
-          toplevel: false,
+          toplevel: true,
           // 保留类名和函数名，避免初始化顺序问题
-          keep_classnames: true,
-          keep_fnames: true,
           properties: {
             // 禁用属性混淆
             regex: /^$/,
