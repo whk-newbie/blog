@@ -95,30 +95,30 @@ function imageHandler() {
       ElMessage.info(t('common.uploading'))
       
       // 上传图片
-      const response = await api.upload.uploadArticleImage(file)
-      
-      if (response.code === 0) {
-        const imageUrl = response.data.url
-        
-        // 获取编辑器实例
-        const quill = quillInstance.value.getQuill()
-        
-        // 获取当前光标位置
-        const range = quill.getSelection(true)
-        
-        // 插入图片
-        quill.insertEmbed(range.index, 'image', imageUrl)
-        
-        // 光标移动到图片后面
-        quill.setSelection(range.index + 1)
-        
-        ElMessage.success(t('common.uploadSuccess'))
-      } else {
-        ElMessage.error(response.message || t('common.uploadError'))
+      const data = await api.upload.uploadArticleImage(file)
+      const imageUrl = data?.url
+      if (!imageUrl) {
+        throw new Error(t('common.uploadError'))
       }
+
+      // 获取编辑器实例
+      const quill = quillInstance.value.getQuill()
+
+      // 获取当前光标位置
+      const range = quill.getSelection(true)
+
+      // 插入图片
+      quill.insertEmbed(range.index, 'image', imageUrl)
+
+      // 光标移动到图片后面
+      quill.setSelection(range.index + 1)
+
+      ElMessage.success(t('common.uploadSuccess'))
     } catch (error) {
       console.error('图片上传失败:', error)
-      ElMessage.error(t('common.uploadError'))
+      if (!error?.userMessageShown) {
+        ElMessage.error(t('common.uploadError'))
+      }
     }
   }
 }

@@ -57,6 +57,10 @@ function clearSession() {
   try { sessionStorage.removeItem(SESSION_STORE_KEY) } catch (e) { /* ignore */ }
 }
 
+function isFormData(data) {
+  return typeof FormData !== 'undefined' && data instanceof FormData
+}
+
 // Negotiate encryption key with server
 async function negotiateKey() {
   if (aesKey && sessionId) return
@@ -122,8 +126,15 @@ http.interceptors.request.use(
       }
       config.headers['X-Session-Id'] = sessionId
 
-      // Encrypt request body
-      if (config.data && typeof config.data === 'object') {
+      const multipartRequest = isFormData(config.data)
+      if (multipartRequest) {
+        if (typeof config.headers.setContentType === 'function') {
+          config.headers.setContentType(false)
+        } else {
+          delete config.headers['Content-Type']
+        }
+      } else if (config.data && typeof config.data === 'object') {
+        // Encrypt JSON request bodies. Multipart file bodies remain binary.
         const jsonStr = JSON.stringify(config.data)
         const encrypted = aesEncrypt(jsonStr, aesKey)
         config.data = encrypted
@@ -183,7 +194,11 @@ http.interceptors.response.use(
           // Try parsing as JSON directly (fallback for error responses)
           response.data = JSON.parse(response.data)
         } catch (_) {
-          return Promise.reject(new Error('Failed to decrypt response'))
+          const message = '数据请求失败，请联系管理员'
+          const error = new Error(message)
+          error.userMessageShown = true
+          ElMessage.error(message)
+          return Promise.reject(error)
         }
       }
     }

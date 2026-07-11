@@ -44,8 +44,7 @@
             fit="cover"
           />
           <el-upload
-            :action="uploadAction"
-            :headers="uploadHeaders"
+            :http-request="uploadCoverImage"
             :show-file-list="false"
             :before-upload="beforeUpload"
             :on-success="handleUploadSuccess"
@@ -170,11 +169,9 @@ import api from '@/api'
 import aiApi from '@/api/ai'
 import PageHeader from '@/components/common/PageHeader.vue'
 import RichTextEditor from '@/components/editor/RichTextEditor.vue'
-import { useUserStore } from '@/store/user'
 
 const route = useRoute()
 const router = useRouter()
-const userStore = useUserStore()
 const { t } = useI18n()
 
 const formRef = ref(null)
@@ -208,17 +205,6 @@ const rules = computed(() => ({
     { required: true, message: t('article.contentPlaceholder'), trigger: 'blur' }
   ]
 }))
-
-const uploadAction = computed(() => {
-  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
-  return `${baseURL}/admin/upload/article-image`
-})
-
-const uploadHeaders = computed(() => {
-  return {
-    Authorization: `Bearer ${userStore.token}`
-  }
-})
 
 // 获取文章详情
 const fetchArticle = async () => {
@@ -297,6 +283,18 @@ const beforeUpload = (file) => {
   return true
 }
 
+const uploadCoverImage = async ({ file, onProgress, onSuccess, onError }) => {
+  try {
+    const data = await api.upload.uploadArticleImage(file, (percent) => onProgress({ percent }))
+    if (!data?.url) {
+      throw new Error(t('common.uploadError'))
+    }
+    onSuccess({ code: 0, data })
+  } catch (error) {
+    onError(error)
+  }
+}
+
 // 上传成功
 const handleUploadSuccess = (response) => {
   if (response.code === 0) {
@@ -308,8 +306,10 @@ const handleUploadSuccess = (response) => {
 }
 
 // 上传失败
-const handleUploadError = () => {
-  ElMessage.error(t('common.uploadError'))
+const handleUploadError = (error) => {
+  if (!error?.userMessageShown) {
+    ElMessage.error(t('common.uploadError'))
+  }
 }
 
 // AI 生成摘要
@@ -387,7 +387,9 @@ const handleSubmit = async (status) => {
   } catch (error) {
     if (error instanceof Error) {
       console.error('提交失败:', error)
-      ElMessage.error(isEdit.value ? t('article.updateError') : t('article.createError'))
+      if (!error.userMessageShown) {
+        ElMessage.error(isEdit.value ? t('article.updateError') : t('article.createError'))
+      }
     }
   } finally {
     loading.value = false

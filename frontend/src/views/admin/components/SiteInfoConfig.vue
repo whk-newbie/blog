@@ -28,10 +28,10 @@
         <div style="display:flex;gap:8px;align-items:center">
           <el-input v-model="form.avatarUrl" placeholder="头像URL" clearable style="flex:1" />
           <el-upload
-            :action="uploadUrl"
-            :headers="uploadHeaders"
+            :http-request="uploadAvatar"
             :show-file-list="false"
             :on-success="onAvatarUpload"
+            :on-error="onAvatarUploadError"
             :before-upload="beforeUpload"
             accept="image/*"
           >
@@ -82,12 +82,7 @@ import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import api from '@/api'
 
-const uploadUrl = '/api/v1/admin/upload/image'
-const uploadHeaders = computed(() => {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-})
-
+const { t } = useI18n()
 const beforeUpload = (file) => {
   const isImage = file.type.startsWith('image/')
   const isLt10M = file.size / 1024 / 1024 < 10
@@ -96,13 +91,32 @@ const beforeUpload = (file) => {
   return true
 }
 
-const onAvatarUpload = (response) => {
-  if (response.code === 0 && response.data?.url) {
-    form.avatarUrl = response.data.url
+const uploadAvatar = async ({ file, onProgress, onSuccess, onError }) => {
+  try {
+    const data = await api.upload.uploadImage(file, (percent) => onProgress({ percent }))
+    if (!data?.url) {
+      throw new Error(t('common.uploadError'))
+    }
+    onSuccess({ code: 0, data })
+  } catch (error) {
+    onError(error)
   }
 }
 
-const { t } = useI18n()
+const onAvatarUpload = (response) => {
+  if (response.code === 0 && response.data?.url) {
+    form.avatarUrl = response.data.url
+    ElMessage.success(t('common.uploadSuccess'))
+  } else {
+    ElMessage.error(t('common.uploadError'))
+  }
+}
+
+const onAvatarUploadError = (error) => {
+  if (!error?.userMessageShown) {
+    ElMessage.error(t('common.uploadError'))
+  }
+}
 const formRef = ref(null)
 const saving = ref(false)
 const siteInfoConfig = ref(null)
@@ -259,7 +273,9 @@ const handleSave = async () => {
   } catch (error) {
     if (error instanceof Error) {
       console.error('保存失败:', error)
-      ElMessage.error(t('config.updateError'))
+      if (!error.userMessageShown) {
+        ElMessage.error(t('config.updateError'))
+      }
     }
   } finally {
     saving.value = false

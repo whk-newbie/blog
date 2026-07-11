@@ -40,6 +40,10 @@ func isWhitelisted(path string) bool {
 	return false
 }
 
+func shouldDecryptRequestBody(request *http.Request) bool {
+	return !strings.HasPrefix(strings.ToLower(request.Header.Get("Content-Type")), "multipart/form-data")
+}
+
 // Encryption middleware: decrypts request body, encrypts response body
 func Encryption(rsaKeyPair *crypto.RSAKeyPair) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -63,7 +67,7 @@ func Encryption(rsaKeyPair *crypto.RSAKeyPair) gin.HandlerFunc {
 		}
 
 		// Decrypt request body (AES-256-CBC, matches frontend crypto-js)
-		if c.Request.Body != nil && c.Request.ContentLength > 0 {
+		if c.Request.Body != nil && c.Request.ContentLength > 0 && shouldDecryptRequestBody(c.Request) {
 			bodyBytes, _ := io.ReadAll(c.Request.Body)
 			c.Request.Body.Close()
 			if len(bodyBytes) > 0 {

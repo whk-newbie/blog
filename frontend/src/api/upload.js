@@ -12,9 +12,6 @@ export default {
     formData.append('file', file)
 
     return http.post('/admin/upload/image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
@@ -32,9 +29,6 @@ export default {
     formData.append('file', file)
 
     return http.post('/admin/upload/article-image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
